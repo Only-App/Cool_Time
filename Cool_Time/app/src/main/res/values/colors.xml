@@ -5,4 +5,5 @@
     <color name= "colorPrimary">#EE3D43</color>
     <color name= "colorPrimaryDark">#D6442D</color>
     <color name= "background">#ECECEC</color>
+    <color name="light_gray">#6A6A6A</color>
 </resources>
