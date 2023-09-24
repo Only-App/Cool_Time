@@ -3,36 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/nav_main">
 
     <fragment
-        android:id="@+id/mainFragment"
+        android:id="@+id/nav_main"
         android:name="com.example.cool_time.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" />
     <fragment
-        android:id="@+id/useStatFragment"
+        android:id="@+id/nav_use_stat"
         android:name="com.example.cool_time.UseStatFragment"
         android:label="fragment_use_stat"
         tools:layout="@layout/fragment_use_stat" />
     <fragment
-        android:id="@+id/alarmFragment"
+        android:id="@+id/nav_alarm"
         android:name="com.example.cool_time.AlarmFragment"
         android:label="fragment_alarm"
         tools:layout="@layout/fragment_alarm" />
     <fragment
-        android:id="@+id/calendarFragment"
+        android:id="@+id/nav_calendar"
         android:name="com.example.cool_time.CalendarFragment"
         android:label="fragment_calendar"
-        tools:layout="@layout/fragment_calendar" />
+        tools:layout="@layout/fragment_calendar" >
+
+    </fragment>
     <fragment
-        android:id="@+id/directLockFragment"
+        android:id="@+id/nav_direct_lock"
         android:name="com.example.cool_time.DirectLockFragment"
         android:label="fragment_direct_lock"
         tools:layout="@layout/fragment_direct_lock" />
+
     <fragment
-        android:id="@+id/phoneLockFragment"
+        android:id="@+id/nav_phone_lock"
         android:name="com.example.cool_time.PhoneLockFragment"
         android:label="fragment_phone_lock"
         tools:layout="@layout/fragment_phone_lock" />
+
+    <!-- <include app:graph = "@navigation/nav_phone_lock"/> !-->
+
 </navigation>
