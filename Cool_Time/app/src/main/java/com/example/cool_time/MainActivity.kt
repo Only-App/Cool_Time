@@ -30,8 +30,6 @@ class MainActivity : AppCompatActivity() {
         //Navigation을 통한 메뉴 옵션 프래그먼트 이동 처리, back button 클릭 시
         // startDestination(메인 화면)으로 다시 돌아옴
         setUpNavViewController()
-        supportActionBar!!.elevation = 4.0f
-        Log.e("elevation", supportActionBar!!.elevation.toString())
 
     }
 
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, navDestination, bundle ->
             // 현재 프래그먼트가 메인이면 흰색 메뉴, 아니면 흰색 백 버튼
             // 이 코드가 없으면 검은 색 버튼들로 동작
-            if(navDestination.id !== R.id.nav_main){
+            if(navDestination.id !== R.id.main){
                 supportActionBar!!.setHomeAsUpIndicator(R.drawable.arrow_back_24dp)
             }
             else{
@@ -63,21 +61,25 @@ class MainActivity : AppCompatActivity() {
 
             //프래그먼트에 따라서 툴바 가운데 텍스트를 변경
             when(navDestination.id){
-                R.id.nav_use_stat -> {
+                R.id.main -> {
+                    binding!!.tvToolbarName.text = "COOL TIME"
+                }
+                R.id.use_stat -> {
                     binding!!.tvToolbarName.text = "사용시간 통계"
                 }
-                R.id.nav_alarm ->{
+                R.id.alarm_main ->{
                     binding!!.tvToolbarName.text = "알람"
                 }
-                R.id.nav_direct_lock -> {
+                R.id.direct_lock -> {
                     binding!!.tvToolbarName.text= "바로 잠금"
                 }
-                R.id.nav_phone_lock -> {
+                R.id.phone_lock_main -> {
                     binding!!.tvToolbarName.text = "폰 잠금"
                 }
-                R.id.nav_calendar -> {
+                R.id.calendar -> {
                     binding!!.tvToolbarName.text = "캘린더"
                 }
+
 
             }
         }

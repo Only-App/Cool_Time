@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LockSettingFragment">
+    tools:context=".PhoneLock.LockSettingFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.cardview.widget.CardView
@@ -56,13 +56,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@id/ll_select_app"
-                android:layout_marginTop = "20dp">
+                android:layout_marginTop = "10dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text = "하루 총 사용량"
                     android:textSize= "20dp"
                     />
+
                 <TextView
                     android:id = "@+id/tv_today_total_time"
                     android:layout_width="match_parent"
@@ -84,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@id/ll_today_total_time"
-                android:layout_marginTop = "20dp">
+                android:layout_marginTop = "10dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -124,7 +125,9 @@
                <LinearLayout
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
-                   android:orientation="horizontal">
+                   android:orientation="horizontal"
+                   android:layout_marginTop = "5dp"
+                   >
 
                    <TextView
                        android:id="@+id/tv_start_time"
@@ -202,77 +205,93 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <androidx.appcompat.widget.AppCompatRadioButton
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp"
+                    >
+                    <androidx.appcompat.widget.AppCompatCheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
                         android:text = "월"
                         android:textAlignment="center"
                         android:button = "@null"
-                        android:background="@drawable/selector_radio_button"
-                        android:textColor = "@drawable/selector_radio_text"
-                        android:layout_gravity="center_horizontal" />
-                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:background="@drawable/selector_check_box"
+                        android:textColor = "@drawable/selector_check_box_text"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin= "3dp"
+                        />
+                    <androidx.appcompat.widget.AppCompatCheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
                         android:text = "화"
                         android:textAlignment="center"
                         android:button = "@null"
-                        android:background="@drawable/selector_radio_button"
-                        android:textColor = "@drawable/selector_radio_text"
-                        android:layout_gravity="center_horizontal" />
-                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:background="@drawable/selector_check_box"
+                        android:textColor = "@drawable/selector_check_box_text"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin= "3dp"
+                        />
+                    <androidx.appcompat.widget.AppCompatCheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
                         android:text = "수"
                         android:textAlignment="center"
                         android:button = "@null"
-                        android:background="@drawable/selector_radio_button"
-                        android:textColor = "@drawable/selector_radio_text"
-                        android:layout_gravity="center_horizontal" />
-                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:background="@drawable/selector_check_box"
+                        android:textColor = "@drawable/selector_check_box_text"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin= "3dp"
+                        />
+                    <androidx.appcompat.widget.AppCompatCheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
                         android:text = "목"
                         android:textAlignment="center"
                         android:button = "@null"
-                        android:background="@drawable/selector_radio_button"
-                        android:textColor = "@drawable/selector_radio_text"
-                        android:layout_gravity="center_horizontal" />
-                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:background="@drawable/selector_check_box"
+                        android:textColor = "@drawable/selector_check_box_text"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin= "3dp"
+                        />
+                    <androidx.appcompat.widget.AppCompatCheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
                         android:text = "금"
                         android:textAlignment="center"
                         android:button = "@null"
-                        android:background="@drawable/selector_radio_button"
-                        android:textColor = "@drawable/selector_radio_text"
-                        android:layout_gravity="center_horizontal" />
-                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:background="@drawable/selector_check_box"
+                        android:textColor = "@drawable/selector_check_box_text"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin= "3dp"
+                        />
+                    <androidx.appcompat.widget.AppCompatCheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
                         android:text = "토"
                         android:textAlignment="center"
                         android:button = "@null"
-                        android:background="@drawable/selector_radio_button"
-                        android:textColor = "@drawable/selector_radio_text"
-                        android:layout_gravity="center_horizontal" />
-                    <androidx.appcompat.widget.AppCompatRadioButton
+                        android:background="@drawable/selector_check_box"
+                        android:textColor = "@drawable/selector_check_box_text"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin= "3dp"
+                        />
+                    <androidx.appcompat.widget.AppCompatCheckBox
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
                         android:text = "일"
                         android:textAlignment="center"
                         android:button = "@null"
-                        android:background="@drawable/selector_radio_button"
-                        android:textColor = "@drawable/selector_radio_text"
-                        android:layout_gravity="center_horizontal" />
+                        android:background="@drawable/selector_check_box"
+                        android:textColor = "@drawable/selector_check_box_text"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin= "3dp"
+                        />
                 </LinearLayout>
             </LinearLayout>
 
@@ -293,7 +312,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp"
+                    >
 
                     <TextView
                         android:id="@+id/tv_start_day"
@@ -353,10 +374,12 @@
                 </LinearLayout>
             </LinearLayout>
             <androidx.appcompat.widget.AppCompatButton
-                android:id = "@+id/fab_add_setting"
+                android:id = "@+id/btn_add_setting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom = "10dp"
                 app:tint = "@color/white"
                 android:text = "확인"
                 android:textSize = "20dp"
@@ -364,7 +387,6 @@
                 android:background="@drawable/radius"
                 android:backgroundTint="@color/colorPrimary"
                 android:padding="10dp"
-                android:layout_marginTop="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
 
                 />
