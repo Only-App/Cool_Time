@@ -1,19 +1,26 @@
 package com.example.cool_time.Alarm
 
+import android.app.Activity
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.cool_time.UserDatabase
 import com.example.cool_time.databinding.FragmentAlarmSettingBinding
 import com.example.cool_time.model.Alarm
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -45,14 +52,33 @@ class AlarmSettingFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentAlarmSettingBinding.inflate(inflater, container, false)
-
+        hide()
         addAlarmSetting()
-
         return binding.root
     }
 
+    //키보드 숨기는 함수
+    fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+    //키보드 숨기는 함수 Context -> View -> Activity -> Fragment 순으로 hideKeyboard 함수 연속으로 실행되는 구조로 파악
+    fun Context.hideKeyboard(view: View) {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 
-
+    fun hide(){
+        binding!!.alaFrame.setOnClickListener{
+            hideKeyboard()
+        }
+        binding!!.etAlarmDescription.setOnEditorActionListener{v, actionId, event -> var handled = false
+            if(actionId == EditorInfo.IME_ACTION_DONE || event.keyCode == KeyEvent.KEYCODE_ENTER) {
+                hideKeyboard() // 엔터나 완료 입력 시 키보드 사라짐
+                handled = true
+            }
+            handled
+        }
+    }
     @RequiresApi(Build.VERSION_CODES.M) //timePicker에서 hour와 minute property 사용이 최소 API를 요구함
     private fun addAlarmSetting(){
         //db 객체 가져오기
