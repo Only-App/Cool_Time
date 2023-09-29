@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
@@ -46,13 +47,14 @@ class AlarmSettingFragment : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.M) //timePicker에서 hour와 minute property 사용이 최소 API를 요구함
-    override fun onCreateView(
+    override fun onCreateView( //Fragment가 실행될 때 생명주기에 따라 onCreate 다음으로 자동 실행되는 함수, View 관련 내용을 세팅하기에 적합
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentAlarmSettingBinding.inflate(inflater, container, false)
         hide()
+        alarmInit()
         addAlarmSetting()
         return binding.root
     }
@@ -66,7 +68,6 @@ class AlarmSettingFragment : Fragment() {
         val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
-
     fun hide(){
         binding!!.alaFrame.setOnClickListener{
             hideKeyboard()
@@ -79,6 +80,21 @@ class AlarmSettingFragment : Fragment() {
             handled
         }
     }
+
+    fun alarmInit(){ // Time Picker 위한 초기 설정
+        binding!!.alaHourPicker.wrapSelectorWheel = false; // 숫자 값을 키보드로 입력하는 것을 막음
+        binding!!.alaHourPicker.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS // 최대값에서 최소값으로 순환하는 것을 막음
+
+        binding!!.alaMinPicker.wrapSelectorWheel = false;
+        binding!!.alaMinPicker.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+
+        binding!!.alaHourPicker.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
+        binding!!.alaHourPicker.maxValue = 23
+
+        binding!!.alaMinPicker.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
+        binding!!.alaMinPicker.maxValue = 59
+    }
+
     @RequiresApi(Build.VERSION_CODES.M) //timePicker에서 hour와 minute property 사용이 최소 API를 요구함
     private fun addAlarmSetting(){
         //db 객체 가져오기
@@ -90,12 +106,25 @@ class AlarmSettingFragment : Fragment() {
 
             val etAlarmDescription :String= binding!!.etAlarmDescription.text.toString()    //알람 내용
 
-            val hour : Int = binding!!.timePicker.hour  //시간
-            val minutes : Int= binding!!.timePicker.minute   //분
+            var hour = binding!!.alaHourPicker.value // 시간과 분을 선택된 값으로 대입
+            var minutes = binding!!.alaMinPicker.value
+
+            /*
+            기본적으로 addAlarmSetting 함수가 확인 버튼을 눌렀을 때 작동하는 함수이니까
+            setOnValueChangedListener로 실시간으로 값을 경신시킬 필요는 없다고 판단
+            그러나 혹시나 나중에 값이 제대로 안들어갈 경우에 위 코드 사용
+            정상 작동 확인될 시 위 주석 처리 코드 삭제
+
+            binding!!.alaHourPicker.setOnValueChangedListener{time, before, after ->
+                hour = after
+            }
+            binding!!.alaMinPicker.setOnValueChangedListener{time, before, after ->
+                minutes = after
+            }
+            */
 
             //설정한 시간 값(기준값: 분)
             val time_result = hour * 60  + minutes
-
 
             //요일 설정 값(비트 마스크 값)
             val day_result = dayToBit()
@@ -103,17 +132,12 @@ class AlarmSettingFragment : Fragment() {
             //Alarm 객체 생성
             val entity = Alarm(name = etAlarmDescription, day = time_result, time = day_result)
 
-
             lifecycleScope.launch(Dispatchers.IO){
                 db!!.alarmDao().insertAlarm(entity)
             }
 
             findNavController().popBackStack()
         }
-
-
-
-
     }
 
     private fun dayToBit() : Int{
