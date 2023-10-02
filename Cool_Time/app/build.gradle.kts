@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+    implementation("com.google.code.gson:gson:2.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     kapt("org.xerial:sqlite-jdbc:3.34.0")
     annotationProcessor("androidx.room:room-compiler:2.5.0")

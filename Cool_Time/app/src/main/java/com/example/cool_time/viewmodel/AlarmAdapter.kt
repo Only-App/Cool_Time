@@ -7,7 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cool_time.databinding.AlarmItemBinding
 import com.example.cool_time.model.Alarm
 
-class AlarmAdapter(private val list : List<Alarm>): RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder> () {
+class AlarmAdapter(private val list : List<Alarm>, private var mListener : OnAlarmItemOnClickListener): RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>(){
+
     companion object{
         val day_list  = arrayOf("월","화", "수", "목", "금", "토", "일")
         val num_list = arrayOf(64, 32, 16, 8 ,4, 2, 1)
@@ -16,12 +17,13 @@ class AlarmAdapter(private val list : List<Alarm>): RecyclerView.Adapter<AlarmAd
         //선택한 요일 정보(Int type)를 바탕으로 요일을 String으로 변환하도록 함
         fun getDayStr(data : Int) : String{
             var day_str : String= ""
-
+            var temp = data
             for(i in 0..6){
-                if(data >= num_list[i]){
+                if(temp >= num_list[i]){
                     if(day_str.isNotEmpty())
                         day_str+= ", "
                     day_str+= "${day_list[i]}"
+                    temp -= num_list[i]
                 }
             }
 
@@ -51,7 +53,7 @@ class AlarmAdapter(private val list : List<Alarm>): RecyclerView.Adapter<AlarmAd
             time_str += " : "
 
             if(minute < 10){
-                time_str += '0' + minute
+                time_str += "0$minute"
             }
             else time_str += minute
 
@@ -59,6 +61,7 @@ class AlarmAdapter(private val list : List<Alarm>): RecyclerView.Adapter<AlarmAd
         }
 
     }
+
 
     //TODO 현재 시간 대비 얼마 남았는 지를 계산해서 String Type으로 return할 수 있도록 해야 함
     fun compareTimeStr() : String{
@@ -73,10 +76,13 @@ class AlarmAdapter(private val list : List<Alarm>): RecyclerView.Adapter<AlarmAd
             var time_str : String = getTimeStr(alarm.time)
 
 
-            binding.alarmName.text = alarm.name.toString()
+            binding.alarmName.text = alarm.name
             binding.alarmTime.text = time_str
             binding.alarmDay.text = day_str
             binding.alarmCompare.text= "어쩌구 저쩌구"
+
+
+
         }
     }
 
@@ -92,5 +98,13 @@ class AlarmAdapter(private val list : List<Alarm>): RecyclerView.Adapter<AlarmAd
 
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         holder.bind(list[position])
+        holder.binding.clAlarmItem.setOnClickListener(View.OnClickListener {
+            mListener?.onItemClick(list[position], position)
+        })
     }
+}
+
+
+interface OnAlarmItemOnClickListener{
+    fun onItemClick(alarm : Alarm, pos :Int)
 }

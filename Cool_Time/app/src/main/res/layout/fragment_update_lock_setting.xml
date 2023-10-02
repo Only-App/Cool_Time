@@ -108,86 +108,86 @@
             </LinearLayout>
 
 
-           <LinearLayout
-               android:id="@+id/ll_time_lock"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:orientation="vertical"
-               app:layout_constraintTop_toBottomOf="@id/ll_interval_time"
-               android:layout_marginTop = "10dp"
-               >
-               <TextView
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:text = "특정 시간 잠금"
-                   android:textSize= "20dp"
-                   />
-
-               <LinearLayout
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:orientation="horizontal"
-                   android:layout_marginTop = "5dp"
-                   >
-
-                   <TextView
-                       android:id="@+id/tv_start_time"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="center_horizontal"
-                       android:layout_marginTop="5dp"
-                       android:layout_weight="1.5"
-                       android:background="@drawable/radius"
-                       android:padding="8dp"
-                       android:text="00:00"
-                       android:textAlignment="center"
-                       android:textSize="20dp" />
-
-                   <View
-                       android:layout_width="0dp"
-                       android:layout_height="0dp"
-                       android:layout_weight="1"
-                       />
-
-                   <TextView
-                       android:id="@+id/tv_end_time"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="center_horizontal"
-                       android:layout_marginTop="5dp"
-                       android:layout_weight="1.5"
-                       android:background="@drawable/radius"
-                       android:padding="8dp"
-                       android:text="00:00"
-                       android:textAlignment="center"
-                       android:textSize="20dp" />
-               </LinearLayout>
-
-               <LinearLayout
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:orientation="horizontal"
-                   android:layout_gravity="right">
-                   <View
-                       android:layout_width="0dp"
-                       android:layout_height="0dp"
-                       android:layout_weight="1"
-                       />
-
-                   <CheckBox
-                       android:id="@+id/cb_not_interval_setting"
-                       android:layout_width="20dp"
-                       android:layout_height="match_parent"
-                       android:layout_gravity="right"
-                       android:layout_marginRight="10dp" />
-                   <TextView
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="center"
-                       android:text = "설정 안함"
+            <LinearLayout
+                android:id="@+id/ll_time_lock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/ll_interval_time"
+                android:layout_marginTop = "10dp"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text = "특정 시간 잠금"
+                    android:textSize= "20dp"
                     />
-               </LinearLayout>
-           </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop = "5dp"
+                    >
+
+                    <TextView
+                        android:id="@+id/tv_start_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="1.5"
+                        android:background="@drawable/radius"
+                        android:padding="8dp"
+                        android:text="00:00"
+                        android:textAlignment="center"
+                        android:textSize="20dp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_end_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="1.5"
+                        android:background="@drawable/radius"
+                        android:padding="8dp"
+                        android:text="00:00"
+                        android:textAlignment="center"
+                        android:textSize="20dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="right">
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/cb_not_interval_setting"
+                        android:layout_width="20dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="right"
+                        android:layout_marginRight="10dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text = "설정 안함"
+                        />
+                </LinearLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:id = "@+id/ll_select_day"
@@ -297,6 +297,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id = "@+id/ll_select_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -374,23 +375,46 @@
                         />
                 </LinearLayout>
             </LinearLayout>
-            <androidx.appcompat.widget.AppCompatButton
-                android:id = "@+id/btn_add_setting"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width = "match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom = "10dp"
-                app:tint = "@color/white"
-                android:text = "확인"
-                android:textSize = "20dp"
-                android:textColor = "@color/white"
-                android:background="@drawable/radius"
-                android:backgroundTint="@color/colorPrimary"
-                android:padding="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ll_select_date"
+                android:layout_marginTop = "30dp"
+                android:orientation="horizontal"
+                >
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id = "@+id/btn_delete_setting"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:tint = "@color/white"
+                    android:text = "삭제"
+                    android:textSize = "20dp"
+                    android:textColor = "@color/white"
+                    android:background="@drawable/radius"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:padding="10dp"
+                    android:layout_marginHorizontal="10dp"
+                    />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id = "@+id/btn_update_setting"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:tint = "@color/white"
+                    android:text = "수정"
+                    android:textSize = "20dp"
+                    android:textColor = "@color/white"
+                    android:background="@drawable/radius"
+                    android:backgroundTint="@color/purple"
+                    android:padding="10dp"
+                    android:layout_marginHorizontal="10dp"
 
-                />
+                    />
+            </LinearLayout>
+
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

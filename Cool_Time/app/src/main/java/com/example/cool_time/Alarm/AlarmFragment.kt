@@ -1,18 +1,33 @@
 package com.example.cool_time.Alarm
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cool_time.AlarmRepository
 
 import com.example.cool_time.R
+import com.example.cool_time.UserDatabase
 import com.example.cool_time.databinding.FragmentAlarmBinding
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.viewmodel.AlarmAdapter
+import com.example.cool_time.viewmodel.AlarmViewModel
+import com.example.cool_time.viewmodel.AlarmViewModelFactory
+import com.example.cool_time.viewmodel.OnAlarmItemOnClickListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * A simple [Fragment] subclass.
@@ -27,6 +42,14 @@ class AlarmFragment : Fragment() {
     private var _binding : FragmentAlarmBinding? = null
     private val binding : FragmentAlarmBinding
         get() = _binding!!
+
+
+    private var db :UserDatabase? = null
+    private var repository : AlarmRepository?= null
+
+
+    private var alarmViewModel : AlarmViewModel? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,17 +71,26 @@ class AlarmFragment : Fragment() {
             findNavController().navigate(R.id.action_alarm_main_to_alarm_setting)
         }
 
-        //TODO 테스트용 코드, 다시 지워야 함
-        binding!!.btnTest.setOnClickListener {
-            findNavController().navigate(R.id.action_alarm_main_to_update_alarm_setting)
-        }
 
-        //원래는 getAll함수를 통해서 database(User Database)에 있는 Alarm 정보들을 List로 가져와 어댑터의 파라미터로 전달해야 함
-        //현재는 테스트 단계(임의의 샘플 데이터)
+        //TODO: 현재 시간을 바탕으로 몇 시간 몇 분 남았는지를 출력해야 함, 그리고 계속 변할 수 있어야 함
+        db = UserDatabase.getInstance(activity!!.applicationContext)
+        repository = AlarmRepository(db!!.alarmDao())
+        alarmViewModel = ViewModelProvider(activity!!, AlarmViewModelFactory(repository!!)).get(AlarmViewModel::class.java)
 
-        binding.rvAlarmSet.adapter=  AlarmAdapter(
-            listOf(Alarm(name = "알람 내용입니다...", day = 15, time = 75), Alarm(name = "아무거나 적습니다", day = 65, time = 800)))
         binding.rvAlarmSet.layoutManager = LinearLayoutManager(this.context)
+
+        alarmViewModel!!.alarm_list.observe(this, Observer<List<Alarm>>{
+            list -> binding.rvAlarmSet.adapter = AlarmAdapter(list, object : OnAlarmItemOnClickListener {
+            override fun onItemClick(alarm: Alarm, pos: Int) {
+                val bundle  = Bundle()
+                bundle.putSerializable("key", alarm)
+                findNavController().navigate(R.id.action_alarm_main_to_update_alarm_setting, bundle)
+            }
+            })
+
+
+        })
+
 
 
         return binding.root

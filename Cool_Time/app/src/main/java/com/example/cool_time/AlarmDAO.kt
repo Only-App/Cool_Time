@@ -1,6 +1,7 @@
 package com.example.cool_time
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -16,11 +17,11 @@ interface AlarmDAO {
     @Delete
     fun deleteAlarm(alarm : Alarm)
     @Update
-    fun updateAlarm(alarm : Alarm)
+    fun updateAlarm(alarm : Alarm) : Int
 
-    @Query("SELECT * FROM ALARM")
+    @Query("SELECT * FROM alarm")
     fun getAll() : LiveData<List<Alarm>>
 
-    @Query("SELECT * FROM ALARM WHERE id= :id")
+    @Query("SELECT * FROM alarm WHERE id= :id")
     fun getAlarm(id : Int) : Alarm
 }

@@ -5,9 +5,20 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Database
+import com.example.cool_time.LockRepository
 import com.example.cool_time.R
+import com.example.cool_time.UserDatabase
 import com.example.cool_time.databinding.FragmentPhoneLockBinding
+import com.example.cool_time.model.PhoneLock
+import com.example.cool_time.viewmodel.LockAdapter
+import com.example.cool_time.viewmodel.LockViewModel
+import com.example.cool_time.viewmodel.LockViewModelFactory
+import com.example.cool_time.viewmodel.OnLockItemOnClickListener
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,6 +36,14 @@ class PhoneLockFragment : Fragment() {
     private var param2: String? = null
     private var _binding : FragmentPhoneLockBinding? = null
     val binding get() = _binding!!
+
+
+    private var db : UserDatabase? = null
+    private var repository : LockRepository?= null
+
+
+    private var lockViewModel : LockViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -39,6 +58,22 @@ class PhoneLockFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentPhoneLockBinding.inflate(inflater, container, false)
+
+        db= UserDatabase.getInstance(activity!!.applicationContext)
+        repository = LockRepository(db!!.phoneLockDao())
+        lockViewModel = ViewModelProvider(activity!!, LockViewModelFactory(repository!!)).get(LockViewModel::class.java)
+
+        binding.rvLockList.layoutManager = LinearLayoutManager(this.context)
+
+        lockViewModel!!.lock_list.observe(this, Observer<List<PhoneLock>>{
+            list -> binding!!.rvLockList.adapter = LockAdapter(list, object : OnLockItemOnClickListener{
+            override fun onItemClick(lock: PhoneLock, position: Int) {
+                val bundle  = Bundle()
+                bundle.putSerializable("key", lock)
+                findNavController().navigate(R.id.action_phone_lock_main_to_update_lock_setting, bundle)
+            }
+            })
+        })
 
         binding.fabAddSetting.setOnClickListener {
             findNavController().navigate(R.id.action_phone_lock_main_to_lock_setting)

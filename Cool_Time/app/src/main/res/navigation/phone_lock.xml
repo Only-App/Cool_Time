@@ -22,10 +22,18 @@
         android:name="com.example.cool_time.PhoneLock.PhoneLockFragment"
         android:label="fragment_phone_lock"
         tools:layout="@layout/fragment_phone_lock" >
-       =
+
         <action
             android:id="@+id/action_phone_lock_main_to_lock_setting"
             app:destination="@id/lock_setting"
             />
+        <action
+            android:id="@+id/action_phone_lock_main_to_update_lock_setting"
+            app:destination="@id/update_lock_setting" />
     </fragment>
+    <fragment
+        android:id="@+id/update_lock_setting"
+        android:name="com.example.cool_time.PhoneLock.UpdateLockSettingFragment"
+        android:label="fragment_update_lock_setting"
+        tools:layout = "@layout/fragment_update_lock_setting"/>
 </navigation>

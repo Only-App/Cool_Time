@@ -1,7 +1,9 @@
 package com.example.cool_time.Alarm
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -16,11 +18,15 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.cool_time.AlarmRepository
 import com.example.cool_time.UserDatabase
 import com.example.cool_time.databinding.FragmentAlarmSettingBinding
 import com.example.cool_time.model.Alarm
+import com.example.cool_time.viewmodel.AlarmViewModel
+import com.example.cool_time.viewmodel.AlarmViewModelFactory
 import com.google.android.material.internal.ViewUtils.hideKeyboard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +44,12 @@ class AlarmSettingFragment : Fragment() {
     private val binding
         get() = _binding!!
 
+    private var db :UserDatabase? = null
+    private var repository : AlarmRepository?= null
+
+
+    private var alarmViewModel : AlarmViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -53,6 +65,11 @@ class AlarmSettingFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentAlarmSettingBinding.inflate(inflater, container, false)
+
+        db = UserDatabase.getInstance(activity!!.applicationContext)
+        repository = AlarmRepository(db!!.alarmDao())
+        alarmViewModel = ViewModelProvider(activity!!, AlarmViewModelFactory(repository!!)).get(AlarmViewModel::class.java)
+
         hide()
         alarmInit()
         addAlarmSetting()
@@ -69,9 +86,11 @@ class AlarmSettingFragment : Fragment() {
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
     fun hide(){
+
         binding!!.alaFrame.setOnClickListener{
             hideKeyboard()
         }
+
         binding!!.etAlarmDescription.setOnEditorActionListener{v, actionId, event -> var handled = false
             if(actionId == EditorInfo.IME_ACTION_DONE || event.keyCode == KeyEvent.KEYCODE_ENTER) {
                 hideKeyboard() // 엔터나 완료 입력 시 키보드 사라짐
@@ -79,6 +98,7 @@ class AlarmSettingFragment : Fragment() {
             }
             handled
         }
+
     }
 
     fun alarmInit(){ // Time Picker 위한 초기 설정
@@ -96,22 +116,28 @@ class AlarmSettingFragment : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.M) //timePicker에서 hour와 minute property 사용이 최소 API를 요구함
-    private fun addAlarmSetting(){
+    private fun addAlarmSetting() {
         //db 객체 가져오기
-        val db = UserDatabase.getInstance(activity!!.applicationContext)
+        db = UserDatabase.getInstance(activity!!.applicationContext)
+
+        repository = AlarmRepository(db!!.alarmDao())
+        alarmViewModel = ViewModelProvider(
+            activity!!,
+            AlarmViewModelFactory(repository!!)
+        ).get(AlarmViewModel::class.java)
+
 
         //등록 버튼을 누르면 입력한 값들을 바탕으로 Entity객체를 생성하고 Alarm 테이블에 Insert
         binding!!.btnAddSetting.setOnClickListener {
-            Toast.makeText(activity, "REGISTER ALARM SETTING", Toast.LENGTH_SHORT).show()
 
-            val etAlarmDescription :String= binding!!.etAlarmDescription.text.toString()    //알람 내용
+            val etAlarmDescription: String = binding!!.etAlarmDescription.text.toString()    //알람 내용
 
             var hour = binding!!.alaHourPicker.value // 시간과 분을 선택된 값으로 대입
             var minutes = binding!!.alaMinPicker.value
 
             /*
             기본적으로 addAlarmSetting 함수가 확인 버튼을 눌렀을 때 작동하는 함수이니까
-            setOnValueChangedListener로 실시간으로 값을 경신시킬 필요는 없다고 판단
+            setOnValueChangedListener로 실시간으로 값을 갱신시킬 필요는 없다고 판단
             그러나 혹시나 나중에 값이 제대로 안들어갈 경우에 위 코드 사용
             정상 작동 확인될 시 위 주석 처리 코드 삭제
 
@@ -124,19 +150,22 @@ class AlarmSettingFragment : Fragment() {
             */
 
             //설정한 시간 값(기준값: 분)
-            val time_result = hour * 60  + minutes
+            val time_result = hour * 60 + minutes
 
             //요일 설정 값(비트 마스크 값)
             val day_result = dayToBit()
 
             //Alarm 객체 생성
-            val entity = Alarm(name = etAlarmDescription, day = time_result, time = day_result)
+            val entity = Alarm(name = etAlarmDescription, day = day_result, time = time_result)
 
-            lifecycleScope.launch(Dispatchers.IO){
-                db!!.alarmDao().insertAlarm(entity)
+            if (contentCheck()) {
+                alarmViewModel!!.insertAlarm(entity)
+                findNavController().popBackStack()
+            } else {
+                Toast.makeText(activity, "정보를 전부 입력해주세요", Toast.LENGTH_SHORT).show()
             }
 
-            findNavController().popBackStack()
+
         }
     }
 
@@ -160,6 +189,12 @@ class AlarmSettingFragment : Fragment() {
 
         return result
     }
+
+    private fun contentCheck() : Boolean{
+        return !binding.etAlarmDescription.text.isNullOrBlank()
+                && dayToBit() != 0
+    }
+
     companion object {
         // TODO: Rename parameter arguments, choose names that match
         // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -184,4 +219,6 @@ class AlarmSettingFragment : Fragment() {
                 }
             }
     }
+
+
 }

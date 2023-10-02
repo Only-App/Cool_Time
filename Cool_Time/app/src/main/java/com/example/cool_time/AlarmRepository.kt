@@ -1,6 +1,8 @@
 package com.example.cool_time
 
+import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.cool_time.model.Alarm
 
 class AlarmRepository(private val alarmDao : AlarmDAO) {
@@ -19,7 +21,7 @@ class AlarmRepository(private val alarmDao : AlarmDAO) {
     }
 
     suspend fun update(alarm: Alarm){
-        alarmDao.updateAlarm(alarm)
+        val result = alarmDao.updateAlarm(alarm)
     }
 
 }

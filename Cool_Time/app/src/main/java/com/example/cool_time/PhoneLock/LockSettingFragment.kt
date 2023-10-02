@@ -6,8 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.cool_time.LockRepository
+import com.example.cool_time.UserDatabase
 import com.example.cool_time.databinding.FragmentLockSettingBinding
+import com.example.cool_time.model.PhoneLock
+import com.example.cool_time.viewmodel.LockViewModel
+import com.example.cool_time.viewmodel.LockViewModelFactory
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,6 +33,11 @@ class LockSettingFragment : Fragment() {
     private val binding
         get() = _binding!!
 
+    private var db : UserDatabase? = null
+    private var repository : LockRepository?= null
+
+    private var lockViewModel : LockViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -40,8 +51,19 @@ class LockSettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentLockSettingBinding.inflate(inflater, container, false)
-        binding!!.btnAddSetting.setOnClickListener {
+            _binding = FragmentLockSettingBinding.inflate(inflater, container, false)
+            binding!!.btnAddSetting.setOnClickListener {
+
+            db= UserDatabase.getInstance(activity!!.applicationContext)
+            repository = LockRepository(db!!.phoneLockDao())
+            lockViewModel = ViewModelProvider(activity!!, LockViewModelFactory(repository!!)).get(LockViewModel::class.java)
+
+            //테스트용 insert
+            lockViewModel!!.insertLock(
+                PhoneLock(app_list= emptyList(), total_time = 0, min_time = 0,
+                lock_on = 0, lock_off=  0,
+                start_date = 0, end_date = 0))
+
             Toast.makeText(activity, "REGISTER LOCK SETTING", Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
         }
