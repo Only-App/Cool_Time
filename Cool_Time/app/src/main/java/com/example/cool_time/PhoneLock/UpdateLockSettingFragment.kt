@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.cool_time.CustomCalendarPickerDialog
@@ -18,6 +19,7 @@ import com.example.cool_time.databinding.FragmentUpdateLockSettingBinding
 import com.example.cool_time.model.PhoneLock
 import com.example.cool_time.viewmodel.LockViewModel
 import com.example.cool_time.viewmodel.LockViewModelFactory
+import java.text.SimpleDateFormat
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -95,26 +97,29 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         //수정 버튼을 눌렀을 때
         binding.btnUpdateSetting.setOnClickListener{
             //TODO: 업데이트 로직
+            if(SimpleDateFormat("yyyy년 MM월 dd일").parse(binding.tvStartDay.text.toString())!!.time > SimpleDateFormat("yyyy년 MM월 dd일").parse(binding.tvEndDay.text.toString())!!.time){
+                Toast.makeText(activity, "Please Set Date Correctly", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                //다이얼로그 출력
+                val dialog = AlertDialog.Builder(activity)
+                    .setTitle("수정")
+                    .setMessage("수정하시겠습니까?")
+                    .setPositiveButton("예") { _, _ ->
+                        //TODO: null check 함수 만들어서 값들이 채워져 있는지를 확인한 후 업데이트 작업할 수 있도록 함
 
-            //다이얼로그 출력
-            val dialog = AlertDialog.Builder(activity)
-                .setTitle("수정")
-                .setMessage("수정하시겠습니까?")
-                .setPositiveButton("예"){
-                    _,_ ->
-                    //TODO: null check 함수 만들어서 값들이 채워져 있는지를 확인한 후 업데이트 작업할 수 있도록 함
+                        //update 작업, 다시 돌아가기
+                        lockViewModel!!.updateLock(lock)
+                        findNavController().popBackStack()
+                    }
+                    .setNegativeButton("아니요") {
+                        //아니요를 눌렀을 때는 아무 작업도 하지 않도록 함
+                            _, _ ->
+                    }
+                    .create()
 
-                    //update 작업, 다시 돌아가기
-                    lockViewModel!!.updateLock(lock)
-                    findNavController().popBackStack()
-                }
-                .setNegativeButton("아니요"){
-                    //아니요를 눌렀을 때는 아무 작업도 하지 않도록 함
-                    _,_ ->
-                }
-                .create()
-
-            dialog.show()
+                dialog.show()
+            }
         }
 
         //삭제 버튼을 눌렀을 때

@@ -10,12 +10,16 @@ import androidx.fragment.app.DialogFragment
 import androidx.window.layout.WindowMetricsCalculator
 import com.example.cool_time.databinding.CustomCalendarPickerDialogBinding
 import com.example.cool_time.databinding.CustomTimePickerDialogBinding
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class CustomCalendarPickerDialog(confirmDialogInterface : CustomCalendarPickerDialog.OnDateChangeListener) :DialogFragment(){
     private lateinit var binding: CustomCalendarPickerDialogBinding
     private  var confirmDialogInterface: CustomCalendarPickerDialog.OnDateChangeListener? = null
     private var date : String = ""
     init{this.confirmDialogInterface= confirmDialogInterface}
+    var dateFormat = SimpleDateFormat("yyyy년 MM월 dd일")
+    lateinit var initDate: Date;
     override fun onResume() {
         super.onResume()
         val windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity!!)
@@ -23,6 +27,7 @@ class CustomCalendarPickerDialog(confirmDialogInterface : CustomCalendarPickerDi
         val width = (currentBounds.width() * 0.7).toInt()
         val height = (currentBounds.height() * 0.7).toInt()
         val params = dialog!!.window!!.attributes
+
         params.width = width
         //params.height = height
         params.horizontalMargin = 0.0f
@@ -34,14 +39,13 @@ class CustomCalendarPickerDialog(confirmDialogInterface : CustomCalendarPickerDi
                               savedInstanceState: Bundle?
     ): View {
         binding = CustomCalendarPickerDialogBinding.inflate(inflater, container, false)
+
+
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        /*
-        binding.phoneLockCalendarPicker.setOnDateChangeListener{
-            calendarView, year, month, dayofMonth->
-            var day: String = "${year}년 ${month}월 ${dayofMonth}일"
-            dayText
-        }
-         */
+
+        initDate = Date(binding.phoneLockCalendarPicker.date)
+        date = dateFormat.format(initDate)
+
         // 취소 버튼 클릭
 
         binding.phoneLockCalendarPicker.setOnDateChangeListener {
