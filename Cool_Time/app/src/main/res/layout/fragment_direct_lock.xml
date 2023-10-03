@@ -35,6 +35,8 @@
                     android:layout_height="wrap_content"
                     android:text = "지금부터 집중할 시간"
                     android:textSize= "22dp"
+                    android:textAlignment="center"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginHorizontal="5dp"
                     />
                 <!--

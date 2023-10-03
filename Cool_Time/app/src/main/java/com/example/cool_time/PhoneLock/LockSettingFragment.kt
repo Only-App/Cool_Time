@@ -66,27 +66,19 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
             _binding = FragmentLockSettingBinding.inflate(inflater, container, false)
 
             binding!!.btnAddSetting.setOnClickListener {
-                if(SimpleDateFormat("yyyy년 MM월 dd일").parse(binding.tvStartDay.text.toString())!!.time > SimpleDateFormat("yyyy년 MM월 dd일").parse(binding.tvEndDay.text.toString())!!.time){
-                    Toast.makeText(activity, "Please Set Date Correctly", Toast.LENGTH_SHORT).show()
-                }
-                else {
-                    db = UserDatabase.getInstance(activity!!.applicationContext)
-                    repository = LockRepository(db!!.phoneLockDao())
-                    lockViewModel = ViewModelProvider(activity!!, LockViewModelFactory(repository!!)).get(LockViewModel::class.java)
+            db= UserDatabase.getInstance(activity!!.applicationContext)
+            repository = LockRepository(db!!.phoneLockDao())
+            lockViewModel = ViewModelProvider(activity!!, LockViewModelFactory(repository!!)).get(LockViewModel::class.java)
 
-                    //테스트용 insert
-                    lockViewModel!!.insertLock(
-                        PhoneLock(
-                            app_list = emptyList(), total_time = 0, min_time = 0,
-                            lock_on = 0, lock_off = 0,
-                            start_date = 0, end_date = 0
-                        )
-                    )
+            //테스트용 insert
+            lockViewModel!!.insertLock(
+                PhoneLock(app_list= emptyList(), total_time = 0, min_time = 0,
+                lock_on = 0, lock_off=  0,
+                start_date = 0, end_date = 0))
 
-                    Toast.makeText(activity, "REGISTER LOCK SETTING", Toast.LENGTH_SHORT).show()
-                    findNavController().popBackStack()
-                }
-            }
+            Toast.makeText(activity, "REGISTER LOCK SETTING", Toast.LENGTH_SHORT).show()
+            findNavController().popBackStack()
+        }
         binding!!.tvTodayTotalTime.setOnClickListener{
             time_dialog = CustomTimePickerDialog(this)
             time_dialog.show(activity!!.supportFragmentManager, "TotalDialog")

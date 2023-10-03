@@ -45,7 +45,7 @@ class CustomTimePickerDialog(confirmDialogInterface : ConfirmDialogInterface) :D
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         // 취소 버튼 클릭
-        binding.cancleButton.setOnClickListener {
+        binding.cancelButton.setOnClickListener {
             dismiss()
         }
         // 확인 버튼 클릭
