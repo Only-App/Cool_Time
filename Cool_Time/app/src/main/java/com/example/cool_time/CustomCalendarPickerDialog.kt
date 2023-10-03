@@ -18,7 +18,7 @@ class CustomCalendarPickerDialog(confirmDialogInterface : CustomCalendarPickerDi
     private  var confirmDialogInterface: CustomCalendarPickerDialog.OnDateChangeListener? = null
     private var date : String = ""
     init{this.confirmDialogInterface= confirmDialogInterface}
-    var dateFormat = SimpleDateFormat("yyyy년 MM월 dd일")
+    var dateFormat = SimpleDateFormat("yy년 MM월 dd일")
     lateinit var initDate: Date;
     override fun onResume() {
         super.onResume()
@@ -50,7 +50,7 @@ class CustomCalendarPickerDialog(confirmDialogInterface : CustomCalendarPickerDi
 
         binding.phoneLockCalendarPicker.setOnDateChangeListener {
             calendarView, year, month, dayofMonth ->
-            date = "${year}년 ${month+1}월 ${dayofMonth}일"
+            date = "${year%100}년 ${month+1}월 ${dayofMonth}일"
         }
         binding.cancleButton.setOnClickListener {
             dismiss()

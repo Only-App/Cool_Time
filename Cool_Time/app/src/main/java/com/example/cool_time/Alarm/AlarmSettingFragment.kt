@@ -35,7 +35,7 @@ class AlarmSettingFragment : Fragment() {
     private var _binding : FragmentAlarmSettingBinding? = null
     private val binding
         get() = _binding!!
-    private lateinit var hourPick : NumberPicker   // 시간 입력하는 Numberpicker 관리하는 변수
+    private lateinit var hourPick : NumberPicker   // 시간 입력하는 Numberpicker 관리하는 변수, lateinit을 이용해 지금 당장 초기화 하지 않아도 됨, 나중에 binding 후 초기화
     private lateinit var minPick :NumberPicker // 분 입력하는 Numberpicker 관리하는 변수
     private var db :UserDatabase? = null
     private var repository : AlarmRepository?= null
@@ -60,14 +60,14 @@ class AlarmSettingFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentAlarmSettingBinding.inflate(inflater, container, false)
         hourPick = binding!!.alaTimePicker.hourPicker // _binding이 init 되고 난 후에 값 지정해야 함!
-        minPick = binding!!.alaTimePicker.minPicker
+        minPick = binding!!.alaTimePicker.minPicker   // 아니면 그냥 이 페이지 들어오려고 하면 튕김
 
         db = UserDatabase.getInstance(activity!!.applicationContext)
         repository = AlarmRepository(db!!.alarmDao())
         alarmViewModel = ViewModelProvider(activity!!, AlarmViewModelFactory(repository!!)).get(AlarmViewModel::class.java)
 
-        hide()
-        timeInit()
+        hide() // 다른 곳 누르면 키보드 사라지는 함수
+        timeInit() // 시간 설정하는 TimePicker 관련 옵션 설정(숫자 범위 등)
         addAlarmSetting()
         return binding.root
     }
