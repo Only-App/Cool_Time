@@ -118,8 +118,8 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
         when(time_dialog.tag!!){
             "TotalDialog" -> binding.tvTodayTotalTime.text = "${hour}시간 ${min}분"
             "IntervalDialog" -> binding.tvIntervalTime.text = "${hour}시간 ${min}분"
-            "StartTimeDialog" -> binding.tvStartTime.text = "${hour}시  ${min}분부터"
-            "EndTimeDialog" -> binding.tvEndTime.text = "${hour}시 ${min}분까지"
+            "StartTimeDialog" -> binding.tvStartTime.text = "${hour} : ${min}"
+            "EndTimeDialog" -> binding.tvEndTime.text = "${hour} : ${min}"
         }
     }
     override fun onYesButtonClick(value:String){
