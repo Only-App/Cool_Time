@@ -67,14 +67,8 @@
                     />
 
                 <!-- TODO: TimePicker Customize  !-->
-                <TimePicker
-                    android:id = "@+id/time_picker"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:timePickerMode="spinner"
-
-                    />
-
+                <!--시간 입력하는 레이아웃 소환-->
+                <include layout="@layout/time_picker" android:id="@+id/ala_update_picker"/>
             </LinearLayout>
 
             <LinearLayout

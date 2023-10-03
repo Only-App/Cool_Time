@@ -70,53 +70,8 @@
                     android:text = "시간 설정"
                     android:textSize = "20dp"
                     />
-
-                <!-->time picker 커스텀 위한 공간<-->
-                <!-->위젯 간 간격을 자연스롭게 조절하기 위해 Liniear 대신 Constraints layout으로 설정<-->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    >
-
-                    <!-->수동으로 만들기 위해 Numberpicker 2개, : 하나 사용<-->
-                    <!-->layout_constraint들로 수직으로 중앙 정렬, 수평으로도 일정 간격 유지<-->
-                    <!-->같은 선상에 있는 위젯들끼리 chain되는 걸 이용해서 chianStyle을 packed(뭉치는 느낌)으로 설정<-->
-                    <!-->요구했던 am,pm 선택지 없애기 성공<-->
-                    <NumberPicker
-                        android:id="@+id/ala_hour_picker"
-                        android:layout_width="63dp"
-                        android:layout_height="124dp"
-
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/colon"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintHorizontal_chainStyle="packed"
-
-                        />
-                    <TextView
-                        android:gravity="center_horizontal|center_vertical"
-                        android:id="@+id/colon"
-                        android:layout_width="30dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintStart_toEndOf="@id/ala_hour_picker"
-                        app:layout_constraintEnd_toStartOf="@id/ala_min_picker"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:text=":"
-                        android:textSize="30dp"
-                        />
-                    <NumberPicker
-                        android:id="@+id/ala_min_picker"
-                        android:layout_width="63dp"
-                        android:layout_height="124dp"
-                        app:layout_constraintStart_toEndOf="@id/colon"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <!--시간 입력하는 레이아웃 소환-->
+                    <include layout="@layout/time_picker" android:id="@+id/ala_time_picker"/>
                 <!--
                 <TimePicker
                     android:id = "@+id/time_picker"

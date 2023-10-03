@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.frag_container) as NavHostFragment
         val navController = navHostFragment.navController
         var navDestination = navController.currentDestination
-
         if(navDestination!!.id == R.id.main) {
             if (System.currentTimeMillis() - backTime >= 2000 || backTime == 0.toLong()){ //2초내에 다시 누른게 아니면
                 backTime = System.currentTimeMillis() // 마지막으로 back버튼을 누른 시간 갱신

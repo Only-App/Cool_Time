@@ -1,12 +1,9 @@
 package com.example.cool_time.Alarm
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -16,10 +13,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.cool_time.AlarmRepository
 import com.example.cool_time.UserDatabase
@@ -27,9 +22,6 @@ import com.example.cool_time.databinding.FragmentAlarmSettingBinding
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.viewmodel.AlarmViewModel
 import com.example.cool_time.viewmodel.AlarmViewModelFactory
-import com.google.android.material.internal.ViewUtils.hideKeyboard
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
@@ -43,7 +35,8 @@ class AlarmSettingFragment : Fragment() {
     private var _binding : FragmentAlarmSettingBinding? = null
     private val binding
         get() = _binding!!
-
+    private lateinit var hourPick : NumberPicker   // 시간 입력하는 Numberpicker 관리하는 변수
+    private lateinit var minPick :NumberPicker // 분 입력하는 Numberpicker 관리하는 변수
     private var db :UserDatabase? = null
     private var repository : AlarmRepository?= null
 
@@ -56,6 +49,7 @@ class AlarmSettingFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.M) //timePicker에서 hour와 minute property 사용이 최소 API를 요구함
@@ -65,13 +59,15 @@ class AlarmSettingFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentAlarmSettingBinding.inflate(inflater, container, false)
+        hourPick = binding!!.alaTimePicker.hourPicker // _binding이 init 되고 난 후에 값 지정해야 함!
+        minPick = binding!!.alaTimePicker.minPicker
 
         db = UserDatabase.getInstance(activity!!.applicationContext)
         repository = AlarmRepository(db!!.alarmDao())
         alarmViewModel = ViewModelProvider(activity!!, AlarmViewModelFactory(repository!!)).get(AlarmViewModel::class.java)
 
         hide()
-        alarmInit()
+        timeInit()
         addAlarmSetting()
         return binding.root
     }
@@ -101,18 +97,18 @@ class AlarmSettingFragment : Fragment() {
 
     }
 
-    fun alarmInit(){ // Time Picker 위한 초기 설정
-        binding!!.alaHourPicker.wrapSelectorWheel = false; // 숫자 값을 키보드로 입력하는 것을 막음
-        binding!!.alaHourPicker.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS // 최대값에서 최소값으로 순환하는 것을 막음
+    fun timeInit(){ // Time Picker 위한 초기 설정
+        hourPick.wrapSelectorWheel = false; // 숫자 값을 키보드로 입력하는 것을 막음
+        hourPick.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS // 최대값에서 최소값으로 순환하는 것을 막음
 
-        binding!!.alaMinPicker.wrapSelectorWheel = false;
-        binding!!.alaMinPicker.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+        minPick.wrapSelectorWheel = false;
+        minPick.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
 
-        binding!!.alaHourPicker.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
-        binding!!.alaHourPicker.maxValue = 23
+        hourPick.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
+        hourPick.maxValue = 23
 
-        binding!!.alaMinPicker.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
-        binding!!.alaMinPicker.maxValue = 59
+        minPick.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
+        minPick.maxValue = 59
     }
 
     @RequiresApi(Build.VERSION_CODES.M) //timePicker에서 hour와 minute property 사용이 최소 API를 요구함
@@ -132,8 +128,8 @@ class AlarmSettingFragment : Fragment() {
 
             val etAlarmDescription: String = binding!!.etAlarmDescription.text.toString()    //알람 내용
 
-            var hour = binding!!.alaHourPicker.value // 시간과 분을 선택된 값으로 대입
-            var minutes = binding!!.alaMinPicker.value
+            var hour = hourPick.value // 시간과 분을 선택된 값으로 대입
+            var minutes = minPick.value
 
             /*
             기본적으로 addAlarmSetting 함수가 확인 버튼을 눌렀을 때 작동하는 함수이니까
