@@ -62,12 +62,12 @@ class AlarmFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentAlarmBinding.inflate(inflater, container, false)
 
         //추가 버튼을 누르면 알람 세팅 화면으로 이동
-        binding!!.fabAddAlarm.setOnClickListener {
+        binding.fabAddAlarm.setOnClickListener {
             findNavController().navigate(R.id.action_alarm_main_to_alarm_setting)
         }
 

@@ -37,10 +37,8 @@ class PhoneLockFragment : Fragment() {
     private var _binding : FragmentPhoneLockBinding? = null
     val binding get() = _binding!!
 
-
     private var db : UserDatabase? = null
     private var repository : LockRepository?= null
-
 
     private var lockViewModel : LockViewModel? = null
 
@@ -74,7 +72,6 @@ class PhoneLockFragment : Fragment() {
             }
             })
         })
-
         binding.fabAddSetting.setOnClickListener {
             findNavController().navigate(R.id.action_phone_lock_main_to_lock_setting)
         }
@@ -83,8 +80,6 @@ class PhoneLockFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
     }
     companion object {
         /**
@@ -105,7 +100,4 @@ class PhoneLockFragment : Fragment() {
                 }
             }
     }
-
-
-
 }

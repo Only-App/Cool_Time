@@ -43,11 +43,11 @@ class DirectLockFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentDirectLockBinding.inflate(inflater, container, false)
-        hourPick = binding!!.timePicker.hourPicker // _binding이 init 되고 난 후에 값 지정해야 함!
-        minPick = binding!!.timePicker.minPicker
+        hourPick = binding.timePicker.hourPicker // _binding이 init 되고 난 후에 값 지정해야 함!
+        minPick = binding.timePicker.minPicker
 
         timeInit()
         binding.fabAddSetting.setOnClickListener{
@@ -55,11 +55,12 @@ class DirectLockFragment : Fragment() {
         }
         return binding.root
     }
-    fun timeInit(){ // Time Picker 위한 초기 설정
-        hourPick.wrapSelectorWheel = false; // 숫자 값을 키보드로 입력하는 것을 막음
+
+    private fun timeInit(){ // Time Picker 위한 초기 설정
+        hourPick.wrapSelectorWheel = false // 숫자 값을 키보드로 입력하는 것을 막음
         hourPick.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS // 최대값에서 최소값으로 순환하는 것을 막음
 
-        minPick.wrapSelectorWheel = false;
+        minPick.wrapSelectorWheel = false
         minPick.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
 
         hourPick.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
@@ -68,6 +69,7 @@ class DirectLockFragment : Fragment() {
         minPick.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
         minPick.maxValue = 59
     }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
