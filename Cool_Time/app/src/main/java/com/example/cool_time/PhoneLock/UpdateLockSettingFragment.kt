@@ -16,10 +16,12 @@ import com.example.cool_time.LockRepository
 import com.example.cool_time.R
 import com.example.cool_time.UserDatabase
 import com.example.cool_time.databinding.FragmentUpdateLockSettingBinding
+import com.example.cool_time.model.Alarm
 import com.example.cool_time.model.PhoneLock
 import com.example.cool_time.viewmodel.LockViewModel
 import com.example.cool_time.viewmodel.LockViewModelFactory
 import java.text.SimpleDateFormat
+import java.util.Date
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -69,6 +71,8 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         // PhoneLock 객체를 이전 프래그먼트에서 받아오는 작업
         val lock = requireArguments().getSerializable("key") as PhoneLock
 
+        receiveLockData(lock)
+
         binding!!.tvTodayTotalTime.setOnClickListener{
             time_dialog = CustomTimePickerDialog(this)
             time_dialog.show(activity!!.supportFragmentManager, "TotalDialog")
@@ -97,7 +101,7 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         //수정 버튼을 눌렀을 때
         binding.btnUpdateSetting.setOnClickListener{
             //TODO: 업데이트 로직
-            if(SimpleDateFormat("yyyy년 MM월 dd일").parse(binding.tvStartDay.text.toString())!!.time > SimpleDateFormat("yyyy년 MM월 dd일").parse(binding.tvEndDay.text.toString())!!.time){
+            if(SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time > SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time){
                 Toast.makeText(activity, "Please Set Date Correctly", Toast.LENGTH_SHORT).show()
             }
             else {
@@ -127,8 +131,8 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
 
             //다이얼로그 출력
             val dialog = AlertDialog.Builder(activity)
-                .setTitle("수정")
-                .setMessage("수정하시겠습니까?")
+                .setTitle("삭제")
+                .setMessage("삭제하시겠습니까?")
                 .setPositiveButton("예"){
                         _,_ ->
                     //delete 작업, 다시 돌아가기
@@ -144,6 +148,41 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
             dialog.show()
         }
         return binding.root
+    }
+
+    fun receiveLockData(lock: PhoneLock){
+
+        binding.tvTodayTotalTime.text = "${lock.total_time / 60}시간 ${lock.total_time % 60}분"
+        binding.tvIntervalTime.text =  "${lock.min_time / 60}시간 ${lock.min_time % 60}분"
+
+
+        binding.updateLockCheckMon.isChecked = lock.lock_day >= 64
+        lock.lock_day -= if(lock.lock_day >= 64) 64 else 0
+
+        binding.updateLockCheckTues.isChecked = lock.lock_day >= 32
+        lock.lock_day -= if(lock.lock_day >= 32) 32 else 0
+
+        binding.updateLockCheckWeds.isChecked = lock.lock_day >= 16
+        lock.lock_day -= if(lock.lock_day >= 16) 16 else 0
+
+        binding.updateLockCheckThurs.isChecked = lock.lock_day >= 8
+        lock.lock_day -= if(lock.lock_day >= 8) 8 else 0
+
+        binding.updateLockCheckFri.isChecked = lock.lock_day >= 4
+        lock.lock_day -= if(lock.lock_day >= 4) 4 else 0
+
+        binding.updateLockCheckSat.isChecked = lock.lock_day >= 2
+        lock.lock_day -= if(lock.lock_day >= 2) 2 else 0
+
+        binding.updateLockCheckSun.isChecked = lock.lock_day >= 1
+        lock.lock_day -= if(lock.lock_day >= 1) 1 else 0
+
+        binding.tvStartTime.text = "${lock.lock_on / 60}시간 ${lock.lock_on % 60}분"
+        binding.tvEndTime.text  = "${lock.lock_off / 60}시간 ${lock.lock_off % 60}분"
+
+        binding.tvStartDay.text = SimpleDateFormat("yyyy.MM.dd").format(Date(lock.start_date))
+        binding.tvEndDay.text=    SimpleDateFormat("yyyy.MM.dd").format(Date(lock.end_date))
+
     }
 
     override fun onYesButtonClick(hour:Int, min:Int){
@@ -162,6 +201,7 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
             "EndDayDialog" -> binding.tvEndDay.text = value
         }
     }
+
 
     companion object {
         /**

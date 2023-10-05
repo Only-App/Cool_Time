@@ -42,7 +42,7 @@ class CustomCalendarPickerDialog(confirmDialogInterface : OnDateChangeListener) 
         // 확인 버튼 클릭
         binding.phoneLockCalendarPicker.setOnDateChangeListener { //날짜가 변했을 때
             _, year, month, dayofMonth ->
-            date = "${year%100}년 ${month+1}월 ${dayofMonth}일" //년은 끝자리 2개만 출력할꺼니가 100으로 나눈 나머지 값으로 전달
+            date = "${year}.${month+1}.${dayofMonth}" //년은 끝자리 2개만 출력할꺼니가 100으로 나눈 나머지 값으로 전달
             //Month는 0부터 시작해서 +1을 추가해야 원래 Month가 나옴
         }
         // 확인 버튼 클릭

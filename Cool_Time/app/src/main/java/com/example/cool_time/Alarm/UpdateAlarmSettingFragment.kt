@@ -89,6 +89,7 @@ class UpdateAlarmSettingFragment : Fragment() {
             //입력한 정보를 바탕으로 다시 entity 생성
             val entity=  Alarm(id = alarm.id, name = etAlarmDescription, time = total_time, day = day_result)
 
+
             //다이얼로그 출력
             val dialog = AlertDialog.Builder(activity!!)
 

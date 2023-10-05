@@ -214,6 +214,7 @@
                     android:layout_marginTop="5dp"
                     >
                     <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id = "@+id/lock_check_mon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
@@ -226,6 +227,7 @@
                         android:layout_margin= "3dp"
                         />
                     <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id = "@+id/lock_check_tues"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
@@ -238,6 +240,7 @@
                         android:layout_margin= "3dp"
                         />
                     <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id = "@+id/lock_check_weds"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
@@ -250,6 +253,7 @@
                         android:layout_margin= "3dp"
                         />
                     <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id = "@+id/lock_check_thurs"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
@@ -262,6 +266,7 @@
                         android:layout_margin= "3dp"
                         />
                     <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id = "@+id/lock_check_fri"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
@@ -274,6 +279,7 @@
                         android:layout_margin= "3dp"
                         />
                     <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id = "@+id/lock_check_sat"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
@@ -286,6 +292,7 @@
                         android:layout_margin= "3dp"
                         />
                     <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id = "@+id/lock_check_sun"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
@@ -330,7 +337,7 @@
                         android:layout_weight="1.5"
                         android:background="@drawable/radius"
                         android:padding="8dp"
-                        android:text="00:00"
+                        android:text="시작 날짜"
                         android:textAlignment="center"
                         android:textSize="20dp" />
 
@@ -342,7 +349,7 @@
                         android:text="-"
                         android:textSize="20dp"
                         android:textAlignment="center"
-                        />
+                        android:gravity="center_horizontal" />
 
                     <TextView
                         android:id="@+id/tv_end_day"
@@ -353,7 +360,7 @@
                         android:layout_weight="1.5"
                         android:background="@drawable/radius"
                         android:padding="8dp"
-                        android:text="00:00"
+                        android:text="종료 날짜"
                         android:textAlignment="center"
                         android:textSize="20dp" />
                 </LinearLayout>

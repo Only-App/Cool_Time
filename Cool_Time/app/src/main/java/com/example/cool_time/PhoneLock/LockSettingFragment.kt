@@ -48,6 +48,12 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
 
     private var lockViewModel : LockViewModel? = null
 
+    private var total_time : Long = 0
+    private var min_time : Long = 0
+    private var lock_on : Int = 0
+    private var lock_off : Int = 0
+    private var start_date : Long = 0
+    private var end_date : Long = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -66,7 +72,7 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
             _binding = FragmentLockSettingBinding.inflate(inflater, container, false)
 
             binding!!.btnAddSetting.setOnClickListener {
-                if(SimpleDateFormat("yyyy년 MM월 dd일").parse(binding.tvStartDay.text.toString())!!.time > SimpleDateFormat("yyyy년 MM월 dd일").parse(binding.tvEndDay.text.toString())!!.time){
+                if(SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time > SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time){
                     Toast.makeText(activity, "Please Set Date Correctly", Toast.LENGTH_SHORT).show()
                 }
                 else {
@@ -77,9 +83,9 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
                     //테스트용 insert
                     lockViewModel!!.insertLock(
                         PhoneLock(
-                            app_list = emptyList(), total_time = 0, min_time = 0,
-                            lock_on = 0, lock_off = 0,
-                            start_date = 0, end_date = 0
+                            app_list = emptyList(), total_time = total_time, min_time = min_time,
+                            lock_on = lock_on, lock_off = lock_off, lock_day = dayToBit(),
+                            start_date = start_date, end_date = end_date
                         )
                     )
 
@@ -87,6 +93,7 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
                     findNavController().popBackStack()
                 }
             }
+
         binding!!.tvTodayTotalTime.setOnClickListener{
             time_dialog = CustomTimePickerDialog(this)
             time_dialog.show(activity!!.supportFragmentManager, "TotalDialog")
@@ -116,22 +123,63 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
     override fun onYesButtonClick(hour:Int, min:Int){
         Log.d("chk", time_dialog.tag!!)
         when(time_dialog.tag!!){
-            "TotalDialog" -> binding.tvTodayTotalTime.text = "${hour}시간 ${min}분"
-            "IntervalDialog" -> binding.tvIntervalTime.text = "${hour}시간 ${min}분"
-            "StartTimeDialog" -> binding.tvStartTime.text = "${hour} : ${min}"
-            "EndTimeDialog" -> binding.tvEndTime.text = "${hour} : ${min}"
+            "TotalDialog" -> {
+                total_time = hour * 60L + min
+                binding.tvTodayTotalTime.text = "${hour}시간 ${min}분"
+            }
+            "IntervalDialog" -> {
+                min_time = hour* 60L + min
+                binding.tvIntervalTime.text = "${hour}시간 ${min}분"
+            }
+            "StartTimeDialog" -> {
+                lock_on = hour * 60 + min
+                binding.tvStartTime.text = String.format("%02d", hour) + " : " + String.format("%02d", min)
+            }
+            "EndTimeDialog" -> {
+                lock_off = hour * 60 + min
+                binding.tvEndTime.text = String.format("%02d", hour) + " : " + String.format("%02d", min)
+            }
         }
     }
     override fun onYesButtonClick(value:String){
         Log.d("chk", "${value}")
         when(day_dialog.tag!!){
-            "StartDayDialog" -> binding.tvStartDay.text = value
-            "EndDayDialog" -> binding.tvEndDay.text = value
+            "StartDayDialog" -> {
+                binding.tvStartDay.text = value
+                start_date = SimpleDateFormat("yyyy.MM.dd").parse(value).time
+            }
+            "EndDayDialog" -> {
+                binding.tvEndDay.text = value
+                end_date = SimpleDateFormat("yyyy.MM.dd").parse(value).time
+            }
         }
     }
 
 
 
+    private fun dayToBit() : Int{
+        var result = 0
+        val list = Array<Boolean>(7){false}
+
+        list[0] = binding.lockCheckMon.isChecked
+        list[1] = binding.lockCheckTues.isChecked
+        list[2] = binding.lockCheckWeds.isChecked
+        list[3] = binding.lockCheckThurs.isChecked
+        list[4]  =binding.lockCheckFri.isChecked
+        list[5] = binding.lockCheckSat.isChecked
+        list[6] = binding.lockCheckSun.isChecked
+
+        //비트 마스킹 작업
+        for(check in list){
+            result *= 2
+            result += if (check) 1 else 0
+        }
+        return result
+    }
+
+    private fun contentCheck() : Boolean{
+       return true
+    }
 
     companion object {
         /**

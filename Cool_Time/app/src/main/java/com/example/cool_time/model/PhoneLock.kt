@@ -15,6 +15,7 @@ data class PhoneLock(
     var min_time : Long,
     var lock_on : Int,
     var lock_off : Int,
+    var lock_day : Int,
     var start_date : Long,
     var end_date : Long
 ) : Serializable

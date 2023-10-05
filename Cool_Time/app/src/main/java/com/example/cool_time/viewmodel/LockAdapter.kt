@@ -6,14 +6,50 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cool_time.databinding.LockSettingItemBinding
 import com.example.cool_time.model.PhoneLock
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class LockAdapter(private val list : List<PhoneLock>, private var mListener : OnLockItemOnClickListener) :
     RecyclerView.Adapter<LockAdapter.LockViewHolder> (){
+        companion object{
+            val day_list  = arrayOf("월","화", "수", "목", "금", "토", "일")
+            val num_list = arrayOf(64, 32, 16, 8 ,4, 2, 1)
+
+
+            //선택한 요일 정보(Int type)를 바탕으로 요일을 String으로 변환하도록 함
+            fun getDayStr(data : Int) : String{
+                var day_str : String= ""
+                var temp = data
+                for(i in 0..6){
+                    if(temp >= num_list[i]){
+                        if(day_str.isNotEmpty())
+                            day_str+= ", "
+                        day_str+= "${day_list[i]}"
+                        temp -= num_list[i]
+                    }
+                }
+
+                return day_str
+            }
+        }
         class LockViewHolder(val binding : LockSettingItemBinding): RecyclerView.ViewHolder(binding.root){
             fun bind(lock : PhoneLock){ //일단 그냥 test용 Binding
-                binding.tvLockTime.text = "6시간"
-                binding.tvDuration.text = "23.00.00 ~ 23.00.00"
-                binding.tvDay.text = "월, 화, 수"
+
+                binding.tvLockTime.text =
+                    if(lock.total_time < 60L)
+                            "${lock.total_time % 60}분"
+                    else if(lock.total_time % 60 == 0L)
+                            "${lock.total_time / 60}시간"
+                    else
+                        "${lock.total_time / 60}시간 ${lock.total_time % 60}분"
+
+
+                binding.tvDuration.text =
+                    SimpleDateFormat("yyyy.MM.dd").format(Date(lock.start_date)) +
+                    " ~ " + SimpleDateFormat("yyyy.MM.dd").format(Date(lock.end_date))
+
+                binding.tvDay.text = getDayStr(lock.lock_day)
+
                 binding.tvReuseLock.text = "0분 내로 재사용 시도시 잠금"
                 binding.tvLockRemainTime.text = "0시간 사용시 잠금"
 
@@ -41,3 +77,4 @@ class LockAdapter(private val list : List<PhoneLock>, private var mListener : On
 interface OnLockItemOnClickListener{
     fun onItemClick(lock : PhoneLock, position : Int)
 }
+
