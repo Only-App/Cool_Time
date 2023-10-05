@@ -150,32 +150,33 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         return binding.root
     }
 
-    fun receiveLockData(lock: PhoneLock){
+    private fun receiveLockData(lock: PhoneLock){
 
         binding.tvTodayTotalTime.text = "${lock.total_time / 60}시간 ${lock.total_time % 60}분"
         binding.tvIntervalTime.text =  "${lock.min_time / 60}시간 ${lock.min_time % 60}분"
 
+        var temp = lock.lock_day
 
-        binding.updateLockCheckMon.isChecked = lock.lock_day >= 64
-        lock.lock_day -= if(lock.lock_day >= 64) 64 else 0
+        binding.updateLockCheckMon.isChecked = temp >= 64
+        temp -= if(temp >= 64) 64 else 0
 
-        binding.updateLockCheckTues.isChecked = lock.lock_day >= 32
-        lock.lock_day -= if(lock.lock_day >= 32) 32 else 0
+        binding.updateLockCheckTues.isChecked = temp >= 32
+        temp -= if(temp >= 32) 32 else 0
 
-        binding.updateLockCheckWeds.isChecked = lock.lock_day >= 16
-        lock.lock_day -= if(lock.lock_day >= 16) 16 else 0
+        binding.updateLockCheckWeds.isChecked = temp >= 16
+        temp -= if(temp >= 16) 16 else 0
 
-        binding.updateLockCheckThurs.isChecked = lock.lock_day >= 8
-        lock.lock_day -= if(lock.lock_day >= 8) 8 else 0
+        binding.updateLockCheckThurs.isChecked = temp >= 8
+        temp -= if(temp >= 8) 8 else 0
 
-        binding.updateLockCheckFri.isChecked = lock.lock_day >= 4
-        lock.lock_day -= if(lock.lock_day >= 4) 4 else 0
+        binding.updateLockCheckFri.isChecked = temp >= 4
+        temp -= if(temp >= 4) 4 else 0
 
-        binding.updateLockCheckSat.isChecked = lock.lock_day >= 2
-        lock.lock_day -= if(lock.lock_day >= 2) 2 else 0
+        binding.updateLockCheckSat.isChecked = temp >= 2
+        temp -= if(temp >= 2) 2 else 0
 
-        binding.updateLockCheckSun.isChecked = lock.lock_day >= 1
-        lock.lock_day -= if(lock.lock_day >= 1) 1 else 0
+        binding.updateLockCheckSun.isChecked = temp >= 1
+        temp -= if(lock.lock_day >= 1) 1 else 0
 
         binding.tvStartTime.text = "${lock.lock_on / 60}시간 ${lock.lock_on % 60}분"
         binding.tvEndTime.text  = "${lock.lock_off / 60}시간 ${lock.lock_off % 60}분"

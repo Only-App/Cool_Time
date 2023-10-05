@@ -134,26 +134,28 @@ class UpdateAlarmSettingFragment : Fragment() {
         hourPick.value = alarm.time / 60
         minPick.value = alarm.time % 60
 
-        binding.checkMon.isChecked = alarm.day >= 64
-        alarm.day -= if(alarm.day >= 64) 64 else 0
+        var temp = alarm.day
 
-        binding.checkTues.isChecked = alarm.day >= 32
-        alarm.day -= if(alarm.day >= 32) 32 else 0
+        binding.checkMon.isChecked = temp >= 64
+        temp -= if(temp >= 64) 64 else 0
 
-        binding.checkWeds.isChecked = alarm.day >= 16
-        alarm.day -= if(alarm.day >= 16) 16 else 0
+        binding.checkTues.isChecked = temp >= 32
+        temp -= if(temp >= 32) 32 else 0
 
-        binding.checkThurs.isChecked = alarm.day >= 8
-        alarm.day -= if(alarm.day >= 8) 8 else 0
+        binding.checkWeds.isChecked = temp >= 16
+        temp -= if(temp >= 16) 16 else 0
 
-        binding.checkFri.isChecked = alarm.day >= 4
-        alarm.day -= if(alarm.day >= 4) 4 else 0
+        binding.checkThurs.isChecked = temp >= 8
+        temp -= if(temp >= 8) 8 else 0
 
-        binding.checkSat.isChecked = alarm.day >= 2
-        alarm.day -= if(alarm.day >= 64) 2 else 0
+        binding.checkFri.isChecked = temp >= 4
+        temp -= if(temp >= 4) 4 else 0
 
-        binding.checkSun.isChecked = alarm.day >= 1
-        alarm.day -= if(alarm.day >= 1) 1 else 0
+        binding.checkSat.isChecked = temp >= 2
+        temp -= if(temp >= 64) 2 else 0
+
+        binding.checkSun.isChecked = temp >= 1
+        temp -= if(temp >= 1) 1 else 0
     }
 
     private fun dayToBit() : Int{

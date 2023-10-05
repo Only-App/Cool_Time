@@ -87,7 +87,7 @@ class AlarmFragment : Fragment() {
                 findNavController().navigate(R.id.action_alarm_main_to_update_alarm_setting, bundle)
             }
             })
-
+            Log.e("list", list.toString())
 
         })
 
