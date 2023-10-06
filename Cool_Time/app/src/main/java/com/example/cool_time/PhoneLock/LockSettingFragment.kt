@@ -121,7 +121,6 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
         return binding.root
     }
     override fun onYesButtonClick(hour:Int, min:Int){
-        Log.d("chk", time_dialog.tag!!)
         when(time_dialog.tag!!){
             "TotalDialog" -> {
                 total_time = hour * 60L + min
@@ -142,7 +141,6 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
         }
     }
     override fun onYesButtonClick(value:String){
-        Log.d("chk", "${value}")
         when(day_dialog.tag!!){
             "StartDayDialog" -> {
                 binding.tvStartDay.text = value

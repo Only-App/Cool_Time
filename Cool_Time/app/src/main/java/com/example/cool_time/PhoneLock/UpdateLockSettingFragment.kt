@@ -187,7 +187,6 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
     }
 
     override fun onYesButtonClick(hour:Int, min:Int){
-        Log.d("chk", time_dialog.tag!!)
         when(time_dialog.tag!!){
             "TotalDialog" -> binding.tvTodayTotalTime.text = "${hour}시간 ${min}분"
             "IntervalDialog" -> binding.tvIntervalTime.text = "${hour}시간 ${min}분"
@@ -196,7 +195,6 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         }
     }
     override fun onYesButtonClick(value:String){
-        Log.d("chk", "${value}")
         when(day_dialog.tag!!){
             "StartDayDialog" -> binding.tvStartDay.text = value
             "EndDayDialog" -> binding.tvEndDay.text = value

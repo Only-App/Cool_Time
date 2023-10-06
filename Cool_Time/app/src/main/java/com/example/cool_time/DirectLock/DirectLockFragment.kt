@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
+import com.example.cool_time.R
 import com.example.cool_time.databinding.FragmentDirectLockBinding
 
 // TODO: Rename parameter arguments, choose names that match
@@ -52,6 +54,7 @@ class DirectLockFragment : Fragment() {
         timeInit()
         binding.fabAddSetting.setOnClickListener{
             Toast.makeText(activity, "DIRECT LOCK", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_directLockFragment_to_activeLockFragment)
         }
         return binding.root
     }

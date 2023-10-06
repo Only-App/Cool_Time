@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/direct_lock"
+    app:startDestination="@id/direct_lock_main"
+    >
+
+
+    <fragment
+        android:id="@+id/direct_lock_main"
+        android:name="com.example.cool_time.DirectLock.DirectLockFragment"
+        android:label="fragment_direct_lock"
+        tools:layout="@layout/fragment_direct_lock" >
+        <action
+            android:id="@+id/action_directLockFragment_to_activeLockFragment"
+            app:destination="@id/activeLockFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/activeLockFragment"
+        android:name="com.example.cool_time.ActiveLockFragment"
+        android:label="ActiveLockFragment" >
+        <action
+            android:id="@+id/action_activeLockFragment_to_directLockFragment"
+            app:destination="@id/direct_lock_main" />
+    </fragment>
+
+
+</navigation>
