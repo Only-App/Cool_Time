@@ -1,13 +1,10 @@
 package com.example.cool_time.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.ViewModelFactoryDsl
-import com.example.cool_time.AlarmRepository
+import com.example.cool_time.data.AlarmRepository
 import com.example.cool_time.model.Alarm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -1,8 +1,7 @@
-package com.example.cool_time.PhoneLock
+package com.example.cool_time.ui.PhoneLock
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.text.format.DateFormat
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,16 +10,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.cool_time.CustomCalendarPickerDialog
-import com.example.cool_time.CustomTimePickerDialog
-import com.example.cool_time.LockRepository
-import com.example.cool_time.UserDatabase
+import com.example.cool_time.ui.CustomCalendarPickerDialog
+import com.example.cool_time.ui.CustomTimePickerDialog
+import com.example.cool_time.data.LockRepository
+import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.databinding.FragmentLockSettingBinding
 import com.example.cool_time.model.PhoneLock
 import com.example.cool_time.viewmodel.LockViewModel
 import com.example.cool_time.viewmodel.LockViewModelFactory
 import java.text.SimpleDateFormat
-import java.util.Date
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -69,17 +67,20 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
     ): View? {
         // Inflate the layout for this fragment
 
-            _binding = FragmentLockSettingBinding.inflate(inflater, container, false)
+        _binding = FragmentLockSettingBinding.inflate(inflater, container, false)
+        db = UserDatabase.getInstance(activity!!.applicationContext)
+        repository = LockRepository(db!!.phoneLockDao())
+        lockViewModel = ViewModelProvider(activity!!, LockViewModelFactory(repository!!)).get(LockViewModel::class.java)
 
-            binding!!.btnAddSetting.setOnClickListener {
-                if(SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time > SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time){
+
+        binding!!.btnAddSetting.setOnClickListener {
+
+                if(start_date != -1L && end_date != -1L){
+                    if(SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time >
+                        SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time)
                     Toast.makeText(activity, "Please Set Date Correctly", Toast.LENGTH_SHORT).show()
                 }
                 else {
-                    db = UserDatabase.getInstance(activity!!.applicationContext)
-                    repository = LockRepository(db!!.phoneLockDao())
-                    lockViewModel = ViewModelProvider(activity!!, LockViewModelFactory(repository!!)).get(LockViewModel::class.java)
-
                     //테스트용 insert
                     lockViewModel!!.insertLock(
                         PhoneLock(
@@ -118,6 +119,38 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
             day_dialog = CustomCalendarPickerDialog(this)
             day_dialog.show(activity!!.supportFragmentManager, "EndDayDialog")
         }
+
+        binding.cbNotIntervalSetting.setOnClickListener { //최소 시간 간격 설정 체크박스에 대한 리스너
+            if (binding.cbNotIntervalSetting.isChecked) {   //체크되지 않았을 경우
+                binding.tvStartTime.isEnabled = false   //잠금 시작 시간과 잠금 종료 시간 텍스트 뷰의 리스너를 비활성화
+                binding.tvEndTime.isEnabled = false
+
+                //유효하지 않은 값 == -1로 처리
+                lock_on = -1
+                lock_off = -1
+
+            } else {    //체크한 경우
+                binding.tvStartTime.isEnabled = true    //잠금 시작 시간과 잠금 종료 시간 텍스트 뷰의 리스너를 활성화
+                binding.tvEndTime.isEnabled = true
+            }
+        }
+        binding.cbNotDaySetting.setOnClickListener{//날짜 설정 체크박스에 대한 리스너
+            if(binding.cbNotDaySetting.isChecked){  //체크되지 않았을 경우
+                binding.tvStartDay.isEnabled = false    //시작 날짜와 종료 날짜 텍스트 뷰의 리스너를 비활성화
+                binding.tvEndDay.isEnabled = false
+
+                //유효하지 않은 값 == -1로 처리
+                start_date = -1L
+                end_date = -1L
+            }
+
+            else{
+                binding.tvStartDay.isEnabled = true //시작 날짜와 종료 날짜 텍스트 뷰의 텍스트를 활성화
+                binding.tvEndDay.isEnabled = true
+
+            }
+        }
+
         return binding.root
     }
     override fun onYesButtonClick(hour:Int, min:Int){
@@ -133,12 +166,16 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
             "StartTimeDialog" -> {
                 lock_on = hour * 60 + min
                 binding.tvStartTime.text = String.format("%02d", hour) + " : " + String.format("%02d", min)
+                binding.cbNotIntervalSetting.isChecked = false
+
             }
             "EndTimeDialog" -> {
                 lock_off = hour * 60 + min
                 binding.tvEndTime.text = String.format("%02d", hour) + " : " + String.format("%02d", min)
+                binding.cbNotIntervalSetting.isChecked = false
             }
         }
+
     }
     override fun onYesButtonClick(value:String){
         when(day_dialog.tag!!){
@@ -174,9 +211,9 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
         }
         return result
     }
-
+    //TODO : 내용을 다 입력했는지
     private fun contentCheck() : Boolean{
-       return true
+        return true
     }
 
     companion object {

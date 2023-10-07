@@ -1,4 +1,4 @@
-package com.example.cool_time.Alarm
+package com.example.cool_time.ui.Alarm
 
 import android.app.Activity
 import android.content.Context
@@ -16,8 +16,8 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.cool_time.AlarmRepository
-import com.example.cool_time.UserDatabase
+import com.example.cool_time.data.AlarmRepository
+import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.databinding.FragmentAlarmSettingBinding
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.viewmodel.AlarmViewModel
@@ -37,7 +37,7 @@ class AlarmSettingFragment : Fragment() {
         get() = _binding!!
     private lateinit var hourPick : NumberPicker   // 시간 입력하는 Numberpicker 관리하는 변수, lateinit을 이용해 지금 당장 초기화 하지 않아도 됨, 나중에 binding 후 초기화
     private lateinit var minPick :NumberPicker // 분 입력하는 Numberpicker 관리하는 변수
-    private var db :UserDatabase? = null
+    private var db : UserDatabase? = null
     private var repository : AlarmRepository?= null
 
 

@@ -1,10 +1,11 @@
-package com.example.cool_time
+package com.example.cool_time.data
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.cool_time.utils.StringListConverter
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.model.PhoneLock
 

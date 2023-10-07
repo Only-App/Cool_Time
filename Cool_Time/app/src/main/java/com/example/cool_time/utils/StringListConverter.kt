@@ -1,4 +1,4 @@
-package com.example.cool_time
+package com.example.cool_time.utils
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

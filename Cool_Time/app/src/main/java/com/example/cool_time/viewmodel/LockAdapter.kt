@@ -18,7 +18,12 @@ class LockAdapter(private val list : List<PhoneLock>, private var mListener : On
 
             //선택한 요일 정보(Int type)를 바탕으로 요일을 String으로 변환하도록 함
             fun getDayStr(data : Int) : String{
+                if(data == 127){    //일주일 모두 체크한 경우라면
+                    return "매일"
+                }
+
                 var day_str : String= ""
+
                 var temp = data
                 for(i in 0..6){
                     if(temp >= num_list[i]){
@@ -45,12 +50,14 @@ class LockAdapter(private val list : List<PhoneLock>, private var mListener : On
 
 
                 binding.tvDuration.text =
-                    SimpleDateFormat("yyyy.MM.dd").format(Date(lock.start_date)) +
+                    if(lock.start_date == -1L && lock.end_date == -1L)
+                        "날짜 설정하지 않음"
+                    else SimpleDateFormat("yyyy.MM.dd").format(Date(lock.start_date)) +
                     " ~ " + SimpleDateFormat("yyyy.MM.dd").format(Date(lock.end_date))
 
                 binding.tvDay.text = getDayStr(lock.lock_day)
 
-                binding.tvReuseLock.text = "0분 내로 재사용 시도시 잠금"
+                binding.tvReuseLock.text = "${lock.min_time}분 내로 재사용 시도시 잠금"
                 binding.tvLockRemainTime.text = "0시간 사용시 잠금"
 
             }

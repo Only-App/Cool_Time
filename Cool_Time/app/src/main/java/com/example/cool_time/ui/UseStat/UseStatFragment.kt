@@ -1,10 +1,11 @@
-package com.example.cool_time.Calendar
+package com.example.cool_time.ui.UseStat
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.example.cool_time.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -14,10 +15,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [CalendarFragment.newInstance] factory method to
+ * Use the [UseStatFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CalendarFragment : Fragment() {
+class UseStatFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -35,9 +36,15 @@ class CalendarFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calendar, container, false)
+        return inflater.inflate(R.layout.fragment_use_stat, container, false)
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        val actionbar = (requireActivity() as AppCompatActivity).supportActionBar
+
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -45,12 +52,12 @@ class CalendarFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment CalendartFragment.
+         * @return A new instance of fragment UseStatFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            CalendarFragment().apply {
+            UseStatFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

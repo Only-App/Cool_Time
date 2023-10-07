@@ -1,4 +1,4 @@
-package com.example.cool_time.DirectLock
+package com.example.cool_time.ui.DirectLock
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

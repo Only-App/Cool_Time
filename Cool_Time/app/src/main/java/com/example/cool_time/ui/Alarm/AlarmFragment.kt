@@ -1,33 +1,25 @@
-package com.example.cool_time.Alarm
+package com.example.cool_time.ui.Alarm
 
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.cool_time.AlarmRepository
+import com.example.cool_time.data.AlarmRepository
 
 import com.example.cool_time.R
-import com.example.cool_time.UserDatabase
+import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.databinding.FragmentAlarmBinding
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.viewmodel.AlarmAdapter
 import com.example.cool_time.viewmodel.AlarmViewModel
 import com.example.cool_time.viewmodel.AlarmViewModelFactory
 import com.example.cool_time.viewmodel.OnAlarmItemOnClickListener
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * A simple [Fragment] subclass.
@@ -44,7 +36,7 @@ class AlarmFragment : Fragment() {
         get() = _binding!!
 
 
-    private var db :UserDatabase? = null
+    private var db : UserDatabase? = null
     private var repository : AlarmRepository?= null
 
 
@@ -87,7 +79,6 @@ class AlarmFragment : Fragment() {
                 findNavController().navigate(R.id.action_alarm_main_to_update_alarm_setting, bundle)
             }
             })
-            Log.e("list", list.toString())
 
         })
 

@@ -1,8 +1,7 @@
-package com.example.cool_time
+package com.example.cool_time.data
 
-import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import com.example.cool_time.data.AlarmDAO
 import com.example.cool_time.model.Alarm
 
 class AlarmRepository(private val alarmDao : AlarmDAO) {

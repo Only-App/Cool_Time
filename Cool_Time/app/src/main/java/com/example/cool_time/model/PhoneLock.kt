@@ -13,9 +13,9 @@ data class PhoneLock(
     var app_list : List<String>,
     var total_time : Long,
     var min_time : Long,
-    var lock_on : Int,
+    var lock_on : Int,  //TOOD : Nullable or boolean type add
     var lock_off : Int,
     var lock_day : Int,
-    var start_date : Long,
+    var start_date : Long,  //TOOD :
     var end_date : Long
 ) : Serializable

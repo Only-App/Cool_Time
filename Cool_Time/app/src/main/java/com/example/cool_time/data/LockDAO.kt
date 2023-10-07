@@ -1,4 +1,4 @@
-package com.example.cool_time
+package com.example.cool_time.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

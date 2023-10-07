@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/main"
-        android:name="com.example.cool_time.Main.MainFragment"
+        android:name="com.example.cool_time.ui.Main.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" />
     <fragment
         android:id="@+id/use_stat"
-        android:name="com.example.cool_time.UseStat.UseStatFragment"
+        android:name="com.example.cool_time.ui.UseStat.UseStatFragment"
         android:label="fragment_use_stat"
         tools:layout="@layout/fragment_use_stat" />
     <!--
@@ -25,7 +25,7 @@
     <include app:graph = "@navigation/alarm" />
     <fragment
         android:id="@+id/calendar"
-        android:name="com.example.cool_time.Calendar.CalendarFragment"
+        android:name="com.example.cool_time.ui.Calendar.CalendarFragment"
         android:label="fragment_calendar"
         tools:layout="@layout/fragment_calendar" >
 
@@ -34,7 +34,7 @@
     <!--
     <fragment
         android:id="@+id/direct_lock"
-        android:name="com.example.cool_time.DirectLock.DirectLockFragment"
+        android:name="com.example.cool_time.ui.DirectLock.DirectLockFragment"
         android:label="fragment_direct_lock"
         tools:layout="@layout/fragment_direct_lock" />
     -->

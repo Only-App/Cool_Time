@@ -1,4 +1,4 @@
-package com.example.cool_time.Alarm
+package com.example.cool_time.ui.Alarm
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -11,8 +11,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.cool_time.AlarmRepository
-import com.example.cool_time.UserDatabase
+import com.example.cool_time.data.AlarmRepository
+import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.databinding.FragmentUpdateAlarmSettingBinding
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.viewmodel.AlarmViewModel
@@ -65,13 +65,13 @@ class UpdateAlarmSettingFragment : Fragment() {
                 .setTitle("삭제")
                 .setMessage("삭제하시겠습니까?")
                 .setPositiveButton("예"){
-                    _, _ ->
-                        //삭제 후 이전 화면으로
-                        alarmViewModel!!.deleteAlarm(alarm)
-                        findNavController().popBackStack()
+                        _, _ ->
+                    //삭제 후 이전 화면으로
+                    alarmViewModel!!.deleteAlarm(alarm)
+                    findNavController().popBackStack()
                 }
                 .setNegativeButton("아니요"){  //아니요를 눌렀을 때 아무 작업도 하지 않도록
-                    _, _ ->
+                        _, _ ->
                 }
                 .create()
             dialog.show()
@@ -182,4 +182,5 @@ class UpdateAlarmSettingFragment : Fragment() {
         return !binding.etAlarmDescription.text.isNullOrBlank()
                 && dayToBit() != 0
     }
+
 }

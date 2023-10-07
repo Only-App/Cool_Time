@@ -1,4 +1,4 @@
-package com.example.cool_time.PhoneLock
+package com.example.cool_time.ui.PhoneLock
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,10 +9,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.room.Database
-import com.example.cool_time.LockRepository
+import com.example.cool_time.data.LockRepository
 import com.example.cool_time.R
-import com.example.cool_time.UserDatabase
+import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.databinding.FragmentPhoneLockBinding
 import com.example.cool_time.model.PhoneLock
 import com.example.cool_time.viewmodel.LockAdapter

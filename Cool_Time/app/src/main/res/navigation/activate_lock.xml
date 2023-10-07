@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/direct_lock_main"
-        android:name="com.example.cool_time.DirectLock.DirectLockFragment"
+        android:name="com.example.cool_time.ui.DirectLock.DirectLockFragment"
         android:label="fragment_direct_lock"
         tools:layout="@layout/fragment_direct_lock" >
         <action
@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/activeLockFragment"
-        android:name="com.example.cool_time.ActiveLockFragment"
+        android:name="com.example.cool_time.ui.ActiveLockFragment"
         android:label="ActiveLockFragment" >
         <action
             android:id="@+id/action_activeLockFragment_to_directLockFragment"

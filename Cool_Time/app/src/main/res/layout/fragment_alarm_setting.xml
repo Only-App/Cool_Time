@@ -5,10 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/ala_frame"
-    tools:context=".Alarm.AlarmSettingFragment">
+    tools:context=".ui.Alarm.AlarmSettingFragment">
 
 
-    <!-- TODO: Update blank fragment layout -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

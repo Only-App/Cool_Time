@@ -1,6 +1,7 @@
-package com.example.cool_time
+package com.example.cool_time.data
 
 import androidx.lifecycle.LiveData
+import com.example.cool_time.data.LockDAO
 import com.example.cool_time.model.PhoneLock
 
 class LockRepository(private val lockDAO : LockDAO) {

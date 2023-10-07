@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.cool_time.LockRepository
+import com.example.cool_time.data.LockRepository
 import com.example.cool_time.model.PhoneLock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

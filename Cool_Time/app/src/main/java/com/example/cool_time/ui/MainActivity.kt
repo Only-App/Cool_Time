@@ -1,24 +1,18 @@
-package com.example.cool_time
-import android.annotation.SuppressLint
+package com.example.cool_time.ui
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.cool_time.databinding.ActivityMainBinding
-import com.example.cool_time.databinding.FragmentMainBinding
 import com.google.android.material.snackbar.Snackbar
-import android.view.LayoutInflater
-import androidx.appcompat.view.menu.MenuAdapter
+import com.example.cool_time.R
 
 var backTime : Long = 0
 class MainActivity : AppCompatActivity() {
@@ -139,7 +133,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.share-> {  //share button 누른게 공유 아이콘 버튼일 때 작성할 메소드
+            R.id.share -> {  //share button 누른게 공유 아이콘 버튼일 때 작성할 메소드
                 Toast.makeText(this, "Click Share Button", Toast.LENGTH_SHORT).show()
                 //TODO KAKAOTALK SHARE FUNCTION
             }

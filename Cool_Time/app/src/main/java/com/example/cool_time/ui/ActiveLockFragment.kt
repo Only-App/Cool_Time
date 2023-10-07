@@ -1,4 +1,4 @@
-package com.example.cool_time
+package com.example.cool_time.ui
 
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager

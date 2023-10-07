@@ -16,7 +16,12 @@ class AlarmAdapter(private val list : List<Alarm>, private var mListener : OnAla
 
         //선택한 요일 정보(Int type)를 바탕으로 요일을 String으로 변환하도록 함
         fun getDayStr(data : Int) : String{
+            if(data == 127){    //일주일 모두 체크한 경우라면
+                return "매일"
+            }
+
             var day_str : String= ""
+
             var temp = data
             for(i in 0..6){
                 if(temp >= num_list[i]){
