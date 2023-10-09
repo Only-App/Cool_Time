@@ -9,7 +9,7 @@ import com.example.cool_time.model.PhoneLock
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class LockAdapter(private val list : List<PhoneLock>, private var mListener : OnLockItemOnClickListener) :
+class LockAdapter(private val list : List<PhoneLock>, private var mListener : OnLockItemOnClickListener?) :
     RecyclerView.Adapter<LockAdapter.LockViewHolder> (){
         companion object{
             val day_list  = arrayOf("월","화", "수", "목", "금", "토", "일")
@@ -72,7 +72,7 @@ class LockAdapter(private val list : List<PhoneLock>, private var mListener : On
     override fun onBindViewHolder(holder: LockViewHolder, position: Int) {
         holder.bind(list[position])
         holder.binding.llLockItem.setOnClickListener(View.OnClickListener {
-            mListener.onItemClick(list[position], position)
+            mListener?.onItemClick(list[position], position)
         })
     }
     override fun getItemCount(): Int {

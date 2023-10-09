@@ -74,14 +74,17 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
 
 
         binding!!.btnAddSetting.setOnClickListener {
+                if(binding.tvStartDay.text == "시작 날짜" && binding.tvEndDay.text == "종료 날짜"){
+                    Toast.makeText(activity, "날짜를 선택해주세요", Toast.LENGTH_SHORT).show()
 
-                if(start_date != -1L && end_date != -1L){
-                    if(SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time >
-                        SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time)
-                    Toast.makeText(activity, "Please Set Date Correctly", Toast.LENGTH_SHORT).show()
                 }
-                else {
-                    //테스트용 insert
+                else{
+                    if( start_date != -1L && end_date != -1L &&
+                        SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time >
+                        SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time)
+                    Toast.makeText(activity, "잘못된 날짜 정보입니다", Toast.LENGTH_SHORT).show()
+
+
                     lockViewModel!!.insertLock(
                         PhoneLock(
                             app_list = emptyList(), total_time = total_time, min_time = min_time,
@@ -93,6 +96,9 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
                     Toast.makeText(activity, "REGISTER LOCK SETTING", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 }
+
+
+
             }
 
         binding!!.tvTodayTotalTime.setOnClickListener{

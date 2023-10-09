@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cool_time.databinding.AlarmItemBinding
 import com.example.cool_time.model.Alarm
 
-class AlarmAdapter(private val list : List<Alarm>, private var mListener : OnAlarmItemOnClickListener): RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>(){
+class AlarmAdapter(private val list : List<Alarm>, private var mListener : OnAlarmItemOnClickListener?): RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>(){
 
     companion object{
         val day_list  = arrayOf("월","화", "수", "목", "금", "토", "일")

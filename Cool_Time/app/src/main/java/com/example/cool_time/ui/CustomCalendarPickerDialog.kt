@@ -17,7 +17,7 @@ class CustomCalendarPickerDialog(confirmDialogInterface : OnDateChangeListener) 
     private  var confirmDialogInterface: OnDateChangeListener // 긍정 버튼 눌렀을 떄 처리할 함수를 작동시키기 위한 인터페이스
     private var date : String = "" //날짜를 담을 변수, String은 lateinit이 안되기에 우선 빈문자열로 초기화
     init{this.confirmDialogInterface= confirmDialogInterface} // 인터페이스를 위에 클래스에서 받은 인자로 초기화
-    private var dateFormat = SimpleDateFormat("yy년 MM월 dd일", java.util.Locale.getDefault()) //"yy년 MM월 dd일" 꼴로 날짜를 표기하게 하고 날짜 표시 방법을 현재 휴대폰 기기의 디폴트 언어로 설정
+    private var dateFormat = SimpleDateFormat("yyyy.MM.dd", java.util.Locale.getDefault()) //"yy년 MM월 dd일" 꼴로 날짜를 표기하게 하고 날짜 표시 방법을 현재 휴대폰 기기의 디폴트 언어로 설정
     private lateinit var initDate: Date
     override fun onResume() {
         super.onResume()
