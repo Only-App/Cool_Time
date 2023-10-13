@@ -193,20 +193,26 @@
     <androidx.cardview.widget.CardView
         android:id = "@+id/cv_statistics_time"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         app:cardCornerRadius="10dp"
         android:layout_marginTop= "10dp"
         app:cardElevation="2dp"
         android:background="@android:color/transparent"
         android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="10dp"
         >
-
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
         <RelativeLayout
+            app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/ll_statistics_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="10dp">
+            android:layout_margin="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -225,11 +231,26 @@
                 android:layout_alignParentRight="true"
                 android:src="@drawable/navigate_next_15dp" />
         </RelativeLayout>
+        <ScrollView
+            android:padding="15dp"
+            app:layout_constraintTop_toBottomOf="@id/ll_statistics_time"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity = "center_vertical"
+            android:nestedScrollingEnabled="true"
+
+            >
 
         <!-- Chart View!-->
-        <View
+        <androidx.fragment.app.FragmentContainerView
+            android:id = "@+id/chart_fragment"
             android:layout_width="match_parent"
-            android:layout_height="175dp" />
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            />
+        </ScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
 

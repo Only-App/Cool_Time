@@ -18,6 +18,8 @@ import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.databinding.FragmentCalendarBinding
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.model.PhoneLock
+import com.example.cool_time.utils.ChartAppFragment
+import com.example.cool_time.utils.ChartHourFragment
 import com.example.cool_time.viewmodel.AlarmAdapter
 import com.example.cool_time.viewmodel.AlarmViewModel
 import com.example.cool_time.viewmodel.AlarmViewModelFactory
@@ -70,6 +72,11 @@ class CalendarFragment : Fragment(){
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentCalendarBinding.inflate(inflater, container, false)
+
+        childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment()).commit()
+        childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment()).commit()
+        binding.llLockAndAlarmSet.visibility = View.VISIBLE
+        binding.llChart.visibility = View.GONE
 
         db= UserDatabase.getInstance(activity!!.applicationContext)
         lockRepository = LockRepository(db!!.phoneLockDao())
@@ -133,9 +140,11 @@ class CalendarFragment : Fragment(){
             _, _ ->
             if(binding.btnLockAndAlarm.isChecked) {
                 binding.llLockAndAlarmSet.visibility = View.VISIBLE
+                binding.llChart.visibility = View.GONE
             }
             else{
-                binding.llLockAndAlarmSet.visibility = View.INVISIBLE
+                binding.llLockAndAlarmSet.visibility = View.GONE
+                binding.llChart.visibility = View.VISIBLE
             }
         }
 

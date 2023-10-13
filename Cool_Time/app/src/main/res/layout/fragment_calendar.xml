@@ -69,9 +69,10 @@
            app:layout_constrainedHeight="true"
            android:fillViewport="true"
            android:layout_margin="20dp"
+           android:id = "@+id/ll_lock_and_alarm_set"
            >
            <LinearLayout
-               android:id = "@+id/ll_lock_and_alarm_set"
+
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:orientation="vertical"
@@ -105,6 +106,34 @@
 
        </ScrollView>
 
+       <ScrollView
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           app:layout_constraintTop_toBottomOf="@id/radio_group"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constrainedHeight="true"
+           android:fillViewport="true"
+           android:layout_margin="20dp"
+           android:id = "@+id/ll_chart"
+           >
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="vertical"
+           >
+           <androidx.fragment.app.FragmentContainerView
+               android:id = "@+id/hour_chart_fragment"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+
+               />
+           <androidx.fragment.app.FragmentContainerView
+               android:id = "@+id/app_chart_fragment"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               />
+       </LinearLayout>
+       </ScrollView>
 
    </androidx.constraintlayout.widget.ConstraintLayout>
 
