@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.cool_time.databinding.FragmentActiveLockBinding
 import com.example.cool_time.viewmodel.GridSpacingItemDecoration
-import com.example.cool_time.viewmodel.Item
+import com.example.cool_time.viewmodel.AppItem
 import com.example.cool_time.viewmodel.LockScreenAdapter
 
 
@@ -31,14 +31,14 @@ class ActiveLockFragment: Fragment(){
         binding.lastUseComment.visibility=View.VISIBLE
         binding.lastUseTime.visibility=View.VISIBLE
 
-        val datas = mutableListOf<Item>()
+        val datas = mutableListOf<AppItem>()
         val packageManager = this.activity!!.packageManager
         val packages:List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
         var count = 0
         for(info: PackageInfo in packages){
             if(info.applicationInfo.name != null) {
                 val iticon: Drawable = info.applicationInfo.loadIcon(packageManager)
-                val it = Item(info.applicationInfo.loadLabel(packageManager).toString(), iticon)
+                val it = AppItem(info.applicationInfo.loadLabel(packageManager).toString(), iticon)
                 datas.add(it)
                 count += 1
             }

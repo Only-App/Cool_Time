@@ -496,7 +496,7 @@ class ChartAppFragment : Fragment(){
         val data = BarData(barDataSet)
 
         data.barWidth = 0.1f
-        Log.d("chartasdf", data.maxEntryCountSet.toString())
+
         data.setValueTextSize(Utils.convertDpToPixel(5F))
         barChart.data = data
         var ca = barChart.animator
@@ -505,6 +505,6 @@ class ChartAppFragment : Fragment(){
 
 
         barChart.invalidate()
-        Log.d("chart",barChart.height.toString())
+
     }
 }

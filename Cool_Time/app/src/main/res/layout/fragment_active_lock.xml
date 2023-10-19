@@ -107,7 +107,7 @@
                 app:layout_constraintStart_toStartOf="@id/background"
                 app:layout_constraintEnd_toEndOf="@id/background"
                 android:gravity="center_vertical"
-                tool:listitem="@layout/item_recyclerview"
+                tool:listitem="@layout/app_exception_item_recyclerview"
                 />
     </ScrollView>
 

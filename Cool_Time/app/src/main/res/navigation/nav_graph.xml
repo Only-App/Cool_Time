@@ -10,6 +10,8 @@
         android:name="com.example.cool_time.ui.Main.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" />
+
+
     <fragment
         android:id="@+id/use_stat"
         android:name="com.example.cool_time.ui.UseStat.UseStatFragment"

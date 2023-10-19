@@ -4,10 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.View
-import com.example.cool_time.databinding.ItemRecyclerviewBinding
+import com.example.cool_time.databinding.AppExceptionItemRecyclerviewBinding
 
-class Item(val name : String, val image : Drawable)
+class AppItem(val name : String, val image : Drawable)
 
 internal class GridSpacingItemDecoration(
     private val spanCount: Int, // Grid의 column 수
@@ -41,10 +42,10 @@ internal class GridSpacingItemDecoration(
     }
 }
 
-class LockViewHolder(val binding: ItemRecyclerviewBinding) :
+class LockViewHolder(val binding: AppExceptionItemRecyclerviewBinding) :
     RecyclerView.ViewHolder(binding.root)
 
-class LockScreenAdapter(val datas:MutableList<Item>) :
+class LockScreenAdapter(private val datas:MutableList<AppItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int {
@@ -53,11 +54,12 @@ class LockScreenAdapter(val datas:MutableList<Item>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             RecyclerView.ViewHolder =
-        LockViewHolder(ItemRecyclerviewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        LockViewHolder(AppExceptionItemRecyclerviewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as LockViewHolder).binding
         binding.appName.text = datas[position].name
+
         binding.appIcon.background = datas[position].image
     }
 }
