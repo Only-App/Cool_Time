@@ -66,13 +66,13 @@
            android:layout_height="wrap_content"
            app:layout_constraintTop_toBottomOf="@id/radio_group"
            app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintVertical_bias="0"
            app:layout_constrainedHeight="true"
            android:fillViewport="true"
            android:layout_margin="20dp"
            android:id = "@+id/ll_lock_and_alarm_set"
            >
            <LinearLayout
-
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:orientation="vertical"
@@ -88,6 +88,7 @@
                    android:id = "@+id/rv_calendar_lock_set"
                    android:layout_width = "match_parent"
                    android:layout_height="wrap_content"
+                   android:minHeight = "80dp"
                    />
                 <TextView
                     android:id = "@+id/tv_alarm"
@@ -101,6 +102,7 @@
                    android:id ="@+id/rv_calendar_alarm_set"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
+                   android:minHeight = "80dp"
                    />
            </LinearLayout>
 

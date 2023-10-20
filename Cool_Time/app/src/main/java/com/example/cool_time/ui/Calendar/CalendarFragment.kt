@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
+import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -106,13 +107,12 @@ class CalendarFragment : Fragment(){
                 val filteredList = list.filter{ elem -> elem.start_date <= date_time && date_time <= elem.end_date}
                 if(filteredList.isNullOrEmpty()) {  //조건에 맞는 잠금 정보가 없는 경우
                     binding.tvLock.text = "잠금 정보가 존재하지 않습니다"
-                    binding.rvCalendarLockSet.adapter = null
                 }
                 else {  //조건에 맞는 잠금 정보가 존재하는 경우
                     binding.tvLock.text = "잠금"
-                    binding.rvCalendarLockSet.adapter = LockAdapter(filteredList, null) //filteredList를 가지고 어댑터 연결
-
                 }
+                binding.rvCalendarLockSet.adapter = LockAdapter(filteredList, null) //filteredList를 가지고 어댑터 연결
+
             })
 
             alarmViewModel!!.alarm_list.observe(this, Observer<List<Alarm>>{
@@ -124,7 +124,9 @@ class CalendarFragment : Fragment(){
                     (1 shl  (6- (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7)) and elem.day != 0
                 }
                 //조건에 맞는 알람 정보가 존재하지 않은 경우
-                if(filteredList.isNullOrEmpty()) binding.tvAlarm.text = "알람 정보가 존재하지 않습니다"
+                if(filteredList.isNullOrEmpty()){
+                    binding.tvAlarm.text = "알람 정보가 존재하지 않습니다"
+                }
                 else binding.tvAlarm.text= "알람"
                 binding.rvCalendarAlarmSet.adapter = AlarmAdapter(filteredList, null)   //filteredList를 가지고 어댑터 연결
             })

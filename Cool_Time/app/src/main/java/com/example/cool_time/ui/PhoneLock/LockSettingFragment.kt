@@ -69,22 +69,12 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
 
         _binding = FragmentLockSettingBinding.inflate(inflater, container, false)
         db = UserDatabase.getInstance(activity!!.applicationContext)
-        repository = LockRepository(db!!.phoneLockDao())
+        repository = LockRepository(db!!.phoneLockDao())    
         lockViewModel = ViewModelProvider(activity!!, LockViewModelFactory(repository!!)).get(LockViewModel::class.java)
 
 
         binding!!.btnAddSetting.setOnClickListener {
-                if(binding.tvStartDay.text == "시작 날짜" && binding.tvEndDay.text == "종료 날짜"){
-                    Toast.makeText(activity, "날짜를 선택해주세요", Toast.LENGTH_SHORT).show()
-
-                }
-                else{
-                    if( start_date != -1L && end_date != -1L &&
-                        SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time >
-                        SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time)
-                    Toast.makeText(activity, "잘못된 날짜 정보입니다", Toast.LENGTH_SHORT).show()
-
-
+                if(contentCheck()){
                     lockViewModel!!.insertLock(
                         PhoneLock(
                             app_list = emptyList(), total_time = total_time, min_time = min_time,
@@ -93,10 +83,12 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
                         )
                     )
 
-                    Toast.makeText(activity, "REGISTER LOCK SETTING", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "잠금이 설정되었습니다!", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 }
-
+                else{
+                    Toast.makeText(activity, "잘못된 형식의 입력입니다", Toast.LENGTH_SHORT).show()
+                }
 
 
             }
@@ -219,6 +211,19 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
     }
     //TODO : 내용을 다 입력했는지
     private fun contentCheck() : Boolean{
+        when{
+            dayToBit() == 0 -> return false //요일 정보를 선택하지 않았을 때
+            total_time < min_time -> return false   // 최소 사용 간격 시간이 총 사용량 시간을 초과할 때
+            total_time == 0L -> return false // 총 사용 시간이 0시간 0분인 경우
+            !binding.cbNotDaySetting.isChecked && //설정 안함을 체크하지 않았는데 시작 날짜나 종료 날짜를 선택하지 않았을 때
+                    (binding.tvStartDay.text == "시작 날짜" || binding.tvEndDay.text == "종료 날짜") -> {
+            }
+            start_date != -1L && end_date != -1L &&     //시작 날짜가 종료 날짜보다 늦을 때
+                SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time >
+                SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time
+            -> return false
+
+        }
         return true
     }
 

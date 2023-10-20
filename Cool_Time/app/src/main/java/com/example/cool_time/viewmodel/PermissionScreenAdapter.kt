@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.cool_time.R
-import com.example.cool_time.databinding.FragmentPermissionCheckBinding
+import com.example.cool_time.databinding.ActivityPermissionCheckBinding
 import com.example.cool_time.databinding.PermissionItemRecyclerviewBinding
 import com.example.cool_time.utils.Permission
 import kotlinx.coroutines.runBlocking
@@ -36,7 +36,7 @@ class PermissionViewHolder(val binding: PermissionItemRecyclerviewBinding) :
     RecyclerView.ViewHolder(binding.root)
 
 
-class PermissionScreenAdapter( val datas:MutableList<PermissionItem>, val activity: Activity, val permissionBinding: FragmentPermissionCheckBinding) :
+class PermissionScreenAdapter( val datas:MutableList<PermissionItem>, val activity: Activity, val permissionBinding: ActivityPermissionCheckBinding) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     private var recyclerView: RecyclerView? = permissionBinding.permissionList // RecyclerView 변수
     override fun getItemCount(): Int {
@@ -55,10 +55,12 @@ class PermissionScreenAdapter( val datas:MutableList<PermissionItem>, val activi
     fun setBtnEnable(){
         val btn = permissionBinding.nextButton
         btn.backgroundTintList=ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.colorPrimary))
+        btn.isEnabled = true
     }
     fun setBtnDisEnable(){
         val btn = permissionBinding.nextButton
         btn.backgroundTintList=ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.light_gray))
+        btn.isEnabled = false
     }
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as PermissionViewHolder).binding

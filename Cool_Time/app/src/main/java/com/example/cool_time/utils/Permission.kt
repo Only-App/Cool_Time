@@ -12,10 +12,9 @@ import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.cool_time.databinding.FragmentPermissionCheckBinding
 import com.example.cool_time.ui.MainActivity
 
-class Permission(val activity: Activity,){
+class Permission(val activity: Activity){
     // 리사이클러 뷰 생성 순서대로(코드 값이 곧 인덱스) 설정 => code 값 보고서 어떤 권한 눌렀는지 알아내고, 해당 리스트에 접근해야 되기 때문에
     val USAGE_STATS_PERMISSION_REQUEST = 0
     val OVERLAY_PERMISSION_REQUEST_CODE = 1

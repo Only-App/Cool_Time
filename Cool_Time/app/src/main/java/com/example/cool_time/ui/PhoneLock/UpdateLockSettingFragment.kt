@@ -139,35 +139,42 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
 
 
         //수정 버튼을 눌렀을 때
-        binding.btnUpdateSetting.setOnClickListener{
+        binding.btnUpdateSetting.setOnClickListener {
             //TODO: 업데이트 로직
-            if(SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time > SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time){
-                Toast.makeText(activity, "Please Set Date Correctly", Toast.LENGTH_SHORT).show()
-            }
-            else {
-                //다이얼로그 출력
-                val dialog = AlertDialog.Builder(activity)
-                    .setTitle("수정")
-                    .setMessage("수정하시겠습니까?")
-                    .setPositiveButton("예") { _, _ ->
-                        //TODO: null check 함수 만들어서 값들이 채워져 있는지를 확인한 후 업데이트 작업할 수 있도록
 
+            //다이얼로그 출력
+            val dialog = AlertDialog.Builder(activity)
+                .setTitle("수정")
+                .setMessage("수정하시겠습니까?")
+                .setPositiveButton("예") { _, _ ->
+                    //TODO: null check 함수 만들어서 값들이 채워져 있는지를 확인한 후 업데이트 작업할 수 있도록
+                    if(contentCheck()){
                         //update 작업, 다시 돌아가기
-                        lockViewModel!!.updateLock(PhoneLock(
-                            id = lock.id, app_list = emptyList(), total_time = total_time, min_time = min_time,
-                            lock_on = lock_on, lock_off = lock_off, lock_day = dayToBit(),
-                            start_date = start_date, end_date = end_date
-                        ))
+                        lockViewModel!!.updateLock(
+                            PhoneLock(
+                                id = lock.id,
+                                app_list = emptyList(),
+                                total_time = total_time,
+                                min_time = min_time,
+                                lock_on = lock_on,
+                                lock_off = lock_off,
+                                lock_day = dayToBit(),
+                                start_date = start_date,
+                                end_date = end_date
+                            )
+                        )
                         findNavController().popBackStack()
                     }
-                    .setNegativeButton("아니요") {
-                        //아니요를 눌렀을 때는 아무 작업도 하지 않도록 함
-                            _, _ ->
-                    }
-                    .create()
+                    else Toast.makeText(activity, "잘못된 형식의 입력입니다", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("아니요") {
+                    //아니요를 눌렀을 때는 아무 작업도 하지 않도록 함
+                        _, _ ->
+                }
+                .create()
 
-                dialog.show()
-            }
+            dialog.show()
+
         }
 
         //삭제 버튼을 눌렀을 때
@@ -311,6 +318,19 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
     }
     //TODO : 내용을 다 입력했는지
     private fun contentCheck() : Boolean{
+        when{
+            dayToBit() == 0 -> return false //요일 정보를 선택하지 않았을 때
+            total_time < min_time -> return false   // 최소 사용 간격 시간이 총 사용량 시간을 초과할 때
+            total_time == 0L -> return false // 총 사용 시간이 0시간 0분인 경우
+            !binding.cbNotDaySetting.isChecked && //설정 안함을 체크하지 않았는데 시작 날짜나 종료 날짜를 선택하지 않았을 때
+                    (binding.tvStartDay.text == "시작 날짜" || binding.tvEndDay.text == "종료 날짜") -> {
+            }
+            start_date != -1L && end_date != -1L &&     //시작 날짜가 종료 날짜보다 늦을 때
+                    SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time >
+                    SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time
+            -> return false
+
+        }
         return true
     }
 

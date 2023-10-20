@@ -1,6 +1,3 @@
-
-
-
 package com.example.cool_time.utils
 
 import android.content.Context
@@ -324,7 +321,7 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                     continue
                 }
 
-                val packageName = "com.kakao.talk"
+                val packageName = "com.google.android.gm"
                 val pm :PackageManager = this.mContext!!.packageManager
                 val a = pm.getApplicationLabel(pm.getApplicationInfo(packageName, 0))
                 if (set.isDrawValuesEnabled) {
@@ -451,7 +448,7 @@ class ChartAppFragment : Fragment(){
         var cnt = 0
         for (i in 0 until 50) {
             cnt++
-            val packageName = "com.kakao.talk"
+            val packageName = "com.google.android.gm"
             fun isAppInstalled(packageName : String, packageManager : PackageManager) : Boolean{
                 return try{
                     packageManager.getPackageInfo(packageName, 0)

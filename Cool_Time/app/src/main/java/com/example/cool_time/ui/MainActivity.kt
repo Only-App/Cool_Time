@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cool_time.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.example.cool_time.R
-import com.example.cool_time.databinding.FragmentPermissionCheckBinding
+import com.example.cool_time.databinding.ActivityPermissionCheckBinding
 import com.example.cool_time.databinding.PermissionItemRecyclerviewBinding
 import com.example.cool_time.viewmodel.LinearDecorationSpace
 import com.example.cool_time.viewmodel.PermissionItem
@@ -35,7 +35,7 @@ var backTime : Long = 0
 class MainActivity : AppCompatActivity() {
     private var binding : ActivityMainBinding? = null
     private var appBarConfiguration : AppBarConfiguration? = null
-    private var test : FragmentPermissionCheckBinding? = null
+    private var test : ActivityPermissionCheckBinding? = null
 
 
     lateinit var adapter: PermissionScreenAdapter// = PermissionScreenAdapter(datas = datas, this, test!!)
@@ -45,52 +45,25 @@ class MainActivity : AppCompatActivity() {
 
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+        test = ActivityPermissionCheckBinding.inflate(layoutInflater)
 
-
-        test = FragmentPermissionCheckBinding.inflate(layoutInflater)
-        init()
-        setContentView(test!!.root)
+        //init()
+        setContentView(binding!!.root)
+        //setContentView(test!!.root)
         setUpActionBar()    //액션바 세팅
-        //setUpDrawer()   //드로워 세팅 작업
+        // setUpDrawer()   //드로워 세팅 작업
         //Navigation을 통한 메뉴 옵션 프래그먼트 이동 처리, back button 클릭 시
         // startDestination(메인 화면)으로 다시 돌아옴
         setUpNavViewController()
-
+        if(!Permission(this).checkAllPermission())
+            startActivityForResult(Intent(this, CheckPermissionActivity::class.java), 0)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        adapter.handleActivityResult(requestCode, resultCode, data)
-
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        adapter.handlePermissionResult(requestCode, permissions, grantResults)
-    }
-
-    private fun init(){
-        val use_info = PermissionItem("사용 정보 접근", "현재 실행 중인 앱을 조회합니다.")
-        val drawonapp = PermissionItem("다른 앱 위에 그리기", "현재 실행 중인 앱을 조회합니다.")
-        val call = PermissionItem("전화 걸기 및 관리", "전화 통화 중 잠금화면 해제를 위해 사용")
-        val noti = PermissionItem("알림", "알림을 표시합니다.")
-        val datas = arrayListOf(use_info, drawonapp, call, noti)
-        adapter = PermissionScreenAdapter(datas = datas, this, test!!)
-        test!!.permissionList.adapter = adapter
-        test!!.permissionList.layoutManager  = LinearLayoutManager(this,)
-        test!!.permissionList.addItemDecoration(LinearDecorationSpace(10))
-        if(Permission(this).checkAllPermission()){
-            adapter.setBtnEnable()
-            test!!.nextButton.setOnClickListener{
-
-            }
+        if(requestCode == 0 && resultCode == 0){
+            finish()
         }
-        else{
-            adapter.setBtnDisEnable()
-        }
-
-        //return binding.root
     }
 
     override fun onBackPressed() {//뒤로 두번 눌렀을 때 종료되도록
