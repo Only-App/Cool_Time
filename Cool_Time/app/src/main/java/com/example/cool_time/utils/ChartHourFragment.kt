@@ -34,18 +34,19 @@ class BarChartRender(aChart: BarChart, aAnimator: ChartAnimator,
     //둥글게 설정할 크기 설정
     private val mRadius = 30F
 
-    //상하좌우 위치 받고, 네 모서리의 round 유무를 bool 값으로 받아서 round 처리해줌
+    //상하좌우 위치 받고, 각 축별로 round 할 크기와 네 모서리의 round 유무를 bool 값으로 받아서 round 처리해줌
     private fun roundedRect(
         left: Float, top: Float, right: Float, bottom: Float, rx: Float, ry: Float,
         tl: Boolean, tr: Boolean, br: Boolean, bl: Boolean
     ): Path {
+        // 각 축별 round할 크기 설정
         // rxvalue는 원의 x축 반지름, ryvalue는 원의 y축 반지름이라고 생각하면 됨 (각 값이 다르면 타원 같은 느낌)
         //x축 round 할 크기 설정
         var rxValue = rx
         //y축 round 할 크기 설정
         var ryValue = ry
 
-        //음수로 들어오면 그냥 없는 거로 설정
+        // 음수 같은 비정상적인 값이 들어왔을 땐 그냥 rounding 없도록 설정
         if (rxValue < 0) rxValue = 0f
         if (ryValue < 0) ryValue = 0f
 
@@ -62,6 +63,7 @@ class BarChartRender(aChart: BarChart, aAnimator: ChartAnimator,
         }
 
         //val widthMinusCorners = (width - (2 * rxValue))
+
         // 곡선을 제외한 x축으로부터 수직인 바의 길이
         val heightMinusCorners = (height - (2 * ryValue))
 

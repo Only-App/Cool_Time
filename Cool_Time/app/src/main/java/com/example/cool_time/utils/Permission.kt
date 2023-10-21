@@ -14,8 +14,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.cool_time.ui.MainActivity
 
+//Permissino 클래스는 권한을 요청하거나 권한 설정이 되어 있는지 체크하는 클래스
 class Permission(val activity: Activity){
     // 리사이클러 뷰 생성 순서대로(코드 값이 곧 인덱스) 설정 => code 값 보고서 어떤 권한 눌렀는지 알아내고, 해당 리스트에 접근해야 되기 때문에
+    // => 요청 코드 값이 리스트에서 해당 권한의 index와 동일하도록 설정해줌=> 코드 == index가 성립하도록
     val USAGE_STATS_PERMISSION_REQUEST = 0
     val OVERLAY_PERMISSION_REQUEST_CODE = 1
     val CALL_PERMISSION_REQUEST_CODE = 2
@@ -84,6 +86,5 @@ class Permission(val activity: Activity){
 
     internal fun requestNotificationPermission() {
         ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_PERMISSION_REQUEST)
-
     }
 }

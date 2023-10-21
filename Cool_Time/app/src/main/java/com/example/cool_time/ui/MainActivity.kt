@@ -35,7 +35,7 @@ var backTime : Long = 0
 class MainActivity : AppCompatActivity() {
     private var binding : ActivityMainBinding? = null
     private var appBarConfiguration : AppBarConfiguration? = null
-    private var test : ActivityPermissionCheckBinding? = null
+    //private var test : ActivityPermissionCheckBinding? = null
 
 
     lateinit var adapter: PermissionScreenAdapter// = PermissionScreenAdapter(datas = datas, this, test!!)
@@ -43,22 +43,27 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         binding = ActivityMainBinding.inflate(layoutInflater)
-        test = ActivityPermissionCheckBinding.inflate(layoutInflater)
-
-        //init()
         setContentView(binding!!.root)
-        //setContentView(test!!.root)
         setUpActionBar()    //액션바 세팅
-        // setUpDrawer()   //드로워 세팅 작업
-        //Navigation을 통한 메뉴 옵션 프래그먼트 이동 처리, back button 클릭 시
-        // startDestination(메인 화면)으로 다시 돌아옴
         setUpNavViewController()
+
+        // 모든 권한이 다 설정되었는지 체크하고 만약 안되어 있는게 있다면 권한 설정하는 화면으로 이동
         if(!Permission(this).checkAllPermission())
             startActivityForResult(Intent(this, CheckPermissionActivity::class.java), 0)
+
+        /*
+        test = ActivityPermissionCheckBinding.inflate(layoutInflater)
+        init()
+        setContentView(test!!.root)
+        setUpDrawer()   //드로워 세팅 작업
+        Navigation을 통한 메뉴 옵션 프래그먼트 이동 처리, back button 클릭 시
+        startDestination(메인 화면)으로 다시 돌아옴
+        */
     }
 
+    // 권한 설정 화면으로 이동했다가 뒤로 가는 등 권한 설정하는 액티비티에서 종료 했을때 넘어오는 종료값을 보고서
+    // 종료값이 0이면 그냥 뒤로가기로 돌아온 것이므로 앱 종료
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == 0 && resultCode == 0){
