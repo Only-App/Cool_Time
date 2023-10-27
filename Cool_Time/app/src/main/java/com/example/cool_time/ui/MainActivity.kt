@@ -1,6 +1,7 @@
 package com.example.cool_time.ui
 import android.app.Activity
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
@@ -19,6 +20,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cool_time.MyApplication
+import com.example.cool_time.MyBroadcastReceiver
 import com.example.cool_time.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.example.cool_time.R
@@ -52,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         if(!Permission(this).checkAllPermission())
             startActivityForResult(Intent(this, CheckPermissionActivity::class.java), 0)
 
+
         /*
         test = ActivityPermissionCheckBinding.inflate(layoutInflater)
         init()
@@ -61,6 +65,18 @@ class MainActivity : AppCompatActivity() {
         startDestination(메인 화면)으로 다시 돌아옴
         */
     }
+
+    /*
+    override fun onResume() {
+        super.onResume()
+        val br =  MyBroadcastReceiver()
+        registerReceiver(br, IntentFilter().apply{
+            addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_SCREEN_OFF)
+        })
+    }
+
+     */
 
     // 권한 설정 화면으로 이동했다가 뒤로 가는 등 권한 설정하는 액티비티에서 종료 했을때 넘어오는 종료값을 보고서
     // 종료값이 0이면 그냥 뒤로가기로 돌아온 것이므로 앱 종료

@@ -8,8 +8,12 @@ import android.view.ViewGroup
 import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.example.cool_time.MyApplication
 import com.example.cool_time.R
 import com.example.cool_time.databinding.FragmentDirectLockBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -54,8 +58,15 @@ class DirectLockFragment : Fragment() {
         timeInit()
         binding.fabAddSetting.setOnClickListener{
             Toast.makeText(activity, "DIRECT LOCK", Toast.LENGTH_SHORT).show()
+            CoroutineScope(Dispatchers.Main).launch{    //지정한 시간만큼 인내의 시간 증가
+                MyApplication.getInstance().getDataStore().increaseEnduredTime(hourPick.value * 60  + minPick.value)
+            }
+
             findNavController().navigate(R.id.action_directLockFragment_to_activeLockFragment)
+
         }
+
+
         return binding.root
     }
 

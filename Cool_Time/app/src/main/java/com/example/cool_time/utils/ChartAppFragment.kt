@@ -26,6 +26,7 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.renderer.HorizontalBarChartRenderer
 import com.github.mikephil.charting.utils.Utils
@@ -369,7 +370,7 @@ class ChartAppFragment : Fragment(){
         // 그리드 선 수평 거리 설정
         xAxis.granularity = 1f
         // x축 텍스트 컬러 설정
-        xAxis.textColor = Color.RED
+        //xAxis.textColor = Color.RED
         xAxis.setDrawLabels(false)
         //xAxis.draw
         // x축 선 설정 (default = true)
@@ -428,7 +429,7 @@ class ChartAppFragment : Fragment(){
         var map = ArrayList<Bitmap>()
         // 임의 데이터
         var cnt = 0
-        for (i in 0 until 69) {
+        for (i in 0 until 50) { //TODO : 사용자의 설치된 앱에 대해서 차트 보여줄수록 구현
             cnt++
             val packageName = "com.google.android.gm"
             // 앱이 깔려 있는지 확인하는 함수
@@ -447,7 +448,7 @@ class ChartAppFragment : Fragment(){
 
             if(isAppInstalled(packageName, packageManager)){
                 map.add(appName.toBitmap())
-                valueList.add(BarEntry(i.toFloat(), i.toFloat()*100+1,))
+                valueList.add(BarEntry(i.toFloat(), i.toFloat() * 100  + 1))
 
             }
         }
@@ -460,7 +461,6 @@ class ChartAppFragment : Fragment(){
             // 막대바 색깔 설정 => 여러개 넣으면 순서대로 나뉘어서 설정
             Color.rgb(238, 71, 77)
         )
-
 
         //barChart.setBackgroundColor(Color.RED)
 

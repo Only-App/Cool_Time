@@ -1,14 +1,25 @@
 package com.example.cool_time.ui.UseStat
 
+import android.app.Application
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.cool_time.MyApplication
 import com.example.cool_time.R
+import com.example.cool_time.databinding.FragmentUseStatBinding
 import com.example.cool_time.utils.ChartAppFragment
 import com.example.cool_time.utils.ChartHourFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +35,8 @@ class UseStatFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
+    private var _binding : FragmentUseStatBinding? = null
+    private val binding get() = _binding!!
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -33,22 +45,41 @@ class UseStatFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        _binding = FragmentUseStatBinding.inflate(layoutInflater, container, false)
+
         childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment()).commit()
         childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment()).commit()
-        return inflater.inflate(R.layout.fragment_use_stat, container, false)
+
+
+        CoroutineScope(Dispatchers.Main).launch{    //사용 횟수 출력
+            MyApplication.getInstance().getDataStore().todayCnt.collect{
+                binding.tvStatUseCount.text = it.toString()
+            }
+        }
+        CoroutineScope(Dispatchers.Main).launch{
+            MyApplication.getInstance().getDataStore().latestUseTime.collect{   //최근 사용 시간 출력
+                val sdf= SimpleDateFormat("HH:mm")
+                binding.tvStatRecentTime.text = sdf.format(it)
+            }
+        }
+
+        CoroutineScope(Dispatchers.Main).launch{    //총 사용 시간 출력
+            MyApplication.getInstance().getDataStore().todayUseTime.collect{
+                binding.tvUseTime.text =  "%02d : %02d : %02d".format(it / 3600, it % 3600 /  60, it % 60)
+            }
+
+        }
+
+        return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
 
-        val actionbar = (requireActivity() as AppCompatActivity).supportActionBar
-
-    }
     companion object {
         /**
          * Use this factory method to create a new instance of
