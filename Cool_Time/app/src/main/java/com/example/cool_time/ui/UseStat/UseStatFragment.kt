@@ -4,38 +4,29 @@ import android.app.Application
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-<<<<<<< HEAD
-=======
+
 import androidx.fragment.app.Fragment
->>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-<<<<<<< HEAD
-import androidx.fragment.app.Fragment
-=======
 import com.example.cool_time.MyApplication
->>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
 import com.example.cool_time.R
 import com.example.cool_time.databinding.FragmentUseStatBinding
 import com.example.cool_time.utils.ChartAppFragment
 import com.example.cool_time.utils.ChartHourFragment
-<<<<<<< HEAD
 import com.example.cool_time.utils.getTodayNow
 import com.example.cool_time.utils.getTodayStart
 import com.example.cool_time.utils.getTotalTime
 import com.example.cool_time.utils.load_time_usage
 import com.example.cool_time.utils.load_usage
 import com.example.cool_time.utils.totalTimetoText
-=======
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
->>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -51,12 +42,10 @@ class UseStatFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-<<<<<<< HEAD
-    private lateinit var binding : FragmentUseStatBinding
-=======
+
     private var _binding : FragmentUseStatBinding? = null
     private val binding get() = _binding!!
->>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -71,8 +60,6 @@ class UseStatFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-<<<<<<< HEAD
-        binding = FragmentUseStatBinding.inflate(inflater, container, false)
         /*
         val startday = getTodayStart().timeInMillis
         val endday = getTodayNow().timeInMillis
@@ -86,7 +73,7 @@ class UseStatFragment : Fragment() {
 
 
          */
-=======
+
         _binding = FragmentUseStatBinding.inflate(layoutInflater, container, false)
 
         childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment()).commit()
@@ -104,20 +91,21 @@ class UseStatFragment : Fragment() {
                 binding.tvStatRecentTime.text = sdf.format(it)
             }
         }
-
+/*
         CoroutineScope(Dispatchers.Main).launch{    //총 사용 시간 출력
             MyApplication.getInstance().getDataStore().todayUseTime.collect{
                 binding.tvUseTime.text =  "%02d : %02d : %02d".format(it / 3600, it % 3600 /  60, it % 60)
             }
 
         }
+ */
 
->>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
+
         return binding.root
     }
 
-
-<<<<<<< HEAD
+    override fun onResume() {
+        super.onResume()
         val startday = getTodayStart().timeInMillis
         val endday = getTodayNow().timeInMillis
         val today_list = load_usage(this.context!!, startday, endday)
@@ -129,10 +117,8 @@ class UseStatFragment : Fragment() {
         childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
         childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment(today_list)).commit()
         val actionbar = (requireActivity() as AppCompatActivity).supportActionBar
-
     }
-=======
->>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
+
     companion object {
         /**
          * Use this factory method to create a new instance of

@@ -12,7 +12,6 @@ import com.example.cool_time.MyApplication
 import com.example.cool_time.R
 import com.example.cool_time.databinding.FragmentMainBinding
 import com.example.cool_time.utils.ChartAppFragment
-<<<<<<< HEAD
 import com.example.cool_time.utils.getDiff
 import com.example.cool_time.utils.getTodayNow
 import com.example.cool_time.utils.getTodayStart
@@ -21,13 +20,12 @@ import com.example.cool_time.utils.getYesterdayEnd
 import com.example.cool_time.utils.getYesterdayStart
 import com.example.cool_time.utils.load_usage
 import com.example.cool_time.utils.totalTimetoText
-=======
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
->>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
+
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -62,18 +60,7 @@ class MainFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding= FragmentMainBinding.inflate(inflater, container, false)
-<<<<<<< HEAD
-/*
-        val startday = getTodayStart().timeInMillis
-        val endday = getTodayNow().timeInMillis
-        val list = load_usage(this.context!!, startday, endday)
-
-        childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment(list)).commit()
-
- */
-=======
         childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment()).commit()
-
 
         CoroutineScope(Dispatchers.Main).launch{//사용 횟수 출력
             MyApplication.getInstance().getDataStore().todayCnt.collect{
@@ -109,7 +96,7 @@ class MainFragment : Fragment() {
 
             }
         }
-
+        /*
         CoroutineScope(Dispatchers.Main).launch{    //총 사용 시간 출력
             MyApplication.getInstance().getDataStore().todayUseTime.collect{
                 val yesterdayUseTime = MyApplication.getInstance().getDataStore().yesterdayUseTime.first()
@@ -123,7 +110,7 @@ class MainFragment : Fragment() {
                     else "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 더 사용"
             }
         }
->>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
+         */
         return binding.root
     }
 
@@ -133,7 +120,6 @@ class MainFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-<<<<<<< HEAD
         val startday = getTodayStart().timeInMillis
         val endday = getTodayNow().timeInMillis
         val today_list = load_usage(this.context!!, startday, endday)
@@ -151,9 +137,6 @@ class MainFragment : Fragment() {
         binding.tvCmpUseTime.text = displaydiffTime
 
         childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment(today_list)).commit()
-
-=======
->>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
     }
 
 
