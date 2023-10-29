@@ -26,6 +26,7 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.renderer.HorizontalBarChartRenderer
 import com.github.mikephil.charting.renderer.XAxisRenderer
@@ -380,8 +381,12 @@ class ChartAppFragment(private var appList : List<Pair<String, Long>>  = ArrayLi
         // 그리드 선 수평 거리 설정
         xAxis.granularity = 1f
         // x축 텍스트 컬러 설정
+<<<<<<< HEAD
         xAxis.textColor = Color.RED
         xAxis.setCenterAxisLabels(false)
+=======
+        //xAxis.textColor = Color.RED
+>>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
         xAxis.setDrawLabels(false)
         //xAxis.draw
         // x축 선 설정 (default = true)
@@ -425,7 +430,11 @@ class ChartAppFragment(private var appList : List<Pair<String, Long>>  = ArrayLi
         val packageManager :PackageManager = this.activity!!.packageManager
         // 임의 데이터
         var cnt = 0
+<<<<<<< HEAD
         for (i in 0 until appList.size) {
+=======
+        for (i in 0 until 50) { //TODO : 사용자의 설치된 앱에 대해서 차트 보여줄수록 구현
+>>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
             cnt++
             val packageName = appList[i].first
             // 앱이 깔려 있는지 확인하는 함수
@@ -438,11 +447,23 @@ class ChartAppFragment(private var appList : List<Pair<String, Long>>  = ArrayLi
                 }
             }
 
+<<<<<<< HEAD
             val appIcon = packageManager.getApplicationIcon(packageName)
             //if(isAppInstalled(packageName, packageManager)){
                 map.add(appIcon.toBitmap())
                 valueList.add(BarEntry(i.toFloat(), (appList[i].second ).toFloat()))
             //}
+=======
+
+            val packageManager :PackageManager = this.activity!!.packageManager
+            val appName = packageManager.getApplicationIcon(packageName)
+
+            if(isAppInstalled(packageName, packageManager)){
+                map.add(appName.toBitmap())
+                valueList.add(BarEntry(i.toFloat(), i.toFloat() * 100  + 1))
+
+            }
+>>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
         }
         // barChart.~height가 9999까진 괜찮다가 10000부터 이상해짐
         // => 리스트 1개만 있어도 안짤리는 크기가 55dp => 실험 결과 최대 69개까지만 보여주는 쪽으로 해야 함
@@ -453,7 +474,6 @@ class ChartAppFragment(private var appList : List<Pair<String, Long>>  = ArrayLi
             // 막대바 색깔 설정 => 여러개 넣으면 순서대로 나뉘어서 설정
             Color.rgb(238, 71, 77)
         )
-
 
         //barChart.setBackgroundColor(Color.RED)
 

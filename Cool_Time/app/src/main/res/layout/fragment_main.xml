@@ -68,7 +68,11 @@
                     />
 
                 <TextView
+<<<<<<< HEAD
                     android:id ="@+id/tv_cmp_use_time"
+=======
+                    android:id = "@+id/tv_compare_use_time"
+>>>>>>> 03a5ca37d406ff65faf5c250d7740d4a62665a7f
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
                     android:text = "어제보다 2시간 5분 더 사용"
@@ -107,6 +111,7 @@
                     />
 
                 <TextView
+                    android:id = "@+id/tv_compare_use_cnt"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
                     android:text = "어제보다 5번 더 사용"
@@ -145,6 +150,7 @@
                     />
 
                 <TextView
+                    android:id = "@+id/tv_compare_endure"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
                     android:text = "어제보다 5분 더 잠금"

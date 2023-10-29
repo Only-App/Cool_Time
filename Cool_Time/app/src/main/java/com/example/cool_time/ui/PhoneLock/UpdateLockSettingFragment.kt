@@ -153,7 +153,6 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                         lockViewModel!!.updateLock(
                             PhoneLock(
                                 id = lock.id,
-                                app_list = emptyList(),
                                 total_time = total_time,
                                 min_time = min_time,
                                 lock_on = lock_on,

@@ -9,7 +9,7 @@ import com.example.cool_time.utils.StringListConverter
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.model.PhoneLock
 
-@Database(entities = [Alarm::class, PhoneLock::class], version = 4)
+@Database(entities = [Alarm::class, PhoneLock::class], version = 5)
 @TypeConverters(StringListConverter::class)
 abstract class UserDatabase : RoomDatabase(){
     abstract fun alarmDao() : AlarmDAO  //알람 객체 DAO(Data Access Object)

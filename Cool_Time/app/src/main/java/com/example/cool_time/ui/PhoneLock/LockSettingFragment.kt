@@ -77,7 +77,7 @@ class LockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInte
                 if(contentCheck()){
                     lockViewModel!!.insertLock(
                         PhoneLock(
-                            app_list = emptyList(), total_time = total_time, min_time = min_time,
+                            total_time = total_time, min_time = min_time,
                             lock_on = lock_on, lock_off = lock_off, lock_day = dayToBit(),
                             start_date = start_date, end_date = end_date
                         )

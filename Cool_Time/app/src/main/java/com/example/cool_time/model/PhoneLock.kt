@@ -10,7 +10,7 @@ import java.io.Serializable
 data class PhoneLock(
     @PrimaryKey(autoGenerate = true)
     var id : Int  = 0,
-    var app_list : List<String>,
+    // app_list 는 다른 테이블로 관리
     var total_time : Long,
     var min_time : Long,
     var lock_on : Int,  //TOOD : Nullable or boolean type add

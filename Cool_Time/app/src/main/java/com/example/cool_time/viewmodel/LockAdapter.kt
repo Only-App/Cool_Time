@@ -58,7 +58,7 @@ class LockAdapter(private val list : List<PhoneLock>, private var mListener : On
                 binding.tvDay.text = getDayStr(lock.lock_day)
 
                 binding.tvReuseLock.text = "${lock.min_time}분 내로 재사용 시도시 잠금"
-                binding.tvLockRemainTime.text = "0시간 사용시 잠금"
+                binding.tvLockRemainTime.text = "0시간 사용시 잠금"     //TODO : 남아있는 시간 계산해서 출력해야 함
 
             }
         }
