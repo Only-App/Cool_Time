@@ -132,7 +132,8 @@
            <androidx.fragment.app.FragmentContainerView
                android:id = "@+id/app_chart_fragment"
                android:layout_width="match_parent"
-               android:layout_height="wrap_content"
+               android:layout_height="match_parent"
+               android:layout_gravity="center"
                />
        </LinearLayout>
        </ScrollView>

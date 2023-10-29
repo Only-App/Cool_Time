@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Path
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -261,7 +262,7 @@ class BarChartRender(aChart: BarChart, aAnimator: ChartAnimator,
         }
     }
 }
-class ChartHourFragment : Fragment(){
+class ChartHourFragment(val list: List<Long> = ArrayList<Long>()) : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = FragmentHourChartBinding.inflate(inflater, container, false)
@@ -298,6 +299,7 @@ class ChartHourFragment : Fragment(){
         // x축 텍스트 컬러 설정
         xAxis.textColor = Color.BLACK
         xAxis.setDrawLabels(true)
+        xAxis.setLabelCount(24)
         //xAxis.draw
         // x축 선 설정 (default = true)
         xAxis.setDrawAxisLine(false)
@@ -365,14 +367,9 @@ class ChartHourFragment : Fragment(){
         val title = "차트" // 어차피 안보이게 할거라 필요는 없지만 차트 이름 설정
 
         // 임의 수동 반복문 데이터
-        for (i in 0 until 24) {
+        for (i in 0 until list.size) {
             //테스트 위해서 그냥 임의로 큰값 한번 넣어줌
-            if(i == 3) {
-                valueList.add(BarEntry(i.toFloat(), i * 1000f,))
-            }
-            else{
-                valueList.add(BarEntry(i.toFloat(), i * 100f,))
-            }
+                valueList.add(BarEntry(i.toFloat(), list[i]/60.toFloat(),))
         }
         // 막대바들의 정보를 담은 BarEntry List와 차트 이름을 넣어서 하나의 차트를 만드는데 필요한 DataSet 생성
         val barDataSet = BarDataSet(valueList, title)

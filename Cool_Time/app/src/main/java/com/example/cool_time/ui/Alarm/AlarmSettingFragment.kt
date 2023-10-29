@@ -87,7 +87,7 @@ class AlarmSettingFragment : Fragment() {
             hideKeyboard()
         }
         binding.etAlarmDescription.setOnEditorActionListener{ _, actionId, event -> var handled = false
-            if(actionId == EditorInfo.IME_ACTION_DONE || event.keyCode == KeyEvent.KEYCODE_ENTER) {
+            if(actionId == EditorInfo.IME_ACTION_DONE || (event.action==KeyEvent.ACTION_UP && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
                 hideKeyboard() // 엔터나 완료 입력 시 키보드 사라짐
                 handled = true
             }

@@ -26,7 +26,7 @@
         app:layout_constraintBottom_toTopOf="@id/next_Button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tool:listitem="@layout/permission_item_recyclerview"
+        tool:listitem="@layout/permission_item"
         />
 
     <androidx.appcompat.widget.AppCompatButton

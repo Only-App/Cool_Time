@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.cool_time.R
 import com.example.cool_time.databinding.ActivityPermissionCheckBinding
-import com.example.cool_time.databinding.PermissionItemRecyclerviewBinding
+import com.example.cool_time.databinding.PermissionItemBinding
 import com.example.cool_time.utils.Permission
 
 
@@ -30,7 +30,7 @@ class LinearDecorationSpace(private val divHeight: Int) : RecyclerView.ItemDecor
 
 class PermissionItem(val title : String, val description : String) // 리스트 안에 필요한 데이터들을 담을 클래스
 
-class PermissionViewHolder(val binding: PermissionItemRecyclerviewBinding) :
+class PermissionViewHolder(val binding: PermissionItemBinding) :
     //각 리스트의 뷰와 데이터를 보유하는 객체
     //디자인한 리스트를 받아서 binding
     RecyclerView.ViewHolder(binding.root)
@@ -46,7 +46,7 @@ class PermissionScreenAdapter( val datas:MutableList<PermissionItem>, val activi
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             RecyclerView.ViewHolder =
-        PermissionViewHolder(PermissionItemRecyclerviewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        PermissionViewHolder(PermissionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     fun setCompleteExp(btn:AppCompatButton){
         btn.text="완료"

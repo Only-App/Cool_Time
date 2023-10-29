@@ -1,19 +1,18 @@
 package com.example.cool_time.utils
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Path
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import com.example.cool_time.R
 import com.example.cool_time.databinding.FragmentAppChartBinding
@@ -21,6 +20,7 @@ import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -28,15 +28,18 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.renderer.HorizontalBarChartRenderer
+import com.github.mikephil.charting.renderer.XAxisRenderer
+import com.github.mikephil.charting.renderer.XAxisRendererHorizontalBarChart
+import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.Utils
 import com.github.mikephil.charting.utils.ViewPortHandler
 
 class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: ChartAnimator,
-                                     aViewPortHandler: ViewPortHandler, aImageList: ArrayList<Bitmap>,
+                                     aViewPortHandler: ViewPortHandler, appList : List<Pair<String, Long>>, aImageList: ArrayList<Bitmap>,
                                      aContext: Context
 )
     : HorizontalBarChartRenderer(aChart, aAnimator, aViewPortHandler) {
-
+    private val mAppList = appList
     private val mContext = aContext
     private val mImageList = aImageList
     var mRadius=100F; // round 크기 변수
@@ -245,6 +248,7 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                         }
                     }
                     if (mRadius > 0) { //결론적으로 본 앱에서 차트 그릴 때 사용할 코드
+                        buffer.buffer[j] = 100F
                         val path = RoundedRect(
                             buffer.buffer[j],
                             buffer.buffer[j + 1],
@@ -305,13 +309,18 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                 val right = buffer.buffer[j + 2]
                 val bottom = buffer.buffer[j + 3]
 
-                val packageName = "com.google.android.gm"
+                val packageName = mAppList[j/4].first
                 val packageManager :PackageManager = this.mContext!!.packageManager
-                val appName = packageManager.getApplicationLabel(packageManager.getApplicationInfo(packageName, 0))
+                val appinfo: ApplicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
 
+                val appName = packageManager.getApplicationLabel(appinfo).toString()//packageManager.getApplicationLabel(packageManager.getApplicationInfo(packageName, 0))
                 if (set.isDrawValuesEnabled) {
                     // 앱 이름 나올 위치 설정 => 막대 차트의 왼쪽과 아이콘 상단 라인에 맞춰서
-                    drawValue(aCanvas, appName.toString(), left, top- Utils.convertDpToPixel(iconSize -valueTextHeight.toFloat()) ,
+                    drawValue(aCanvas, appName.toString() + " " +
+                            (mAppList[j/4].second/3600).toInt()+"시간 " +
+                            (mAppList[j/4].second.toFloat()/60%60).toInt()+"분 " +
+                            mAppList[j/4].second%60+"초",
+                        left, top-15  ,
                         set.getValueTextColor(j / 4))
                 }
 
@@ -321,7 +330,7 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                     // 앱 좌상단이 기준이어서 차트의 바닥 라인과 맞출수 있도록 아이콘 크기만큼 아래로 내려가게, => 같은 크기로 했더니 착시 효과로 라인이 더 높게 보여서 살짝 덜 올라가게 함
                     // 맨 왼쪽과 차트 사이 공간의 중간에 위치하도록
                     aCanvas.drawBitmap(scaledBitmap, (left-Utils.convertDpToPixel(iconSize))/2F,
-                        bottom-Utils.convertDpToPixel(27F), null)
+                        bottom-Utils.convertDpToPixel(23F), null)
                 }
             }
         }
@@ -334,7 +343,7 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
     }
 }
 
-class ChartAppFragment : Fragment(){
+class ChartAppFragment(private var appList : List<Pair<String, Long>>  = ArrayList<Pair<String,Long>>()) : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var binding = FragmentAppChartBinding.inflate(inflater, container, false)
@@ -364,12 +373,15 @@ class ChartAppFragment : Fragment(){
 
         // 바텀 좌표 값
         val xAxis: XAxis = barChart.xAxis
+        //barChart.layoutParams.width = 800
         // x축 위치 설정
+
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         // 그리드 선 수평 거리 설정
         xAxis.granularity = 1f
         // x축 텍스트 컬러 설정
         xAxis.textColor = Color.RED
+        xAxis.setCenterAxisLabels(false)
         xAxis.setDrawLabels(false)
         //xAxis.draw
         // x축 선 설정 (default = true)
@@ -397,25 +409,9 @@ class ChartAppFragment : Fragment(){
 
         // 바차트의 타이틀
         val legend: Legend = barChart.legend
-        // 범례 모양 설정 (default = 정사각형)
-        legend.form = Legend.LegendForm.LINE
-        // 타이틀 텍스트 사이즈 설정
-        legend.textSize = 20f
-        // 타이틀 텍스트 컬러 설정
-        legend.textColor = Color.BLACK
-        // 범례 위치 설정
-        legend.verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
-        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-        // 범례 방향 설정
-        legend.orientation = Legend.LegendOrientation.HORIZONTAL
-        // 차트 내부 범례 위치하게 함 (default = false)
-        legend.setDrawInside(false)
         //범례 안보이게 막음
         legend.isEnabled = false
 
-        barChart.run{
-
-            setTouchEnabled(false)}
     }
 
     // 차트 데이터 설정
@@ -426,11 +422,12 @@ class ChartAppFragment : Fragment(){
         val valueList = ArrayList<BarEntry>()
         val title = "앱 사용 시간"
         var map = ArrayList<Bitmap>()
+        val packageManager :PackageManager = this.activity!!.packageManager
         // 임의 데이터
         var cnt = 0
-        for (i in 0 until 69) {
+        for (i in 0 until appList.size) {
             cnt++
-            val packageName = "com.google.android.gm"
+            val packageName = appList[i].first
             // 앱이 깔려 있는지 확인하는 함수
             fun isAppInstalled(packageName : String, packageManager : PackageManager) : Boolean{
                 return try{
@@ -441,15 +438,11 @@ class ChartAppFragment : Fragment(){
                 }
             }
 
-
-            val packageManager :PackageManager = this.activity!!.packageManager
-            val appName = packageManager.getApplicationIcon(packageName)
-
-            if(isAppInstalled(packageName, packageManager)){
-                map.add(appName.toBitmap())
-                valueList.add(BarEntry(i.toFloat(), i.toFloat()*100+1,))
-
-            }
+            val appIcon = packageManager.getApplicationIcon(packageName)
+            //if(isAppInstalled(packageName, packageManager)){
+                map.add(appIcon.toBitmap())
+                valueList.add(BarEntry(i.toFloat(), (appList[i].second ).toFloat()))
+            //}
         }
         // barChart.~height가 9999까진 괜찮다가 10000부터 이상해짐
         // => 리스트 1개만 있어도 안짤리는 크기가 55dp => 실험 결과 최대 69개까지만 보여주는 쪽으로 해야 함
@@ -469,7 +462,7 @@ class ChartAppFragment : Fragment(){
 
         val data = BarData(barDataSet)
 
-        data.barWidth = 0.1f //상대적인 bar 크기
+        data.barWidth = 0.05f //상대적인 bar 크기
 
         data.setValueTextSize(Utils.convertDpToPixel(5F))
 
@@ -479,9 +472,9 @@ class ChartAppFragment : Fragment(){
         val viewPortHandler = barChart.viewPortHandler
 
         //rendering 어떻게 할 건지 설정 => 커스텀 하려면 직접 그려야 해서 필요
-        barChart.renderer = HorizontalBarChartIconRenderer(barChart, chartAnimator, viewPortHandler, map, context!!)
+        barChart.renderer = HorizontalBarChartIconRenderer(barChart, chartAnimator, viewPortHandler, appList, map, context!!)
         // 차트를 새로 그리는 메소드
+        barChart.setTouchEnabled(false)
         barChart.invalidate()
-
     }
 }

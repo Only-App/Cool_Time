@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,11 +18,19 @@ import com.example.cool_time.R
 import com.example.cool_time.data.AlarmRepository
 import com.example.cool_time.data.LockRepository
 import com.example.cool_time.data.UserDatabase
+import com.example.cool_time.databinding.FragmentAppChartBinding
 import com.example.cool_time.databinding.FragmentCalendarBinding
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.model.PhoneLock
 import com.example.cool_time.utils.ChartAppFragment
 import com.example.cool_time.utils.ChartHourFragment
+import com.example.cool_time.utils.getSomedayEnd
+import com.example.cool_time.utils.getSomedayStart
+import com.example.cool_time.utils.getTodayNow
+import com.example.cool_time.utils.getTodayStart
+import com.example.cool_time.utils.getTotalTime
+import com.example.cool_time.utils.load_time_usage
+import com.example.cool_time.utils.load_usage
 import com.example.cool_time.viewmodel.AlarmAdapter
 import com.example.cool_time.viewmodel.AlarmViewModel
 import com.example.cool_time.viewmodel.AlarmViewModelFactory
@@ -74,8 +84,7 @@ class CalendarFragment : Fragment(){
         // Inflate the layout for this fragment
         _binding = FragmentCalendarBinding.inflate(inflater, container, false)
 
-        childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment()).commit()
-        childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment()).commit()
+
         binding.llLockAndAlarmSet.visibility = View.VISIBLE
         binding.llChart.visibility = View.GONE
 
@@ -91,6 +100,19 @@ class CalendarFragment : Fragment(){
 
         binding.calendarView.setOnDateChangeListener {  //캘린더 뷰 날짜 변경 리스너 설정
                 calendarView, year, month, day ->
+
+
+            val date = Date(binding.calendarView.date)
+
+                val startday = getSomedayStart(year, month, day)
+                val endday = getSomedayEnd(year, month, day)
+
+                val appList = load_usage(this.context!!, startday.timeInMillis, endday.timeInMillis)
+                val hourList = load_time_usage(this.context!!, getSomedayStart(startday.get(Calendar.YEAR), startday.get(Calendar.MONTH), startday.get(Calendar.DAY_OF_MONTH)))
+
+                childFragmentManager.beginTransaction().replace(binding.hourChartFragment.id, ChartHourFragment(hourList)).commit()
+                childFragmentManager.beginTransaction().replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
+
                 dateViewModel.date.value = SimpleDateFormat("yyyy.MM.dd").parse("$year.${month + 1}.$day")!!.time
                 //dateViewModel의 date 속성 값 변경
         }
@@ -131,8 +153,11 @@ class CalendarFragment : Fragment(){
                 binding.rvCalendarAlarmSet.adapter = AlarmAdapter(filteredList, null)   //filteredList를 가지고 어댑터 연결
             })
 
-        })
+            val date = Date(date_time)
 
+
+
+        })
 
 
 
@@ -153,6 +178,21 @@ class CalendarFragment : Fragment(){
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        val date = Date(binding.calendarView.date)
+
+        val startday = getSomedayStart(date.year + 1900, date.month, date.date)
+        val endday = getSomedayEnd(date.year + 1900, date.month, date.date)
+
+        val appList = load_usage(this.context!!, startday.timeInMillis, endday.timeInMillis)
+
+        val hourList = load_time_usage(this.context!!, getSomedayStart(startday.get(Calendar.YEAR), startday.get(Calendar.MONTH), startday.get(Calendar.DAY_OF_MONTH)))
+        childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
+        childFragmentManager.beginTransaction().replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
+        //childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment()).commit()
+        //childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment()).commit()
+    }
 
     companion object {
         /**

@@ -1,14 +1,22 @@
 package com.example.cool_time.ui.UseStat
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.cool_time.R
+import com.example.cool_time.databinding.FragmentUseStatBinding
 import com.example.cool_time.utils.ChartAppFragment
 import com.example.cool_time.utils.ChartHourFragment
+import com.example.cool_time.utils.getTodayNow
+import com.example.cool_time.utils.getTodayStart
+import com.example.cool_time.utils.getTotalTime
+import com.example.cool_time.utils.load_time_usage
+import com.example.cool_time.utils.load_usage
+import com.example.cool_time.utils.totalTimetoText
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +32,7 @@ class UseStatFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
+    private lateinit var binding : FragmentUseStatBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -38,14 +46,36 @@ class UseStatFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment()).commit()
-        childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment()).commit()
-        return inflater.inflate(R.layout.fragment_use_stat, container, false)
+        binding = FragmentUseStatBinding.inflate(inflater, container, false)
+        /*
+        val startday = getTodayStart().timeInMillis
+        val endday = getTodayNow().timeInMillis
+        val list = load_usage(this.context!!, startday, endday)
+
+        val hourList = load_time_usage(this.context!!, getTodayStart())
+
+
+        childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
+        childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment(list)).commit()
+
+
+         */
+        return binding.root
     }
 
     override fun onStart() {
         super.onStart()
 
+        val startday = getTodayStart().timeInMillis
+        val endday = getTodayNow().timeInMillis
+        val today_list = load_usage(this.context!!, startday, endday)
+        val totalTime = getTotalTime(today_list)
+        val hourList = load_time_usage(this.context!!, getTodayStart())
+        val displayTotalTime = totalTimetoText(totalTime)
+
+        binding.tvUseTime.text = displayTotalTime
+        childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
+        childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment(today_list)).commit()
         val actionbar = (requireActivity() as AppCompatActivity).supportActionBar
 
     }

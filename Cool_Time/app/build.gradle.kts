@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.cool_time"
-        minSdk = 16
+        minSdk = 20
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"

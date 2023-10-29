@@ -8,6 +8,14 @@ import android.view.ViewGroup
 import com.example.cool_time.R
 import com.example.cool_time.databinding.FragmentMainBinding
 import com.example.cool_time.utils.ChartAppFragment
+import com.example.cool_time.utils.getDiff
+import com.example.cool_time.utils.getTodayNow
+import com.example.cool_time.utils.getTodayStart
+import com.example.cool_time.utils.getTotalTime
+import com.example.cool_time.utils.getYesterdayEnd
+import com.example.cool_time.utils.getYesterdayStart
+import com.example.cool_time.utils.load_usage
+import com.example.cool_time.utils.totalTimetoText
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -41,7 +49,14 @@ class MainFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding= FragmentMainBinding.inflate(inflater, container, false)
-        childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment()).commit()
+/*
+        val startday = getTodayStart().timeInMillis
+        val endday = getTodayNow().timeInMillis
+        val list = load_usage(this.context!!, startday, endday)
+
+        childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment(list)).commit()
+
+ */
         return binding.root
     }
 
@@ -53,7 +68,23 @@ class MainFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        val startday = getTodayStart().timeInMillis
+        val endday = getTodayNow().timeInMillis
+        val today_list = load_usage(this.context!!, startday, endday)
+        val totalTime = getTotalTime(today_list)
 
+        val displayTotalTime = totalTimetoText(totalTime)
+        binding.tvUseTime.text = displayTotalTime
+
+        val startyesterday = getYesterdayStart().timeInMillis
+        val endyesterday = getYesterdayEnd().timeInMillis
+        val yesterday_list = load_usage(this.context!!, startyesterday, endyesterday)
+        val yesterdayTotalTime = getTotalTime(yesterday_list)
+
+        val displaydiffTime = getDiff(totalTime, yesterdayTotalTime)
+        binding.tvCmpUseTime.text = displaydiffTime
+
+        childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment(today_list)).commit()
 
     }
     companion object {

@@ -23,7 +23,6 @@ import com.example.cool_time.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.example.cool_time.R
 import com.example.cool_time.databinding.ActivityPermissionCheckBinding
-import com.example.cool_time.databinding.PermissionItemRecyclerviewBinding
 import com.example.cool_time.viewmodel.LinearDecorationSpace
 import com.example.cool_time.viewmodel.PermissionItem
 import com.example.cool_time.utils.Permission

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.View
-import com.example.cool_time.databinding.AppExceptionItemRecyclerviewBinding
+import com.example.cool_time.databinding.AppExceptionItemBinding
 
 class AppItem(val name : String, val image : Drawable)
 
@@ -42,7 +42,7 @@ internal class GridSpacingItemDecoration(
     }
 }
 
-class LockViewHolder(val binding: AppExceptionItemRecyclerviewBinding) :
+class LockViewHolder(val binding: AppExceptionItemBinding) :
     RecyclerView.ViewHolder(binding.root)
 
 class LockScreenAdapter(private val datas:MutableList<AppItem>) :
@@ -54,7 +54,7 @@ class LockScreenAdapter(private val datas:MutableList<AppItem>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             RecyclerView.ViewHolder =
-        LockViewHolder(AppExceptionItemRecyclerviewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        LockViewHolder(AppExceptionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as LockViewHolder).binding
