@@ -21,8 +21,8 @@ import com.example.cool_time.utils.getTodayStart
 import com.example.cool_time.utils.getTotalTime
 import com.example.cool_time.utils.loadTimeUsageAsync
 import com.example.cool_time.utils.loadUsageAsync
-import com.example.cool_time.utils.load_time_usage
-import com.example.cool_time.utils.load_usage
+//import com.example.cool_time.utils.load_time_usage
+//import com.example.cool_time.utils.load_usage
 import com.example.cool_time.utils.totalTimetoText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

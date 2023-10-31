@@ -11,7 +11,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.util.Calendar
+import java.util.Date
 
 fun getTodayStart(): Calendar {
     val calendar = Calendar.getInstance()
@@ -70,105 +74,62 @@ fun getSomedayEnd(year : Int,  month : Int,  day:Int): Calendar{
     return calendar
 }
 
-fun load_usage(context: Context, startday:Long, endday:Long): ArrayList<Pair<String, Long>> {
-    val list = ArrayList<Pair<String, Long>>()
+
+fun getAppUsageStatsAsync(context : Context, beginTime : Long, endTime : Long)
+    = CoroutineScope(Dispatchers.Default).async{
+    val appUsageMap = mutableMapOf<String, Long>()
+    val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
     val packageManager = context.packageManager
-    val packages: List<PackageInfo> =
-        packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
-    var count = 0
-    for (info: PackageInfo in packages) {
-        if (info.applicationInfo.name != null) {
-            val it = info.applicationInfo.packageName.toString()
-            if (getAppUsageStats(context, it, startday, endday).second != 0L) {
-                list.add(getAppUsageStats(context!!, it, startday, endday))
-                count += 1
+    val usageEvents = usageStatsManager.queryEvents(beginTime, endTime)
+
+    val list :MutableMap<String, ArrayList<Triple<String, Int, Long>>> = mutableMapOf<String, ArrayList<Triple<String, Int,Long>>>()
+    while (usageEvents.hasNextEvent()) {
+        val currentEvent = UsageEvents.Event()
+        usageEvents.getNextEvent(currentEvent)
+        if(currentEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED
+            || currentEvent.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {
+            if (list[currentEvent.packageName] == null) {
+                list.putIfAbsent(currentEvent.packageName, ArrayList<Triple<String, Int, Long>>())
+                list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
+            } else {
+                list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
             }
         }
     }
-    list.sortWith(
-        Comparator { left, right ->
-            compareValues(left.second, right.second)
-            //compareValues(left.lastTimeUsed, right.lastTimeUsed)
-        },
-    )
 
-    return list
+    for((key, value) in list){
+        val packageName = key
+        if(packageManager.getLaunchIntentForPackage(packageName) != null ) {
+            if (appUsageMap[packageName] == null) {
+                appUsageMap.putIfAbsent(packageName, 0L)
+            }
+            for (i in 0 until value.size - 1) {
+                val E0 = value[i]
+                val E1 = value[i + 1]
+                if (//E0.first == E1.first &&
+                    E0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
+                    E1.second == UsageEvents.Event.ACTIVITY_PAUSED
+                ) {
+                    val diff = ((E1.third - E0.third)) / 1000.toLong()
+                    val prev = appUsageMap[packageName] ?: 0L
+                    appUsageMap[packageName] = prev + diff
+                }
+            }
+        }
+    }
+    appUsageMap.toList().sortedBy { it.second }.toMap()
 }
+
 fun loadUsageAsync(context : Context, startDay : Long, endDay : Long) =
     CoroutineScope(Dispatchers.Default).async{
-        val list = ArrayList<Pair<String, Long>>()
-        val packageManager = context.packageManager
-        val packages: List<PackageInfo> =
-            packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
-        var count = 0
-        for (info: PackageInfo in packages) {
-            if (info.applicationInfo.name != null) {
-                val it = info.applicationInfo.packageName.toString()
-                val stats = getAppUsageStatsAsync(context, it, startDay, endDay).await()
-                if (stats.second != 0L) {
-                    list.add(stats)
-                    count += 1
-                }
-            }
-        }
-        list.sortWith(
-            Comparator { left, right ->
-                compareValues(left.second, right.second)
-                //compareValues(left.lastTimeUsed, right.lastTimeUsed)
-            },
-        )
-        list
-    }
-
-fun load_time_usage(context: Context, calendar:Calendar): ArrayList<Long> {
-
-    val list = ArrayList<Long>()
-    val packageManager = context.packageManager
-    val packages: List<PackageInfo> =
-        packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
-    var count = 0
-    for (i in 0 until 24) {
-        val startday = calendar.clone() as Calendar
-        startday.set(Calendar.HOUR_OF_DAY, i)
-        var endday = calendar.clone() as Calendar
-        endday.set(Calendar.HOUR_OF_DAY, i)
-        endday.set(Calendar.MINUTE, 59)
-        endday.set(Calendar.SECOND, 59)
-        endday.set(Calendar.MILLISECOND, 999)
-        var totalTime = 0L
-        for (info: PackageInfo in packages) {
-            if (info.applicationInfo.name != null) {
-                val it = info.applicationInfo.packageName.toString()
-                if (getAppUsageStats(
-                        context,
-                        it,
-                        startday.timeInMillis,
-                        endday.timeInMillis
-                    ).second != 0L
-                ) {
-                    totalTime += getAppUsageStats(
-                        context!!,
-                        it,
-                        startday.timeInMillis,
-                        endday.timeInMillis
-                    ).second
-                    count += 1
-                }
-            }
-        }
-        list.add(totalTime)
-    }
-
-    return list
+        val stats = getAppUsageStatsAsync(context, startDay, endDay).await()
+        stats.toList()
 }
+
 
 fun loadTimeUsageAsync(context : Context, calendar : Calendar) =
     CoroutineScope(Dispatchers.Default).async{
         val list = ArrayList<Long>()
-        val packageManager = context.packageManager
-        val packages: List<PackageInfo> =
-            packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
-        var count = 0
         for (i in 0 until 24) {
             val startday = calendar.clone() as Calendar
             startday.set(Calendar.HOUR_OF_DAY, i)
@@ -178,140 +139,26 @@ fun loadTimeUsageAsync(context : Context, calendar : Calendar) =
             endday.set(Calendar.SECOND, 59)
             endday.set(Calendar.MILLISECOND, 999)
             var totalTime = 0L
-            for (info: PackageInfo in packages) {
-                if (info.applicationInfo.name != null) {
-                    val it = info.applicationInfo.packageName.toString()
-                    if (getAppUsageStats(
-                            context,
-                            it,
-                            startday.timeInMillis,
-                            endday.timeInMillis
-                        ).second != 0L
-                    ) {
-                        totalTime += getAppUsageStats(
-                            context!!,
-                            it,
-                            startday.timeInMillis,
-                            endday.timeInMillis
-                        ).second
-                        count += 1
-                    }
-                }
+
+            val tmp = getAppUsageStatsAsync(
+                context!!,
+                startday.timeInMillis,
+                endday.timeInMillis
+            ).await()
+            for(i in tmp) {
+                totalTime += i.value
             }
             list.add(totalTime)
         }
         list
-    }
-
-fun getAppUsageStats(context: Context, packageName: String?, beginTime: Long, endTime: Long): Pair<String, Long> {
-    val allEvents = mutableListOf<UsageEvents.Event>()
-    val appUsageMap = mutableMapOf<String, Long>()
-    val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-
-    val usageEvents = usageStatsManager.queryEvents(beginTime, endTime)
-
-    while (usageEvents.hasNextEvent()) {
-        val currentEvent = UsageEvents.Event()
-        usageEvents.getNextEvent(currentEvent)
-        if (currentEvent.packageName == packageName || packageName == null) {
-            if (currentEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED
-                || currentEvent.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {
-                allEvents.add(currentEvent)
-                val key = currentEvent.packageName
-                appUsageMap.putIfAbsent(key, 0L)
-            }
-        }
-    }
-
-    for (i in 0 until allEvents.size - 1) {
-        val E0 = allEvents[i]
-        val E1 = allEvents[i + 1]
-
-        if (E0.eventType == UsageEvents.Event.ACTIVITY_RESUMED
-            && E1.eventType == UsageEvents.Event.ACTIVITY_PAUSED
-            && E0.className == E1.className) {
-            val diff = ((E1.timeStamp - E0.timeStamp))/1000.toLong()
-            val prev = appUsageMap[E0.packageName] ?: 0L
-            appUsageMap[E0.packageName] = prev + diff
-        }
-    }
-
-    if(allEvents.size != 0) {
-        /*
-        val lastEvent = allEvents[allEvents.size - 1]
-        if (lastEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
-            var diff = endTime - lastEvent.timeStamp
-            diff /= 1000
-            var prev = appUsageMap[lastEvent.packageName]
-            if (prev == null) prev = 0
-            appUsageMap[lastEvent.packageName] = prev + diff
-        }
-
-         */
-        return Pair(packageName.toString(), appUsageMap[packageName]!!.toLong())
-    }
-    else {
-        return Pair(packageName.toString(), 0L)
-    }
 }
 
-fun getAppUsageStatsAsync(context : Context, packageName : String?, beginTime : Long, endTime : Long)
-    = CoroutineScope(Dispatchers.Default).async{
-    val allEvents = mutableListOf<UsageEvents.Event>()
-    val appUsageMap = mutableMapOf<String, Long>()
-    val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
 
-    val usageEvents = usageStatsManager.queryEvents(beginTime, endTime)
 
-    while (usageEvents.hasNextEvent()) {
-        val currentEvent = UsageEvents.Event()
-        usageEvents.getNextEvent(currentEvent)
-        if (currentEvent.packageName == packageName || packageName == null) {
-            if (currentEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED
-                || currentEvent.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {
-                allEvents.add(currentEvent)
-                val key = currentEvent.packageName
-                appUsageMap.putIfAbsent(key, 0L)
-            }
-        }
-    }
-
-    for (i in 0 until allEvents.size - 1) {
-        val E0 = allEvents[i]
-        val E1 = allEvents[i + 1]
-
-        if (E0.eventType == UsageEvents.Event.ACTIVITY_RESUMED
-            && E1.eventType == UsageEvents.Event.ACTIVITY_PAUSED
-            && E0.className == E1.className) {
-            val diff = ((E1.timeStamp - E0.timeStamp))/1000.toLong()
-            val prev = appUsageMap[E0.packageName] ?: 0L
-            appUsageMap[E0.packageName] = prev + diff
-        }
-    }
-
-    if(allEvents.size != 0) {
-        /*
-        val lastEvent = allEvents[allEvents.size - 1]
-        if (lastEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
-            var diff = endTime - lastEvent.timeStamp
-            diff /= 1000
-            var prev = appUsageMap[lastEvent.packageName]
-            if (prev == null) prev = 0
-            appUsageMap[lastEvent.packageName] = prev + diff
-        }
-
-         */
-        Pair(packageName.toString(), appUsageMap[packageName]!!.toLong())
-    }
-    else {
-        Pair(packageName.toString(), 0L)
-    }
-}
-
-fun getTotalTime(list :  ArrayList<Pair<String, Long>>): Long {
+fun getTotalTime(list :  List<Pair<String, Long>>): Long {
     var totalTime = 0L;
-    for( i in 0 until list.size){
-        totalTime+= list[i].second
+    for(element in list){
+        totalTime+= element.second
     }
     return totalTime
 }

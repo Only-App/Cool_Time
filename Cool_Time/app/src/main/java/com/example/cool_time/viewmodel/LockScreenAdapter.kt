@@ -1,4 +1,7 @@
 package com.example.cool_time.viewmodel
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.View
+import androidx.core.content.ContextCompat.startActivity
 import com.example.cool_time.databinding.AppExceptionItemBinding
 
 class AppItem(val name : String, val image : Drawable)
@@ -45,7 +49,7 @@ internal class GridSpacingItemDecoration(
 class LockViewHolder(val binding: AppExceptionItemBinding) :
     RecyclerView.ViewHolder(binding.root)
 
-class LockScreenAdapter(private val datas:MutableList<AppItem>) :
+class LockScreenAdapter(private val activity:Activity, private val datas:MutableList<AppItem>, private val packageManager: PackageManager) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int {
@@ -58,9 +62,13 @@ class LockScreenAdapter(private val datas:MutableList<AppItem>) :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as LockViewHolder).binding
-        binding.appName.text = datas[position].name
-
+        //binding.appName.text = datas[position].name
         binding.appIcon.background = datas[position].image
+        binding.appIcon.setOnClickListener{
+            val intent = packageManager.getLaunchIntentForPackage(datas[position].name)
+            intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(activity, intent, null)
+        }
     }
 }
 
