@@ -6,6 +6,11 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 fun getTodayStart(): Calendar {
@@ -66,10 +71,11 @@ fun getSomedayEnd(year : Int,  month : Int,  day:Int): Calendar{
 }
 
 fun load_usage(context: Context, startday:Long, endday:Long): ArrayList<Pair<String, Long>> {
-    val packageManager = context.packageManager
-    val packages: List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
-    var count = 0
     val list = ArrayList<Pair<String, Long>>()
+    val packageManager = context.packageManager
+    val packages: List<PackageInfo> =
+        packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
+    var count = 0
     for (info: PackageInfo in packages) {
         if (info.applicationInfo.name != null) {
             val it = info.applicationInfo.packageName.toString()
@@ -85,15 +91,43 @@ fun load_usage(context: Context, startday:Long, endday:Long): ArrayList<Pair<Str
             //compareValues(left.lastTimeUsed, right.lastTimeUsed)
         },
     )
+
     return list
 }
+fun loadUsageAsync(context : Context, startDay : Long, endDay : Long) =
+    CoroutineScope(Dispatchers.Default).async{
+        val list = ArrayList<Pair<String, Long>>()
+        val packageManager = context.packageManager
+        val packages: List<PackageInfo> =
+            packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
+        var count = 0
+        for (info: PackageInfo in packages) {
+            if (info.applicationInfo.name != null) {
+                val it = info.applicationInfo.packageName.toString()
+                val stats = getAppUsageStatsAsync(context, it, startDay, endDay).await()
+                if (stats.second != 0L) {
+                    list.add(stats)
+                    count += 1
+                }
+            }
+        }
+        list.sortWith(
+            Comparator { left, right ->
+                compareValues(left.second, right.second)
+                //compareValues(left.lastTimeUsed, right.lastTimeUsed)
+            },
+        )
+        list
+    }
 
 fun load_time_usage(context: Context, calendar:Calendar): ArrayList<Long> {
-    val packageManager = context.packageManager
-    val packages: List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
-    var count = 0
+
     val list = ArrayList<Long>()
-    for(i in 0 until 24) {
+    val packageManager = context.packageManager
+    val packages: List<PackageInfo> =
+        packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
+    var count = 0
+    for (i in 0 until 24) {
         val startday = calendar.clone() as Calendar
         startday.set(Calendar.HOUR_OF_DAY, i)
         var endday = calendar.clone() as Calendar
@@ -105,16 +139,69 @@ fun load_time_usage(context: Context, calendar:Calendar): ArrayList<Long> {
         for (info: PackageInfo in packages) {
             if (info.applicationInfo.name != null) {
                 val it = info.applicationInfo.packageName.toString()
-                if (getAppUsageStats(context, it, startday.timeInMillis, endday.timeInMillis).second != 0L) {
-                    totalTime += getAppUsageStats(context!!, it, startday.timeInMillis, endday.timeInMillis).second
+                if (getAppUsageStats(
+                        context,
+                        it,
+                        startday.timeInMillis,
+                        endday.timeInMillis
+                    ).second != 0L
+                ) {
+                    totalTime += getAppUsageStats(
+                        context!!,
+                        it,
+                        startday.timeInMillis,
+                        endday.timeInMillis
+                    ).second
                     count += 1
                 }
             }
         }
         list.add(totalTime)
     }
+
     return list
 }
+
+fun loadTimeUsageAsync(context : Context, calendar : Calendar) =
+    CoroutineScope(Dispatchers.Default).async{
+        val list = ArrayList<Long>()
+        val packageManager = context.packageManager
+        val packages: List<PackageInfo> =
+            packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
+        var count = 0
+        for (i in 0 until 24) {
+            val startday = calendar.clone() as Calendar
+            startday.set(Calendar.HOUR_OF_DAY, i)
+            var endday = calendar.clone() as Calendar
+            endday.set(Calendar.HOUR_OF_DAY, i)
+            endday.set(Calendar.MINUTE, 59)
+            endday.set(Calendar.SECOND, 59)
+            endday.set(Calendar.MILLISECOND, 999)
+            var totalTime = 0L
+            for (info: PackageInfo in packages) {
+                if (info.applicationInfo.name != null) {
+                    val it = info.applicationInfo.packageName.toString()
+                    if (getAppUsageStats(
+                            context,
+                            it,
+                            startday.timeInMillis,
+                            endday.timeInMillis
+                        ).second != 0L
+                    ) {
+                        totalTime += getAppUsageStats(
+                            context!!,
+                            it,
+                            startday.timeInMillis,
+                            endday.timeInMillis
+                        ).second
+                        count += 1
+                    }
+                }
+            }
+            list.add(totalTime)
+        }
+        list
+    }
 
 fun getAppUsageStats(context: Context, packageName: String?, beginTime: Long, endTime: Long): Pair<String, Long> {
     val allEvents = mutableListOf<UsageEvents.Event>()
@@ -165,6 +252,59 @@ fun getAppUsageStats(context: Context, packageName: String?, beginTime: Long, en
     }
     else {
         return Pair(packageName.toString(), 0L)
+    }
+}
+
+fun getAppUsageStatsAsync(context : Context, packageName : String?, beginTime : Long, endTime : Long)
+    = CoroutineScope(Dispatchers.Default).async{
+    val allEvents = mutableListOf<UsageEvents.Event>()
+    val appUsageMap = mutableMapOf<String, Long>()
+    val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+
+    val usageEvents = usageStatsManager.queryEvents(beginTime, endTime)
+
+    while (usageEvents.hasNextEvent()) {
+        val currentEvent = UsageEvents.Event()
+        usageEvents.getNextEvent(currentEvent)
+        if (currentEvent.packageName == packageName || packageName == null) {
+            if (currentEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED
+                || currentEvent.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {
+                allEvents.add(currentEvent)
+                val key = currentEvent.packageName
+                appUsageMap.putIfAbsent(key, 0L)
+            }
+        }
+    }
+
+    for (i in 0 until allEvents.size - 1) {
+        val E0 = allEvents[i]
+        val E1 = allEvents[i + 1]
+
+        if (E0.eventType == UsageEvents.Event.ACTIVITY_RESUMED
+            && E1.eventType == UsageEvents.Event.ACTIVITY_PAUSED
+            && E0.className == E1.className) {
+            val diff = ((E1.timeStamp - E0.timeStamp))/1000.toLong()
+            val prev = appUsageMap[E0.packageName] ?: 0L
+            appUsageMap[E0.packageName] = prev + diff
+        }
+    }
+
+    if(allEvents.size != 0) {
+        /*
+        val lastEvent = allEvents[allEvents.size - 1]
+        if (lastEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
+            var diff = endTime - lastEvent.timeStamp
+            diff /= 1000
+            var prev = appUsageMap[lastEvent.packageName]
+            if (prev == null) prev = 0
+            appUsageMap[lastEvent.packageName] = prev + diff
+        }
+
+         */
+        Pair(packageName.toString(), appUsageMap[packageName]!!.toLong())
+    }
+    else {
+        Pair(packageName.toString(), 0L)
     }
 }
 

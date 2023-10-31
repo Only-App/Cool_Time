@@ -29,6 +29,8 @@ import com.example.cool_time.utils.getSomedayStart
 import com.example.cool_time.utils.getTodayNow
 import com.example.cool_time.utils.getTodayStart
 import com.example.cool_time.utils.getTotalTime
+import com.example.cool_time.utils.loadTimeUsageAsync
+import com.example.cool_time.utils.loadUsageAsync
 import com.example.cool_time.utils.load_time_usage
 import com.example.cool_time.utils.load_usage
 import com.example.cool_time.viewmodel.AlarmAdapter
@@ -38,6 +40,9 @@ import com.example.cool_time.viewmodel.DateViewModel
 import com.example.cool_time.viewmodel.LockAdapter
 import com.example.cool_time.viewmodel.LockViewModel
 import com.example.cool_time.viewmodel.LockViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -101,20 +106,36 @@ class CalendarFragment : Fragment(){
         binding.calendarView.setOnDateChangeListener {  //캘린더 뷰 날짜 변경 리스너 설정
                 calendarView, year, month, day ->
 
-
-            val date = Date(binding.calendarView.date)
+            CoroutineScope(Dispatchers.Main).launch {
+                val date = Date(binding.calendarView.date)
 
                 val startday = getSomedayStart(year, month, day)
                 val endday = getSomedayEnd(year, month, day)
 
-                val appList = load_usage(this.context!!, startday.timeInMillis, endday.timeInMillis)
-                val hourList = load_time_usage(this.context!!, getSomedayStart(startday.get(Calendar.YEAR), startday.get(Calendar.MONTH), startday.get(Calendar.DAY_OF_MONTH)))
+                val appList = loadUsageAsync(
+                    this@CalendarFragment.context!!,
+                    startday.timeInMillis,
+                    endday.timeInMillis
+                ).await()
+                val hourList =
+                    loadTimeUsageAsync(
+                        this@CalendarFragment.context!!,
+                        getSomedayStart(
+                            startday.get(Calendar.YEAR),
+                            startday.get(Calendar.MONTH),
+                            startday.get(Calendar.DAY_OF_MONTH)
+                        )
+                    )
+                        .await()
+                childFragmentManager.beginTransaction()
+                    .replace(binding.hourChartFragment.id, ChartHourFragment(hourList)).commit()
+                childFragmentManager.beginTransaction()
+                    .replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
 
-                childFragmentManager.beginTransaction().replace(binding.hourChartFragment.id, ChartHourFragment(hourList)).commit()
-                childFragmentManager.beginTransaction().replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
-
-                dateViewModel.date.value = SimpleDateFormat("yyyy.MM.dd").parse("$year.${month + 1}.$day")!!.time
+                dateViewModel.date.value =
+                    SimpleDateFormat("yyyy.MM.dd").parse("$year.${month + 1}.$day")!!.time
                 //dateViewModel의 date 속성 값 변경
+            }
         }
 
         //RecyclerView 설정 작업
@@ -180,16 +201,29 @@ class CalendarFragment : Fragment(){
 
     override fun onStart() {
         super.onStart()
-        val date = Date(binding.calendarView.date)
+        CoroutineScope(Dispatchers.Main).launch{
+            val date = Date(binding.calendarView.date)
 
-        val startday = getSomedayStart(date.year + 1900, date.month, date.date)
-        val endday = getSomedayEnd(date.year + 1900, date.month, date.date)
+            val startday = getSomedayStart(date.year + 1900, date.month, date.date)
+            val endday = getSomedayEnd(date.year + 1900, date.month, date.date)
 
-        val appList = load_usage(this.context!!, startday.timeInMillis, endday.timeInMillis)
+            val appList =
+                loadUsageAsync(this@CalendarFragment.context!!, startday.timeInMillis, endday.timeInMillis).await()
 
-        val hourList = load_time_usage(this.context!!, getSomedayStart(startday.get(Calendar.YEAR), startday.get(Calendar.MONTH), startday.get(Calendar.DAY_OF_MONTH)))
-        childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
-        childFragmentManager.beginTransaction().replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
+            val hourList =
+                loadTimeUsageAsync(
+                    this@CalendarFragment.context!!,
+                    getSomedayStart(
+                        startday.get(Calendar.YEAR),
+                        startday.get(Calendar.MONTH),
+                        startday.get(Calendar.DAY_OF_MONTH)
+                    )
+                ).await()
+            childFragmentManager.beginTransaction()
+                .replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
+            childFragmentManager.beginTransaction()
+                .replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
+        }
         //childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment()).commit()
         //childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment()).commit()
     }

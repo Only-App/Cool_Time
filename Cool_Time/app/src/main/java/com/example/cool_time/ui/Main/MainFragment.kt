@@ -106,14 +106,18 @@ class MainFragment : Fragment() {
                 binding.tvCompareUseTime.text =
                     if(it < yesterdayUseTime){
                         "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 덜 사용"
-                    }
-                    else "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 더 사용"
+                    } else "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 더 사용"
             }
         }
          */
         return binding.root
     }
 
+
+    override fun onResume() {
+
+        super.onResume()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }

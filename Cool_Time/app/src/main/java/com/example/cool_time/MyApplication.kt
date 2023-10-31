@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -50,6 +51,8 @@ class MyApplication : Application() {
                 usageStatsManager?.run {
                     val todayDate = Calendar.getInstance()  //당일 00시 00분으로 설정 (제대로 안됨)
 
+
+
                     todayDate.set(Calendar.HOUR, 0)
                     todayDate.set(Calendar.MINUTE, 0)
                     todayDate.set(Calendar.SECOND, 0)
@@ -61,8 +64,7 @@ class MyApplication : Application() {
                         todayDate.timeInMillis,
                         System.currentTimeMillis()
                     )
-                    Log.d("todayDate", todayDate.time.toString())
-                    Log.d("currentDate", Date(System.currentTimeMillis()).toString())
+
                     val mainIntent = Intent(Intent.ACTION_MAIN, null)
                     mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
@@ -76,6 +78,7 @@ class MyApplication : Application() {
                         val itemName = item.packageName
                         val itemUseTime = item.totalTimeInForeground / 1000
                         if (itemName in availAppNameList && itemUseTime != 0L) {    //어떤 앱이 실행 가능한 앱이고, 실행 시간이 0초보다 크다면
+                            Log.d(itemName, "$itemUseTime")
                             if(itemName == "com.example.cool_time") continue
                             totalTime += itemUseTime
                         }

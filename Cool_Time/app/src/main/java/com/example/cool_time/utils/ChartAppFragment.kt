@@ -321,8 +321,9 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                             (mAppList[j/4].second/3600).toInt()+"시간 " +
                             (mAppList[j/4].second.toFloat()/60%60).toInt()+"분 " +
                             mAppList[j/4].second%60+"초",
-                        left, top-15  ,
+                        left, top-15 ,
                         set.getValueTextColor(j / 4))
+
                 }
 
                 val bitmap = mImageList.getOrNull(j / 4)
