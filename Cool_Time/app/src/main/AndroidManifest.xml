@@ -44,6 +44,13 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.ActiveLockActivity"
+            android:exported="true"
+            />
+        <service
+            android:name=".background.RemainingTime"
+            />
     </application>
 
 </manifest>

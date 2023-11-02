@@ -1,5 +1,6 @@
 package com.example.cool_time.ui.DirectLock
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.cool_time.MyApplication
 import com.example.cool_time.R
 import com.example.cool_time.databinding.FragmentDirectLockBinding
+import com.example.cool_time.ui.ActiveLockActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,7 +64,10 @@ class DirectLockFragment : Fragment() {
                 MyApplication.getInstance().getDataStore().increaseEnduredTime(hourPick.value * 60  + minPick.value)
             }
 
-            findNavController().navigate(R.id.action_directLockFragment_to_activeLockFragment)
+            val intent = Intent(this.context, ActiveLockActivity::class.java)
+            intent.putExtra("time", hourPick.value*60*60 + minPick.value*60)
+            startActivity(intent)
+            //findNavController().navigate(R.id.action_directLockFragment_to_activeLockActivity)
 
         }
 
