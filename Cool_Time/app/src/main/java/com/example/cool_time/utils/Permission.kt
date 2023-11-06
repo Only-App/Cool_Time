@@ -4,14 +4,17 @@ import android.Manifest
 import android.app.Activity
 import android.app.AppOpsManager
 import android.content.Context
+import android.content.Context.POWER_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.cool_time.ui.MainActivity
 
 //Permissino 클래스는 권한을 요청하거나 권한 설정이 되어 있는지 체크하는 클래스
@@ -22,6 +25,7 @@ class Permission(val activity: Activity){
     val OVERLAY_PERMISSION_REQUEST_CODE = 1
     val CALL_PERMISSION_REQUEST_CODE = 2
     val NOTIFICATION_PERMISSION_REQUEST = 3
+    val BATTERY_PERMISSION_REQUEST = 4
 
     fun checkOverlayPermission():Boolean{
         val appOpsManager = activity.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
@@ -54,11 +58,16 @@ class Permission(val activity: Activity){
             Manifest.permission.POST_NOTIFICATIONS
         ) == PackageManager.PERMISSION_GRANTED
     }
+    fun checkBatteryPermission():Boolean{
+        val powerManager = activity.getSystemService(POWER_SERVICE) as PowerManager
+        return powerManager.isIgnoringBatteryOptimizations(activity.packageName)
+    }
     fun checkAllPermission():Boolean{
         return checkUsageStatsPermission()&&
                 checkOverlayPermission()&&
                 checkNotificationPermission()&&
                 checkCallPermission()
+                checkBatteryPermission()
     }
     internal fun requestOverlayPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -86,5 +95,11 @@ class Permission(val activity: Activity){
 
     internal fun requestNotificationPermission() {
         ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_PERMISSION_REQUEST)
+    }
+
+    internal fun requestIgnoringBatteryOptimization(){
+        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+        intent.data = Uri.parse("package:${activity.packageName}")
+        ActivityCompat.startActivityForResult(activity, intent, BATTERY_PERMISSION_REQUEST, null)
     }
 }

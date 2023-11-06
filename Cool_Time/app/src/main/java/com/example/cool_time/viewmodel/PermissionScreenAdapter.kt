@@ -103,6 +103,9 @@ class PermissionScreenAdapter( val datas:MutableList<PermissionItem>, val activi
                     "알림" -> {
                         Permission(activity).requestNotificationPermission()
                     }
+                    "배터리" -> {
+                        Permission(activity).requestIgnoringBatteryOptimization()
+                    }
                 }
         }
 
@@ -134,7 +137,6 @@ class PermissionScreenAdapter( val datas:MutableList<PermissionItem>, val activi
 
         // 코드 값에 따라 무슨 권한이었는지 알 수 있으므로 해당 권한 리스트의 버튼과 연결
         val btn = binding.checkButton
-
         // 권한이 설정됐으면 해당 버튼을 완료처리
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setCompleteExp(btn)
@@ -170,6 +172,12 @@ class PermissionScreenAdapter( val datas:MutableList<PermissionItem>, val activi
                     setCompleteExp(btn)
                 }
             }
+            4 -> {
+                if(Permission(activity).checkBatteryPermission()){
+                    setCompleteExp(btn)
+                }
+            }
+
         }
 
         // 이후에 권한이 다 체크됐는지 확인해서 체크됐으면 버튼 활성화, 아니면 비활성화

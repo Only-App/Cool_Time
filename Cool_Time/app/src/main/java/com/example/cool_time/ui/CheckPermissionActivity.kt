@@ -24,7 +24,8 @@ class CheckPermissionActivity :AppCompatActivity(){
         val drawonapp = PermissionItem("다른 앱 위에 그리기", "현재 실행 중인 앱을 조회합니다.")
         val call = PermissionItem("전화 걸기 및 관리", "전화 통화 중 잠금화면 해제를 위해 사용")
         val noti = PermissionItem("알림", "알림을 표시합니다.")
-        val datas = arrayListOf(use_info, drawonapp, call, noti)
+        val battery = PermissionItem("배터리", "절전모드 전환으로 인한 서비스 장애를 방지합니다.")
+        val datas = arrayListOf(use_info, drawonapp, call, noti, battery)
 
         binding = ActivityPermissionCheckBinding.inflate(layoutInflater, /*container, false*/)
         adapter = PermissionScreenAdapter(datas, this, binding)
