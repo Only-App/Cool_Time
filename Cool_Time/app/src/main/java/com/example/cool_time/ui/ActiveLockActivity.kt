@@ -18,6 +18,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.view.WindowManager.LayoutParams
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.GridLayoutManager
@@ -35,16 +36,11 @@ class ActiveLockActivity(): Service() {
     private val datas = mutableListOf<AppItem>()
     private val app_list = ArrayList<String>() // 예외 앱 리스트
     private var flag = false // 오버레이(잠금화면)이 떠있는지 체크하는 값
-    private val binding = FragmentActiveLockBinding.inflate(LayoutInflater.from(this)) // 바인딩
-    private val view = binding.root // 오버레이 위에 띄울 뷰
-    private val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager //오버레이 띄우기 위한 윈도우 매니저
-    private val params = WindowManager.LayoutParams( //오버레이 관련 옵션
-        WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, // 항상 위에 유지
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-        PixelFormat.TRANSLUCENT
-    )
+    //val handler = Handler(Looper.getMainLooper()) // runnable 내에서 ui 관련 처리할 때 이거 통해서 해야 함!
+    private lateinit var binding:FragmentActiveLockBinding// 바인딩
+    private lateinit var view:View // 오버레이 위에 띄울 뷰
+    private lateinit var windowManager : WindowManager //오버레이 띄우기 위한 윈도우 매니저
+    private lateinit var params:LayoutParams
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -67,7 +63,16 @@ class ActiveLockActivity(): Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         var togle = false
-
+        binding = FragmentActiveLockBinding.inflate(LayoutInflater.from(this))
+        view = binding.root
+        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        params = WindowManager.LayoutParams( //오버레이 관련 옵션
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, // 항상 위에 유지
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            PixelFormat.TRANSLUCENT
+        )
         binding.scroll.visibility=View.GONE
         binding.lastUseComment.visibility=View.VISIBLE
         binding.lastUseTime.visibility=View.VISIBLE
