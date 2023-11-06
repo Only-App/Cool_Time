@@ -18,6 +18,7 @@ import com.example.cool_time.utils.getTodayStart
 import com.example.cool_time.utils.getTotalTime
 import com.example.cool_time.utils.getYesterdayEnd
 import com.example.cool_time.utils.getYesterdayStart
+import com.example.cool_time.utils.loadUsage
 import com.example.cool_time.utils.loadUsageAsync
 //import com.example.cool_time.utils.load_usage
 import com.example.cool_time.utils.totalTimetoText
@@ -125,10 +126,10 @@ class MainFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        CoroutineScope(Dispatchers.Main).launch {
+
             val startday = getTodayStart().timeInMillis
             val endday = getTodayNow().timeInMillis
-            val today_list = loadUsageAsync(this@MainFragment.context!!, startday, endday).await()
+            val today_list = loadUsage(this@MainFragment.context!!, startday, endday)
             val totalTime = getTotalTime(today_list)
 
             val displayTotalTime = totalTimetoText(totalTime)
@@ -136,13 +137,13 @@ class MainFragment : Fragment() {
 
             val startyesterday = getYesterdayStart().timeInMillis
             val endyesterday = getYesterdayEnd().timeInMillis
-            val yesterday_list = loadUsageAsync(this@MainFragment.context!!, startyesterday, endyesterday).await()
+            val yesterday_list = loadUsage(this@MainFragment.context!!, startyesterday, endyesterday)
             val yesterdayTotalTime = getTotalTime(yesterday_list)
 
             val displaydiffTime = getDiff(totalTime, yesterdayTotalTime)
             binding.tvCmpUseTime.text = displaydiffTime
             childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment(today_list)).commit()
-        }
+
     }
 
 

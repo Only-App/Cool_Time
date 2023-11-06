@@ -83,8 +83,7 @@ class MainActivity : AppCompatActivity() {
                 //뒤로가기 버튼 한번 더 누르면 종료된다고 메세지 띄우기
             }
             else{
-                Log.e("ee", "EE")
-                finish();
+                super.onBackPressed()
             }
         }
         else{

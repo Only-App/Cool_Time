@@ -66,9 +66,7 @@ class DirectLockFragment : Fragment() {
 
             val intent = Intent(this.context, ActiveLockActivity::class.java)
             intent.putExtra("time", hourPick.value*60*60 + minPick.value*60)
-            startActivity(intent)
-            //findNavController().navigate(R.id.action_directLockFragment_to_activeLockActivity)
-
+            activity!!.startService(intent) // 잠금 서비스 실행
         }
 
 

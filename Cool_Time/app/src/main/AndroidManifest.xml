@@ -8,6 +8,8 @@
         />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <queries>
         <intent>
@@ -44,9 +46,9 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity
+        <service
             android:name=".ui.ActiveLockActivity"
-            android:exported="true"
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW"
             />
         <service
             android:name=".background.RemainingTime"

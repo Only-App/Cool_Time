@@ -1,5 +1,6 @@
 package com.example.cool_time.viewmodel
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
@@ -49,7 +50,7 @@ internal class GridSpacingItemDecoration(
 class LockViewHolder(val binding: AppExceptionItemBinding) :
     RecyclerView.ViewHolder(binding.root)
 
-class LockScreenAdapter(private val activity:Activity, private val datas:MutableList<AppItem>, private val packageManager: PackageManager) :
+class LockScreenAdapter(private val activity: Context, private val datas:MutableList<AppItem>, private val packageManager: PackageManager) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int {
