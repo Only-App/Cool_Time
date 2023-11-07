@@ -1,16 +1,14 @@
-package com.example.cool_time.background
+package com.example.cool_time.service
 
-import android.app.ActivityManager
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.example.cool_time.ui.ActiveLockActivity
 import java.util.Timer
 import java.util.TimerTask
 
 
-class RemainingTime(): Service(){
+class RemainingTimeService(): Service(){
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         var variable = intent!!.getIntExtra("time", 0) // 초기 변수 값 설정
         val timer = Timer()

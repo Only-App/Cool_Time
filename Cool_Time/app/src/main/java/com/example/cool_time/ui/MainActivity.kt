@@ -1,4 +1,7 @@
 package com.example.cool_time.ui
+import android.app.usage.UsageEvents
+import android.app.usage.UsageStatsManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -11,11 +14,20 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.cool_time.MyApplication
 import com.example.cool_time.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.example.cool_time.R
+import com.example.cool_time.service.ActiveLockService
+import com.example.cool_time.service.UseTimeService
 import com.example.cool_time.utils.Permission
+import com.example.cool_time.utils.getTodayNow
+import com.example.cool_time.utils.getTodayStart
+import com.example.cool_time.utils.getTotalTime
 import com.example.cool_time.viewmodel.PermissionScreenAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 var backTime : Long = 0
@@ -40,28 +52,12 @@ class MainActivity : AppCompatActivity() {
         if(!Permission(this).checkAllPermission())
             startActivityForResult(Intent(this, CheckPermissionActivity::class.java), 0)
 
-
-        /*
-        test = ActivityPermissionCheckBinding.inflate(layoutInflater)
-        init()
-        setContentView(test!!.root)
-        setUpDrawer()   //드로워 세팅 작업
-        Navigation을 통한 메뉴 옵션 프래그먼트 이동 처리, back button 클릭 시
-        startDestination(메인 화면)으로 다시 돌아옴
-        */
+        startService(Intent(this, UseTimeService::class.java))
+        //calAppUseStats()
     }
 
-    /*
-    override fun onResume() {
-        super.onResume()
-        val br =  MyBroadcastReceiver()
-        registerReceiver(br, IntentFilter().apply{
-            addAction(Intent.ACTION_USER_PRESENT)
-            addAction(Intent.ACTION_SCREEN_OFF)
-        })
-    }
 
-     */
+
 
     // 권한 설정 화면으로 이동했다가 뒤로 가는 등 권한 설정하는 액티비티에서 종료 했을때 넘어오는 종료값을 보고서
     // 종료값이 0이면 그냥 뒤로가기로 돌아온 것이므로 앱 종료
@@ -183,7 +179,89 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    fun calAppUseStats(){
+        Thread {
+            val usageStatsManager =
+                getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+            val packageManager = packageManager
 
+            while(true) {
+                val appUsageMap = mutableMapOf<String, Long>()
+                val beginTime = getTodayStart().timeInMillis
+                val endTime = getTodayNow().timeInMillis
+
+                val usageEvents = usageStatsManager.queryEvents(beginTime, endTime)
+
+                val list: MutableMap<String, ArrayList<Triple<String, Int, Long>>> =
+                    mutableMapOf<String, ArrayList<Triple<String, Int, Long>>>()
+
+                while (usageEvents.hasNextEvent()) {
+                    val currentEvent = UsageEvents.Event()
+                    usageEvents.getNextEvent(currentEvent)
+                    if (currentEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED
+                        || currentEvent.eventType == UsageEvents.Event.ACTIVITY_PAUSED
+                    ) {
+                        if (list[currentEvent.packageName] == null) {
+                            list.putIfAbsent(
+                                currentEvent.packageName,
+                                ArrayList<Triple<String, Int, Long>>()
+                            )
+                            list[currentEvent.packageName]!!.add(
+                                Triple(
+                                    currentEvent.className,
+                                    currentEvent.eventType,
+                                    currentEvent.timeStamp
+                                )
+                            )
+                        } else {
+                            list[currentEvent.packageName]!!.add(
+                                Triple(
+                                    currentEvent.className,
+                                    currentEvent.eventType,
+                                    currentEvent.timeStamp
+                                )
+                            )
+                        }
+                    }
+                }
+
+                for ((key, value) in list) {
+                    val packageName = key
+                    if(packageName == "com.example.cool_time") continue
+                    if (packageManager.getLaunchIntentForPackage(packageName) != null) {
+                        if (appUsageMap[packageName] == null) {
+                            appUsageMap.putIfAbsent(packageName, 0L)
+                        }
+
+                        for (i in 0 until value.size - 1) {
+                            val E0 = value[i]
+                            val E1 = value[i + 1]
+                            if (//E0.first == E1.first &&
+                                E0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
+                                E1.second == UsageEvents.Event.ACTIVITY_PAUSED
+                            ) {
+                                val diff = ((E1.third - E0.third)) / 1000.toLong()
+                                val prev = appUsageMap[packageName] ?: 0L
+                                appUsageMap[packageName] = prev + diff
+                            }
+                        }
+                    }
+                }
+                val totalTime =
+                    getTotalTime(appUsageMap.toList().sortedBy { it.second }.toMap().toList())
+                Log.e("totalTime", totalTime.toString())
+                if(totalTime == 540L){
+                    startActivity(Intent(this, ActiveLockService::class.java))
+                }
+                CoroutineScope(Dispatchers.Main).launch{
+                    MyApplication.getInstance().getDataStore().onUseTimeChanged(totalTime)  //DataStore에 총 사용 시간 저장
+                }
+
+                Thread.sleep(1000)
+            }
+
+        }.start()
+    }
 
 
 }

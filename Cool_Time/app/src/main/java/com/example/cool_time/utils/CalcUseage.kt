@@ -30,6 +30,16 @@ fun getTodayNow(): Calendar {
     return calendar
 }
 
+fun getTomorrowStart() : Calendar{
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_MONTH, 1)
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    return calendar
+}
+
 fun getYesterdayStart(): Calendar {
     val calendar = Calendar.getInstance()
     calendar.add(Calendar.DAY_OF_MONTH, -1)
@@ -99,6 +109,7 @@ fun getAppUsageStatsAsync(context : Context, beginTime : Long, endTime : Long)
 
     for((key, value) in list){
         val packageName = key
+        if(packageName == "com.example.cool_time") continue
         if(packageManager.getLaunchIntentForPackage(packageName) != null ) {
             if (appUsageMap[packageName] == null) {
                 appUsageMap.putIfAbsent(packageName, 0L)
@@ -107,8 +118,8 @@ fun getAppUsageStatsAsync(context : Context, beginTime : Long, endTime : Long)
                 val E0 = value[i]
                 val E1 = value[i + 1]
                 if (//E0.first == E1.first &&
-                    E0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
-                    E1.second == UsageEvents.Event.ACTIVITY_PAUSED
+                    E0.second == UsageEvents.Event.ACTIVITY_RESUMED
+                    && E1.second == UsageEvents.Event.ACTIVITY_PAUSED
                 ) {
                     val diff = ((E1.third - E0.third)) / 1000.toLong()
                     val prev = appUsageMap[packageName] ?: 0L

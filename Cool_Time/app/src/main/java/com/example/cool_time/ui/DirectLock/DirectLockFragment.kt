@@ -7,12 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
-import android.widget.Toast
-import androidx.navigation.fragment.findNavController
 import com.example.cool_time.MyApplication
-import com.example.cool_time.R
 import com.example.cool_time.databinding.FragmentDirectLockBinding
-import com.example.cool_time.ui.ActiveLockActivity
+import com.example.cool_time.service.ActiveLockService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,12 +56,12 @@ class DirectLockFragment : Fragment() {
 
         timeInit()
         binding.fabAddSetting.setOnClickListener{
-            Toast.makeText(activity, "DIRECT LOCK", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(activity, "DIRECT LOCK", Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.Main).launch{    //지정한 시간만큼 인내의 시간 증가
                 MyApplication.getInstance().getDataStore().increaseEnduredTime(hourPick.value * 60  + minPick.value)
             }
 
-            val intent = Intent(this.context, ActiveLockActivity::class.java)
+            val intent = Intent(this.context, ActiveLockService::class.java)
             intent.putExtra("time", hourPick.value*60*60 + minPick.value*60)
             activity!!.startService(intent) // 잠금 서비스 실행
         }

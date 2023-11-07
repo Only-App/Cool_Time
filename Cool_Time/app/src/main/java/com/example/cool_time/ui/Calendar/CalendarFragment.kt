@@ -1,15 +1,10 @@
 package com.example.cool_time.ui.Calendar
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CalendarView
-import android.widget.TextView
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,7 +13,6 @@ import com.example.cool_time.R
 import com.example.cool_time.data.AlarmRepository
 import com.example.cool_time.data.LockRepository
 import com.example.cool_time.data.UserDatabase
-import com.example.cool_time.databinding.FragmentAppChartBinding
 import com.example.cool_time.databinding.FragmentCalendarBinding
 import com.example.cool_time.model.Alarm
 import com.example.cool_time.model.PhoneLock
@@ -26,9 +20,6 @@ import com.example.cool_time.utils.ChartAppFragment
 import com.example.cool_time.utils.ChartHourFragment
 import com.example.cool_time.utils.getSomedayEnd
 import com.example.cool_time.utils.getSomedayStart
-import com.example.cool_time.utils.getTodayNow
-import com.example.cool_time.utils.getTodayStart
-import com.example.cool_time.utils.getTotalTime
 import com.example.cool_time.utils.loadTimeUsageAsync
 import com.example.cool_time.utils.loadUsageAsync
 //import com.example.cool_time.utils.load_time_usage

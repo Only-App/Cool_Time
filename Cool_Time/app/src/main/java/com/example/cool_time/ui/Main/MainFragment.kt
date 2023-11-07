@@ -98,20 +98,21 @@ class MainFragment : Fragment() {
 
             }
         }
-        /*
+
         CoroutineScope(Dispatchers.Main).launch{    //총 사용 시간 출력
             MyApplication.getInstance().getDataStore().todayUseTime.collect{
+                Log.d("TotalTimeChanged", it.toString())
                 val yesterdayUseTime = MyApplication.getInstance().getDataStore().yesterdayUseTime.first()
                 var diff = yesterdayUseTime - it
                 if(diff < 0) diff = -diff
                 binding.tvUseTime.text =  "%02d : %02d : %02d".format(it / 3600, (it % 3600) /  60, it % 60)
-                binding.tvCompareUseTime.text =
+                binding.tvCmpUseTime.text =
                     if(it < yesterdayUseTime){
                         "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 덜 사용"
                     } else "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 더 사용"
             }
         }
-         */
+
         return binding.root
     }
 
@@ -133,7 +134,7 @@ class MainFragment : Fragment() {
             val totalTime = getTotalTime(today_list)
 
             val displayTotalTime = totalTimetoText(totalTime)
-            binding.tvUseTime.text = displayTotalTime
+            //binding.tvUseTime.text = displayTotalTime
 
             val startyesterday = getYesterdayStart().timeInMillis
             val endyesterday = getYesterdayEnd().timeInMillis

@@ -1,4 +1,4 @@
-package com.example.cool_time.ui
+package com.example.cool_time.service
 
 import android.app.Service
 import android.app.usage.UsageStats
@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -23,16 +24,24 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.cool_time.R
-import com.example.cool_time.background.RemainingTime
 import com.example.cool_time.databinding.FragmentActiveLockBinding
+import com.example.cool_time.utils.getTodayNow
 import com.example.cool_time.viewmodel.AppItem
 import com.example.cool_time.viewmodel.GridSpacingItemDecoration
 import com.example.cool_time.viewmodel.LockScreenAdapter
+import java.util.Calendar
 import java.util.TreeMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class ActiveLockActivity(): Service() {
+class ActiveLockService(): Service() {
+    companion object{
+        const val POSSIBLE  = 0 //현재 사용 가능 상태
+        const val EXCEED = 1    //총 사용 시간을 초과한 상태
+        const val LOCK_DURATION = 2 //잠금 시간이 적용된 상태
+        const val WAIT = 3  //최소 사용 시간 간격으로 사용할 수 없는 상태
+    }
+
     private val datas = mutableListOf<AppItem>()
     private val app_list = ArrayList<String>() // 예외 앱 리스트
     private var flag = false // 오버레이(잠금화면)이 떠있는지 체크하는 값
@@ -74,8 +83,8 @@ class ActiveLockActivity(): Service() {
             PixelFormat.TRANSLUCENT
         )
         binding.scroll.visibility=View.GONE
-        binding.lastUseComment.visibility=View.VISIBLE
-        binding.lastUseTime.visibility=View.VISIBLE
+        binding.lockTypeComment.visibility=View.VISIBLE
+        binding.lockUseTime.visibility=View.VISIBLE
 
         val packageManager = this.applicationContext.packageManager
         val packages:List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
@@ -97,14 +106,13 @@ class ActiveLockActivity(): Service() {
         binding.menu.setOnClickListener{
             if(togle){
                 binding.scroll.visibility=View.GONE
-                binding.lastUseComment.visibility=View.VISIBLE
-                binding.lastUseTime.visibility=View.VISIBLE
+                binding.lockTypeComment.visibility=View.VISIBLE
+                binding.lockUseTime.visibility=View.VISIBLE
             }
             else{
                 binding.scroll.visibility=View.VISIBLE
-                binding.lastUseComment.visibility=View.GONE
-                binding.lastUseTime.visibility=View.GONE
-
+                binding.lockTypeComment.visibility=View.GONE
+                binding.lockUseTime.visibility=View.GONE
 
             }
             togle = !togle
@@ -125,7 +133,7 @@ class ActiveLockActivity(): Service() {
         }
 
         val time = intent!!.getIntExtra("time", 0)
-        val serviceIntent = Intent(this, RemainingTime::class.java)
+        val serviceIntent = Intent(this, RemainingTimeService::class.java)
         serviceIntent.putExtra("time", time)
         startService(serviceIntent)
 
@@ -138,11 +146,43 @@ class ActiveLockActivity(): Service() {
         flag = true
         windowManager.addView(view, params) // 오버레이를 작동시키면서 flag를 true로 설정해서 overlay가 켜졌음을 알 수 있도록 함
 
-
+        val lockType = intent!!.getIntExtra("lockType", -1)
+        Log.d("lockType", lockType.toString())
         val handler = Handler(Looper.getMainLooper()) // runnable 내에서 ui 관련 처리할 때 이거 통해서 해야 함!
         val executor = Executors.newSingleThreadScheduledExecutor() // 타이머 같은거
         val runnable = Runnable {
             // UI 업데이트 코드를 여기에 작성
+
+            handler.post {  //날짜, 시간 출력
+                val month = getTodayNow().get(Calendar.MONTH)
+                val date = getTodayNow().get(Calendar.DATE)
+                val day = when (getTodayNow().get(Calendar.DAY_OF_WEEK)) {
+                    1 -> "일"; 2 -> "월"; 3 -> "화"; 4 -> "수"; 5 -> "목"; 6 -> "금"; else -> "토"
+                }
+
+
+                val hour = getTodayNow().get(Calendar.HOUR_OF_DAY)
+                val minute = getTodayNow().get(Calendar.MINUTE)
+
+                binding.lockToday.text = "${month}월 ${date}일 ${day}요일"
+
+                if (hour >= 12) binding.lockTime.text = "오후 ${hour - 12}시간 ${minute}분"
+                else binding.lockTime.text = "오전 ${hour}시간 ${minute}분"
+
+
+                if(lockType == WAIT){
+                    binding.lockTypeComment.text = "재사용 가능까지 몇 분 남음"
+                }
+                else if(lockType == EXCEED){
+                    binding.lockTypeComment.text = "오늘은 더 이상 사용할 수 없습니다"
+                }
+                else if(lockType == LOCK_DURATION){
+                    binding.lockTypeComment.text = "몇시 몇분까지\n 잠금이 적용되었습니다"
+                }
+
+            }
+
+
             val mUsageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             val stats = mUsageStatsManager.queryUsageStats( // 가장 최근 기록 불러오기 위해 실행한다고 이해하면 됨
                 UsageStatsManager.INTERVAL_DAILY,

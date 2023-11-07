@@ -6,7 +6,6 @@ import com.example.cool_time.model.PhoneLock
 
 class LockRepository(private val lockDAO : LockDAO) {
     var allLock : LiveData<List<PhoneLock>> = lockDAO.getAll()
-
     fun getLock(id: Int){
         lockDAO.getLock(id)
     }

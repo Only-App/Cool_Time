@@ -13,9 +13,9 @@ data class PhoneLock(
     // app_list 는 다른 테이블로 관리
     var total_time : Long,
     var min_time : Long,
-    var lock_on : Int,  //TOOD : Nullable or boolean type add
+    var lock_on : Int,
     var lock_off : Int,
     var lock_day : Int,
-    var start_date : Long,  //TOOD :
+    var start_date : Long,
     var end_date : Long
 ) : Serializable

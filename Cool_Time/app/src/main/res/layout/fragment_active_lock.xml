@@ -57,28 +57,28 @@
         />
 
     <TextView
-        android:id = "@+id/last_use_comment"
+        android:id = "@+id/lock_type_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/last_use_time"
+        app:layout_constraintBottom_toTopOf="@id/lock_use_time"
         app:layout_constraintStart_toStartOf="@id/background"
         app:layout_constraintEnd_toEndOf="@id/background"
         android:text= "마지막으로 사용한지"
         android:textSize="30dp"
         android:textColor="@color/black"
+        android:textAlignment="center"
         app:layout_constraintVertical_chainStyle="packed"
         android:visibility="gone"
         />
     <TextView
-        android:id = "@+id/last_use_time"
+        android:id = "@+id/lock_use_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/last_use_comment"
+        app:layout_constraintTop_toBottomOf="@id/lock_type_comment"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/background"
         app:layout_constraintEnd_toEndOf="@id/background"
-        android:text= "00분 지남"
         android:textSize="35dp"
         android:textColor="@color/black"
         app:layout_constraintVertical_chainStyle="packed"

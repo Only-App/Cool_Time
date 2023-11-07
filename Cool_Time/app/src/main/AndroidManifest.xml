@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions"
-        />
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.REORDER_TASKS" />
@@ -29,7 +29,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cool_Time"
         tools:targetApi="31">
-
+        <service
+            android:name=".service.UseTimeService"
+            android:enabled="true"
+            android:exported="true"></service>
 
         <activity
             android:name=".ui.MainActivity"
@@ -44,16 +47,14 @@
             android:name=".ui.CheckPermissionActivity"
             android:exported="true">
             <intent-filter>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <service
-            android:name=".ui.ActiveLockActivity"
+            android:name=".service.ActiveLockService"
             android:permission="android.permission.SYSTEM_ALERT_WINDOW"
             />
-        <service
-            android:name=".background.RemainingTime"
-            />
+        <service android:name=".service.RemainingTimeService" />
     </application>
 
 </manifest>

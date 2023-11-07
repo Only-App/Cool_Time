@@ -93,14 +93,16 @@ class UseStatFragment : Fragment() {
                 binding.tvStatRecentTime.text = sdf.format(it)
             }
         }
-/*
+
         CoroutineScope(Dispatchers.Main).launch{    //총 사용 시간 출력
             MyApplication.getInstance().getDataStore().todayUseTime.collect{
                 binding.tvUseTime.text =  "%02d : %02d : %02d".format(it / 3600, it % 3600 /  60, it % 60)
             }
 
         }
- */
+
+
+
 
 
         return binding.root
@@ -108,21 +110,28 @@ class UseStatFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        CoroutineScope(Dispatchers.Main).launch{
+
+        CoroutineScope(Dispatchers.Main).launch {
             val startday = getTodayStart().timeInMillis
             val endday = getTodayNow().timeInMillis
-            val today_list = loadUsageAsync(this@UseStatFragment.context!!, startday, endday).await()
+            val today_list =
+                loadUsageAsync(this@UseStatFragment.context!!, startday, endday).await()
             val totalTime = getTotalTime(today_list)
             //val hourList = load_time_usage(this.context!!, getTodayStart())
-            val hourList = loadTimeUsageAsync(this@UseStatFragment.context!!, getTodayStart()).await()
+            val hourList =
+                loadTimeUsageAsync(this@UseStatFragment.context!!, getTodayStart()).await()
             val displayTotalTime = totalTimetoText(totalTime)
 
 
-            binding.tvUseTime.text = displayTotalTime
-            childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
-            childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment(today_list)).commit()
+            //binding.tvUseTime.text = displayTotalTime
+            childFragmentManager.beginTransaction()
+                .replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
+            childFragmentManager.beginTransaction()
+                .replace(R.id.app_chart_fragment, ChartAppFragment(today_list)).commit()
             val actionbar = (requireActivity() as AppCompatActivity).supportActionBar
         }
+
+
     }
 
     companion object {

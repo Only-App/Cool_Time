@@ -22,6 +22,7 @@ interface LockDAO {
     @Query("SELECT * FROM phone_lock")
     fun getAll() : LiveData<List<PhoneLock>>
 
+
     @Query("SELECT * FROM phone_lock WHERE id = :id")
     fun getLock(id : Int) : PhoneLock
 }
