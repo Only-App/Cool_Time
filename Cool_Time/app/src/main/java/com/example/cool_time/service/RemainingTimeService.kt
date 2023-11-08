@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import com.example.cool_time.MyApplication.Companion.waitCheck
 import java.util.Timer
 import java.util.TimerTask
 
@@ -18,9 +19,9 @@ class RemainingTimeService(): Service(){
                     val intent = Intent("my-custom-action")
                     intent.putExtra("myData", variable)
                     sendBroadcast(intent)
-                    Log.d("tstst", "남은 시간 :" + variable.toString())
                     variable--
                 } else {
+                    startService(Intent(this@RemainingTimeService, UseTimeService::class.java)) //잠금이 종료되면 사용 시간 체크 서비스 다시 시작
                     timer.cancel() // 변수가 0 이하일 때 타이머 종료
                 }
             }
@@ -31,7 +32,6 @@ class RemainingTimeService(): Service(){
     }
     override fun onDestroy() {
         // 서비스가 종료될 때 수행할 작업
-        Log.d("tstst", "서비스 종료")
     }
     override fun onBind(intent: Intent?): IBinder? {
         return null

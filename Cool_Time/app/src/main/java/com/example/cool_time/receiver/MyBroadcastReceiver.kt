@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.example.cool_time.MyApplication
+import com.example.cool_time.MyApplication.Companion.waitCheck
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -17,6 +18,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
             CoroutineScope(Dispatchers.Main).launch{
                 MyApplication.getInstance().getDataStore().increaseCnt()
                 MyApplication.getInstance().getDataStore().updateLockStatus()
+
             }
         }
         else if(intent!!.action == Intent.ACTION_SCREEN_OFF){   //화면이 꺼진 상황에서
@@ -25,12 +27,14 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                 if(status){ //화면 잠금 해제되어 있는 상태일 때
                     MyApplication.getInstance().getDataStore().updateLatestUseTime(System.currentTimeMillis())
                     MyApplication.getInstance().getDataStore().updateLockStatus()
+                    waitCheck = false
                 }
 
             }
+
         }
         else if(intent!!.action == Intent.ACTION_DATE_CHANGED){ //날짜 변경될 때
-            Log.d("DateChanged", "TRUE")
+
             CoroutineScope(Dispatchers.Main).launch{
                 MyApplication.getInstance().getDataStore().onDateChanged()  //정보 초기화
             }

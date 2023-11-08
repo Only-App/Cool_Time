@@ -106,7 +106,7 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         }
 
         binding.cbNotIntervalSetting.setOnClickListener { //최소 시간 간격 설정 체크박스에 대한 리스너
-            if (binding.cbNotIntervalSetting.isChecked) {   //체크되지 않았을 경우
+            if (binding.cbNotIntervalSetting.isChecked) {   //체크한 경우
                 binding.tvStartTime.isEnabled = false   //잠금 시작 시간과 잠금 종료 시간 텍스트 뷰의 리스너를 비활성화
                 binding.tvEndTime.isEnabled = false
 
@@ -114,13 +114,13 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                 lock_on = -1
                 lock_off = -1
 
-            } else {    //체크한 경우
+            } else {    //체크하지 않은 경우
                 binding.tvStartTime.isEnabled = true    //잠금 시작 시간과 잠금 종료 시간 텍스트 뷰의 리스너를 활성화
                 binding.tvEndTime.isEnabled = true
             }
         }
         binding.cbNotDaySetting.setOnClickListener{//날짜 설정 체크박스에 대한 리스너
-            if(binding.cbNotDaySetting.isChecked){  //체크되지 않았을 경우
+            if(binding.cbNotDaySetting.isChecked){  //체크한 경우
                 binding.tvStartDay.isEnabled = false    //시작 날짜와 종료 날짜 텍스트 뷰의 리스너를 비활성화
                 binding.tvEndDay.isEnabled = false
 
@@ -128,7 +128,7 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                 start_date = -1
                 end_date = -1
             }
-            else{
+            else{   //체크하지 않은 경우
                 binding.tvStartDay.isEnabled = true //시작 날짜와 종료 날짜 텍스트 뷰의 텍스트를 활성화
                 binding.tvEndDay.isEnabled = true
 

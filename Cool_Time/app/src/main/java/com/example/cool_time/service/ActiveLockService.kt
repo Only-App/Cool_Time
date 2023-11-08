@@ -24,11 +24,17 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.cool_time.R
+import com.example.cool_time.data.ExceptAppRepository
+import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.databinding.FragmentActiveLockBinding
 import com.example.cool_time.utils.getTodayNow
 import com.example.cool_time.viewmodel.AppItem
 import com.example.cool_time.viewmodel.GridSpacingItemDecoration
 import com.example.cool_time.viewmodel.LockScreenAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TreeMap
 import java.util.concurrent.Executors
@@ -40,10 +46,11 @@ class ActiveLockService(): Service() {
         const val EXCEED = 1    //총 사용 시간을 초과한 상태
         const val LOCK_DURATION = 2 //잠금 시간이 적용된 상태
         const val WAIT = 3  //최소 사용 시간 간격으로 사용할 수 없는 상태
+
     }
 
     private val datas = mutableListOf<AppItem>()
-    private val app_list = ArrayList<String>() // 예외 앱 리스트
+    private val app_list = arrayListOf<String>() // 예외 앱 리스트
     private var flag = false // 오버레이(잠금화면)이 떠있는지 체크하는 값
     //val handler = Handler(Looper.getMainLooper()) // runnable 내에서 ui 관련 처리할 때 이거 통해서 해야 함!
     private lateinit var binding:FragmentActiveLockBinding// 바인딩
@@ -62,6 +69,7 @@ class ActiveLockService(): Service() {
                 if (receivedData != null) {
                     // receivedData를 사용
                     // 예: TextView에 표시
+                    binding.lockUseTime.text = "${receivedData / 3600}시간 ${receivedData % 3600 / 60}분 ${receivedData % 60}초 남았습니다"
                     if(receivedData == 0){
                         stopSelf()
                     }
@@ -86,8 +94,35 @@ class ActiveLockService(): Service() {
         binding.lockTypeComment.visibility=View.VISIBLE
         binding.lockUseTime.visibility=View.VISIBLE
 
-        val packageManager = this.applicationContext.packageManager
-        val packages:List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
+
+        val loadIconJob = CoroutineScope(Dispatchers.IO).async{
+            val packageManager = this@ActiveLockService.applicationContext.packageManager
+            val packages:List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
+
+            val exceptAppDao = UserDatabase.getInstance(this@ActiveLockService)!!.exceptAppsDao()
+            val exceptAppRepository = ExceptAppRepository(exceptAppDao)
+            val exceptAppList = exceptAppRepository.getAllApps()
+
+            for(exceptApp in exceptAppList){
+                if(!exceptApp.checked) continue //예외앱만 리스트에 추가
+                val packageName = exceptApp.packageName
+
+                val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+
+                val appIcon = appInfo.loadIcon(packageManager) ?: R.drawable.baseline_android_24.toDrawable()
+                val appItem = AppItem(packageName, appIcon)
+                datas.add(appItem)
+                app_list.add(packageName)
+            }
+
+            val adapter = LockScreenAdapter(this@ActiveLockService, datas, packageManager)
+            binding.appList.adapter = adapter
+            binding.appList.layoutManager  = GridLayoutManager(this@ActiveLockService, 3, GridLayoutManager.VERTICAL, false)
+            binding.appList.addItemDecoration(GridSpacingItemDecoration(spanCount = 3, spacing = 10))
+
+        }
+
+        /*
         for(info: PackageInfo in packages){
             if(packageManager.getLaunchIntentForPackage(info.packageName) != null && info.applicationInfo.name != null) {
                 val iticon: Drawable = info.applicationInfo.loadIcon(packageManager) ?: R.drawable.baseline_android_24.toDrawable()
@@ -97,10 +132,8 @@ class ActiveLockService(): Service() {
             }
         }
 
-        val adapter = LockScreenAdapter(this, datas, packageManager)
-        binding.appList.adapter = adapter
-        binding.appList.layoutManager  = GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
-        binding.appList.addItemDecoration(GridSpacingItemDecoration(spanCount = 3, spacing = 10))
+         */
+
 
 
         binding.menu.setOnClickListener{
@@ -147,9 +180,9 @@ class ActiveLockService(): Service() {
         windowManager.addView(view, params) // 오버레이를 작동시키면서 flag를 true로 설정해서 overlay가 켜졌음을 알 수 있도록 함
 
         val lockType = intent!!.getIntExtra("lockType", -1)
-        Log.d("lockType", lockType.toString())
         val handler = Handler(Looper.getMainLooper()) // runnable 내에서 ui 관련 처리할 때 이거 통해서 해야 함!
         val executor = Executors.newSingleThreadScheduledExecutor() // 타이머 같은거
+
         val runnable = Runnable {
             // UI 업데이트 코드를 여기에 작성
 
@@ -169,19 +202,19 @@ class ActiveLockService(): Service() {
                 if (hour >= 12) binding.lockTime.text = "오후 ${hour - 12}시간 ${minute}분"
                 else binding.lockTime.text = "오전 ${hour}시간 ${minute}분"
 
+                //각 잠금 타입에 맞게 텍스트 출력
 
                 if(lockType == WAIT){
-                    binding.lockTypeComment.text = "재사용 가능까지 몇 분 남음"
+                    binding.lockTypeComment.text = "재사용 가능까지"
                 }
                 else if(lockType == EXCEED){
                     binding.lockTypeComment.text = "오늘은 더 이상 사용할 수 없습니다"
                 }
                 else if(lockType == LOCK_DURATION){
-                    binding.lockTypeComment.text = "몇시 몇분까지\n 잠금이 적용되었습니다"
+                    binding.lockTypeComment.text = "잠금이 적용되었습니다"
                 }
 
             }
-
 
             val mUsageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             val stats = mUsageStatsManager.queryUsageStats( // 가장 최근 기록 불러오기 위해 실행한다고 이해하면 됨
@@ -223,7 +256,10 @@ class ActiveLockService(): Service() {
             }
         }
 
-        executor.scheduleAtFixedRate(runnable, 0, 30, TimeUnit.MILLISECONDS) // 30밀리초마다 스케쥴 돌아가도록 함
+        CoroutineScope(Dispatchers.Main).launch{
+            loadIconJob.await()
+            executor.scheduleAtFixedRate(runnable, 0, 30, TimeUnit.MILLISECONDS) // 30밀리초마다 스케쥴 돌아가도록 함
+        }
         return START_STICKY
     }
 

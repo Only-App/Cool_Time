@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import com.example.cool_time.MyApplication
+import com.example.cool_time.MyApplication.Companion.waitCheck
 import com.example.cool_time.data.LockRepository
 import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.model.PhoneLock
@@ -22,6 +23,7 @@ import com.example.cool_time.utils.getTotalTime
 import com.example.cool_time.viewmodel.LockViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -36,7 +38,6 @@ class UseTimeService : LifecycleService() {
     private lateinit var myRunnable: Runnable
     private var lockType = POSSIBLE
     private var reuseTime = 0
-
     override fun onCreate(){
         super.onCreate()
 
@@ -92,7 +93,7 @@ class UseTimeService : LifecycleService() {
 
                 for ((key, value) in list) {
                     val packageName = key
-                    if(packageName == "com.example.cool_time") continue
+                    if(packageName == "com.example.cool_time") continue //CoolTime앱은 제외
                     if (packageManager.getLaunchIntentForPackage(packageName) != null) {
                         if (appUsageMap[packageName] == null) {
                             appUsageMap.putIfAbsent(packageName, 0L)
@@ -121,74 +122,89 @@ class UseTimeService : LifecycleService() {
                     }
                 }
 
-                val totalTime =
-                        getTotalTime(appUsageMap.toList().sortedBy { it.second }.toMap().toList())
 
-                    CoroutineScope(Dispatchers.Main).launch {
-                        MyApplication.getInstance().getDataStore()
-                            .onUseTimeChanged(totalTime)  //DataStore에 총 사용 시간 저장
-                        lockViewModel.lock_list.observe(
-                            this@UseTimeService,
-                            Observer<List<PhoneLock>> {
-                                it.forEach {
-                                    val lockInfo = it
-                                    val startDate = lockInfo.start_date
-                                    val endDate = lockInfo.end_date
-                                    val lockDay = lockInfo.lock_day
+                val totalTime = getTotalTime(appUsageMap.toList().sortedBy { it.second }.toMap().toList())
 
-                                    if ((getTodayNow().timeInMillis in startDate..endDate)  //잠금 기간에 해당되는지
-                                        || (startDate == -1L && endDate == -1L)
-                                    ) {    //잠금 기간이 없는 경우
-                                        val dayOfWeek =
-                                            Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+                CoroutineScope(Dispatchers.Main).launch {
+                    MyApplication.getInstance().getDataStore()
+                        .onUseTimeChanged(totalTime)  //DataStore에 총 사용 시간 저장
 
-                                        if ((1 shl (6 - (dayOfWeek + 5) % 7)) and lockDay != 0) { //오늘이 설정한 요일에 포함되는지
-                                            val lockOnDate = Calendar.getInstance()
-                                            lockOnDate.set(
-                                                Calendar.HOUR_OF_DAY,
-                                                lockInfo.lock_on / 60
-                                            )
-                                            lockOnDate.set(Calendar.MINUTE, lockInfo.lock_on % 60)
+                    val lockStatus = MyApplication.getInstance().getDataStore().lockStatus.first() //현재 잠금 상태
 
-                                            val lockOffDate = Calendar.getInstance()
+                    lockViewModel.lock_list.observe(
+                        this@UseTimeService,
+                        Observer<List<PhoneLock>> {
+                            it.forEach {
+                                val lockInfo = it
+                                val startDate = lockInfo.start_date
+                                var endDate = lockInfo.end_date
+                                val lockDay = lockInfo.lock_day
+                                val minTime = lockInfo.min_time
 
-                                            lockOffDate.set(
-                                                Calendar.HOUR_OF_DAY,
-                                                lockInfo.lock_off / 60
-                                            )
+                                if(endDate != -1L) {
+                                    val endDateCalendar = Calendar.getInstance()
+                                    endDateCalendar.timeInMillis = endDate
+                                    endDateCalendar.set(Calendar.HOUR_OF_DAY, 23)
+                                    endDateCalendar.set(Calendar.MINUTE, 59)
+                                    endDateCalendar.set(Calendar.SECOND, 59)
+                                    endDateCalendar.set(Calendar.MILLISECOND, 999)
 
-                                            lockOffDate.set(Calendar.MINUTE, lockInfo.lock_off % 60)
-
-                                            if (getTodayNow().timeInMillis in lockOnDate.timeInMillis..lockOffDate.timeInMillis) {   //잠금 시작 시간과 잠금 종료 시간에 포함되는지
-                                                lockType = LOCK_DURATION
-                                                reuseTime = ((lockOffDate.timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
-                                                Log.d("LOCK_DURATION", reuseTime.toString())
-                                                return@Observer
-                                            } else if (totalTime >= lockInfo.total_time) {  //총 사용 시간을 모두 사용한 경우
-                                                lockType = EXCEED
-                                                reuseTime = ((getTomorrowStart().timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
-                                                return@Observer
-                                            }
-                                            /*
-                                            else if (true) {  //최소 사용 시간 간격이 설정되어 있는 경우, TODO: LockScreenOn 상황에서 잠금 화면 출력
-                                                lockType = WAIT
-                                                reuseTime = lockInfo.min_time.toInt()
-                                                return@Observer
-                                            }
-
-                                             */
-                                        }
-                                    }
-
+                                    endDate = endDateCalendar.timeInMillis
                                 }
-                            })
-                    }
 
-                if(lockType != POSSIBLE){
-                    stopSelf()
+
+                                if ((getTodayNow().timeInMillis in startDate..endDate)  //잠금 기간에 해당되는지
+                                    || (startDate == -1L && endDate == -1L) //잠금 기간이 없는 경우
+                                ) {
+                                    val dayOfWeek =
+                                        Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+
+                                    if ((1 shl (6 - (dayOfWeek + 5) % 7)) and lockDay != 0) { //오늘이 설정한 요일에 포함되는지
+                                        val lockOnDate = Calendar.getInstance()
+                                        lockOnDate.set(
+                                            Calendar.HOUR_OF_DAY,
+                                            lockInfo.lock_on / 60
+                                        )
+                                        lockOnDate.set(Calendar.MINUTE, lockInfo.lock_on % 60)
+
+                                        val lockOffDate = Calendar.getInstance()
+
+                                        lockOffDate.set(
+                                            Calendar.HOUR_OF_DAY,
+                                            lockInfo.lock_off / 60
+                                        )
+
+                                        lockOffDate.set(Calendar.MINUTE, lockInfo.lock_off % 60)
+
+                                        if (getTodayNow().timeInMillis in lockOnDate.timeInMillis..lockOffDate.timeInMillis) {   //잠금 시작 시간과 잠금 종료 시간에 포함되는지
+                                            lockType = LOCK_DURATION
+                                            reuseTime = ((lockOffDate.timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
+                                            return@Observer
+                                        } else if (totalTime >= lockInfo.total_time * 60) {  //총 사용 시간을 모두 사용한 경우
+                                            lockType = EXCEED
+                                            reuseTime = ((getTomorrowStart().timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
+                                            return@Observer
+                                        }
+
+                                        else if (minTime != -1L && !lockStatus && !waitCheck) {  //최소 사용 시간 간격이 설정되어 있는 경우,
+                                            lockType = WAIT
+                                            waitCheck = true
+                                            reuseTime = (lockInfo.min_time * 60).toInt()
+                                            return@Observer
+                                        }
+
+
+                                    }
+                                }
+
+                            }
+                        })
+                }
+
+                if(lockType != POSSIBLE){   //현재 잠겨야 하는 상황인 경우
                     val intent = Intent(this@UseTimeService, ActiveLockService::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    intent.putExtra("lockType", lockType)
+                    intent.putExtra("lockType", lockType)   //잠금 유형
 
                     when(lockType){
                         WAIT ->{
@@ -201,12 +217,12 @@ class UseTimeService : LifecycleService() {
                             intent.putExtra("time", reuseTime) //총 사용 시간
                         }
                     }
-                    Log.d("reuseTime", reuseTime.toString())
-                    Log.d("lockType", lockType.toString())
+
                     startService(intent)
+                    stopSelf()  //서비스 종료
                 }
 
-                handler.postDelayed(this, 1000)
+                handler.postDelayed(this, 500)
 
             }
         }

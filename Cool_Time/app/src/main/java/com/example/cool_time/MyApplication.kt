@@ -11,6 +11,8 @@ class MyApplication : Application() {
     private lateinit var dataStore : DataStoreModule
     companion object{
         private lateinit var myApplication: MyApplication
+        var waitCheck = true    //최소 시간 간격을 기다렸는지 확인하기 위한 변수
+
         fun getInstance() = myApplication
     }
     @RequiresApi(Build.VERSION_CODES.Q)

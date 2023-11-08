@@ -77,7 +77,6 @@ class ExceptionAppFragment : Fragment(){
                         CoroutineScope(Dispatchers.Main).launch {
                             val exceptAppList = mutableListOf<ExceptAppItem>()
 
-
                             withContext(Dispatchers.IO) {
                                     it.forEach {
                                         try {

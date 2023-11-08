@@ -9,6 +9,9 @@ class ExceptAppRepository(private val exceptAppDAO : ExceptAppDAO) {
     fun getApp(packageName : String) : ExceptApp{
         return exceptAppDAO.getApp(packageName)
     }
+    fun getAllApps() : List<ExceptApp>{
+        return exceptAppDAO.getAllNotLive()
+    }
     fun insertApp(exceptApp: ExceptApp){
         exceptAppDAO.insertApp(exceptApp)
     }

@@ -22,6 +22,8 @@ interface ExceptAppDAO {
     @Query("SELECT * FROM exceptApp")
     fun getAll() : LiveData<List<ExceptApp>>
 
+    @Query("SELECT * FROM exceptApp")
+    fun getAllNotLive() : List<ExceptApp>
     @Update
     fun updateApp(exceptApp : ExceptApp)
 
