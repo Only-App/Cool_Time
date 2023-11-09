@@ -25,10 +25,10 @@ import com.example.cool_time.viewmodel.AlarmViewModelFactory
 
 /**
  * A simple [Fragment] subclass.
- * Use the [AlarmSettingFragment.newInstance] factory method to
+ * Use the [AddAlarmSettingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AlarmSettingFragment : Fragment() {
+class AddAlarmSettingFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -188,7 +188,7 @@ class AlarmSettingFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            AlarmSettingFragment().apply {
+            AddAlarmSettingFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

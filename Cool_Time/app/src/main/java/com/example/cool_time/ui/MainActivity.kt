@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.example.cool_time.R
 import com.example.cool_time.service.ActiveLockService
 import com.example.cool_time.service.UseTimeService
+import com.example.cool_time.ui.Permission.CheckPermissionActivity
 import com.example.cool_time.utils.Permission
 import com.example.cool_time.utils.getTodayNow
 import com.example.cool_time.utils.getTodayStart

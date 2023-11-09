@@ -41,15 +41,13 @@ class ExceptionAppFragment : Fragment(){
         val packageManager = this@ExceptionAppFragment.activity!!.packageManager
 
         CoroutineScope(Dispatchers.Main).launch {
-
             val packages: List<PackageInfo> = async(Dispatchers.IO) {
                 packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
             }.await()
 
             withContext(Dispatchers.IO) {
-
                 for (info: PackageInfo in packages) {
-                    val packageName = info.packageName
+                    val packageName : String? = info.packageName
                     if (packageName != null && info.applicationInfo.name != null) {
                         val result = exceptViewModel.getApp(packageName)
                         if (result != null) continue
@@ -69,23 +67,19 @@ class ExceptionAppFragment : Fragment(){
                 binding.checkedException.layoutManager =
                     LinearLayoutManager(this@ExceptionAppFragment.context)
 
-
                 exceptViewModel.exceptApp.observe(
                     this@ExceptionAppFragment,
                     Observer<List<ExceptApp>> {
-
                         CoroutineScope(Dispatchers.Main).launch {
                             val exceptAppList = mutableListOf<ExceptAppItem>()
 
                             withContext(Dispatchers.IO) {
                                     it.forEach {
                                         try {
-
                                             val appInfo =
                                                 packageManager.getApplicationInfo(
                                                     it.packageName,
-                                                    PackageManager.GET_META_DATA
-                                                )
+                                                    PackageManager.GET_META_DATA)
 
                                             exceptAppList.add(
                                                 ExceptAppItem(
@@ -98,7 +92,6 @@ class ExceptionAppFragment : Fragment(){
                                         } catch (e: Exception) {   //삭제되었는데 table에 저장되어 있는 앱인 경우
                                             exceptViewModel.deleteApp(it.packageName)
                                         }
-
                                     }
                             }
 

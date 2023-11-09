@@ -211,9 +211,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
-        <RelativeLayout
-            app:layout_constraintTop_toTopOf="parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ll_statistics_time"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -224,27 +224,29 @@
                 android:layout_height="wrap_content"
                 android:text="사용 시간 통계"
                 android:textSize="15dp"
-                android:layout_alignParentTop = "true"
-                android:layout_alignParentLeft="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/navigate_next_15dp" />
-        </RelativeLayout>
+            <ImageButton
+                android:id="@+id/btn_navigate_to_use_stat"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@drawable/navigate_next_15dp"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <ScrollView
-            android:padding="15dp"
+            android:layout_marginTop = "20dp"
+            android:padding= "15dp"
             app:layout_constraintTop_toBottomOf="@id/ll_statistics_time"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity = "center_vertical"
             android:nestedScrollingEnabled="true"
-
             >
 
         <!-- Chart View!-->

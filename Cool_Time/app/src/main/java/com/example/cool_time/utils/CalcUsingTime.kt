@@ -75,7 +75,6 @@ fun getSomedayEnd(year : Int,  month : Int,  day:Int): Calendar{
     return calendar
 }
 
-
 fun getAppUsageStatsAsync(context : Context, beginTime : Long, endTime : Long)
     = CoroutineScope(Dispatchers.Default).async{
     val appUsageMap = mutableMapOf<String, Long>()

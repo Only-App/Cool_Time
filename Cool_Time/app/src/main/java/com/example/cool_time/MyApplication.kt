@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.cool_time.data.DataStoreModule
 import com.example.cool_time.receiver.MyBroadcastReceiver
 
 class MyApplication : Application() {

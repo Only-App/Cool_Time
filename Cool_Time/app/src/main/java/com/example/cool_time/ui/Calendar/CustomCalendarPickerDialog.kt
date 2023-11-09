@@ -1,4 +1,4 @@
-package com.example.cool_time.ui
+package com.example.cool_time.ui.Calendar
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable

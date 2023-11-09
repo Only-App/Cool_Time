@@ -1,4 +1,4 @@
-package com.example.cool_time.ui
+package com.example.cool_time.ui.Permission
 
 import android.content.Intent
 import android.os.Bundle

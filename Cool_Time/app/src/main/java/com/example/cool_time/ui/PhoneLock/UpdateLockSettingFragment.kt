@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.cool_time.ui.CustomCalendarPickerDialog
+import com.example.cool_time.ui.Calendar.CustomCalendarPickerDialog
 import com.example.cool_time.ui.CustomTimePickerDialog
 import com.example.cool_time.data.LockRepository
 import com.example.cool_time.data.UserDatabase
@@ -321,8 +321,7 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
             total_time < min_time -> return false   // 최소 사용 간격 시간이 총 사용량 시간을 초과할 때
             total_time == 0L -> return false // 총 사용 시간이 0시간 0분인 경우
             !binding.cbNotDaySetting.isChecked && //설정 안함을 체크하지 않았는데 시작 날짜나 종료 날짜를 선택하지 않았을 때
-                    (binding.tvStartDay.text == "시작 날짜" || binding.tvEndDay.text == "종료 날짜") -> {
-            }
+                    (binding.tvStartDay.text == "시작 날짜" || binding.tvEndDay.text == "종료 날짜") -> return false
             start_date != -1L && end_date != -1L &&     //시작 날짜가 종료 날짜보다 늦을 때
                     SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time >
                     SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time

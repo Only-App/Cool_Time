@@ -116,7 +116,6 @@ class UseTimeService : LifecycleService() {
                         val lastEvent = value[value.size - 1]
 
                         if(lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED){
-                            Log.d("tstst", packageName)
                             val prev = appUsageMap[packageName] ?: 0L
                             appUsageMap[packageName] = prev + (getTodayNow().timeInMillis - lastEvent.third) /1000.toLong()
                         }

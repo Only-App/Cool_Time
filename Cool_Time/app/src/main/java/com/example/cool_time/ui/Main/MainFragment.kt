@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.navigation.fragment.findNavController
 import com.example.cool_time.MyApplication
 import com.example.cool_time.R
 import com.example.cool_time.databinding.FragmentMainBinding
@@ -55,7 +57,6 @@ class MainFragment : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,6 +64,10 @@ class MainFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding= FragmentMainBinding.inflate(inflater, container, false)
         childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment()).commit()
+
+        binding.btnNavigateToUseStat.setOnClickListener{
+            findNavController().navigate(R.id.action_main_to_use_stat)
+        }
 
         CoroutineScope(Dispatchers.Main).launch{//사용 횟수 출력
             MyApplication.getInstance().getDataStore().todayCnt.collect{
@@ -77,6 +82,7 @@ class MainFragment : Fragment() {
                     }
             }
         }
+
         CoroutineScope(Dispatchers.Main).launch{
             MyApplication.getInstance().getDataStore().latestUseTime.collect {   //최근 사용 시간 출력
                 val sdf = SimpleDateFormat("HH:mm")

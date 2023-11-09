@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/alarm_main"
-        android:name="com.example.cool_time.ui.Alarm.AlarmFragment"
+        android:name="com.example.cool_time.ui.Alarm.AlarmOverviewFragment"
         android:label="fragment_alarm"
         tools:layout="@layout/fragment_alarm" >
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/alarm_setting"
-        android:name="com.example.cool_time.ui.Alarm.AlarmSettingFragment"
+        android:name="com.example.cool_time.ui.Alarm.AddAlarmSettingFragment"
         android:label="fragment_alarm_setting"
         tools:layout="@layout/fragment_alarm_setting" >
         <action

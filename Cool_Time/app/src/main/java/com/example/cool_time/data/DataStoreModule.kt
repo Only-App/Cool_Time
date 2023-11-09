@@ -1,4 +1,4 @@
-package com.example.cool_time
+package com.example.cool_time.data
 
 import android.content.Context
 import android.util.Log

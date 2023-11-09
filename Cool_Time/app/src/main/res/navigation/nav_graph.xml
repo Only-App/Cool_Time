@@ -9,7 +9,11 @@
         android:id="@+id/main"
         android:name="com.example.cool_time.ui.Main.MainFragment"
         android:label="fragment_main"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_main_to_use_stat"
+            app:destination="@id/use_stat" />
+    </fragment>
     <fragment
         android:id="@+id/exception"
         android:name="com.example.cool_time.ui.ExceptionApp.ExceptionAppFragment"
@@ -21,13 +25,7 @@
         android:name="com.example.cool_time.ui.UseStat.UseStatFragment"
         android:label="fragment_use_stat"
         tools:layout="@layout/fragment_use_stat" />
-    <!--
-    <fragment
-        android:id="@+id/alarm"
-        android:name="com.example.cool_time.Alarm.AlarmFragment"
-        android:label="fragment_alarm"
-        tools:layout="@layout/fragment_alarm" />
-        !-->
+
     <include app:graph = "@navigation/alarm" />
     <fragment
         android:id="@+id/calendar"
@@ -37,21 +35,6 @@
 
     </fragment>
     <include app:graph = "@navigation/activate_lock"/>
-    <!--
-    <fragment
-        android:id="@+id/direct_lock"
-        android:name="com.example.cool_time.ui.DirectLock.DirectLockFragment"
-        android:label="fragment_direct_lock"
-        tools:layout="@layout/fragment_direct_lock" />
-    -->
-
-    <!--
-    <fragment
-        android:id="@+id/phone_lock"
-        android:name="com.example.cool_time.PhoneLock.PhoneLockFragment"
-        android:label="fragment_phone_lock"
-        tools:layout="@layout/fragment_phone_lock" />
-    !-->
 
     <include app:graph = "@navigation/phone_lock"/>
 
