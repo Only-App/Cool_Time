@@ -84,6 +84,9 @@ class PermissionScreenAdapter( val datas:MutableList<PermissionItem>, val activi
                 "알림" -> {
                     result = Permission(activity).checkNotificationPermission()
                 }
+                "배터리" -> {
+                    result = Permission(activity).checkBatteryPermission()
+                }
             }
             return result
         }

@@ -3,19 +3,10 @@ package com.example.cool_time.utils
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZoneOffset
 import java.util.Calendar
-import java.util.Date
 
 fun getTodayStart(): Calendar {
     val calendar = Calendar.getInstance()
@@ -154,6 +145,7 @@ fun getAppUsageStats(context : Context, beginTime : Long, endTime : Long): Map<S
 
     for((key, value) in list){
         val packageName = key
+        if(packageName == "com.example.cool_time") continue
         if(packageManager.getLaunchIntentForPackage(packageName) != null ) {
             if (appUsageMap[packageName] == null) {
                 appUsageMap.putIfAbsent(packageName, 0L)

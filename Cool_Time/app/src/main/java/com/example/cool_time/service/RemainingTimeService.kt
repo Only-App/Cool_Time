@@ -16,22 +16,20 @@ class RemainingTimeService(): Service(){
         val task = object : TimerTask() {
             override fun run() {
                 if (variable >= 0) {
-                    val intent = Intent("my-custom-action")
-                    intent.putExtra("myData", variable)
+                    val intent = Intent("remaining time")
+                    intent.putExtra("time", variable)
                     sendBroadcast(intent)
                     variable--
                 } else {
                     startService(Intent(this@RemainingTimeService, UseTimeService::class.java)) //잠금이 종료되면 사용 시간 체크 서비스 다시 시작
                     timer.cancel() // 변수가 0 이하일 때 타이머 종료
+                    stopSelf()
                 }
             }
         }
         timer.scheduleAtFixedRate(task, 0, 1000)
         // 백그라운드 서비스가 종료되지 않도록 설정
         return START_STICKY
-    }
-    override fun onDestroy() {
-        // 서비스가 종료될 때 수행할 작업
     }
     override fun onBind(intent: Intent?): IBinder? {
         return null

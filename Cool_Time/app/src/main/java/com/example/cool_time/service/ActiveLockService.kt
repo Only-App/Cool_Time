@@ -57,14 +57,14 @@ class ActiveLockService(): Service() {
     private lateinit var view:View // 오버레이 위에 띄울 뷰
     private lateinit var windowManager : WindowManager //오버레이 띄우기 위한 윈도우 매니저
     private lateinit var params:LayoutParams
-
+    private val executor = Executors.newSingleThreadScheduledExecutor() // 타이머 같은거
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
     private val  receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent != null && intent.action == "my-custom-action") {
-                val receivedData = intent.getIntExtra("myData", 0)
+            if (intent != null && intent.action == "remaining time") {
+                val receivedData = intent.getIntExtra("time", 0)
                 // 데이터를 처리
                 if (receivedData != null) {
                     // receivedData를 사용
@@ -83,11 +83,11 @@ class ActiveLockService(): Service() {
         binding = FragmentActiveLockBinding.inflate(LayoutInflater.from(this))
         view = binding.root
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        params = WindowManager.LayoutParams( //오버레이 관련 옵션
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, // 항상 위에 유지
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+        params = LayoutParams( //오버레이 관련 옵션
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.TYPE_APPLICATION_OVERLAY, // 항상 위에 유지
+            LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         )
         binding.scroll.visibility=View.GONE
@@ -121,20 +121,6 @@ class ActiveLockService(): Service() {
             binding.appList.addItemDecoration(GridSpacingItemDecoration(spanCount = 3, spacing = 10))
 
         }
-
-        /*
-        for(info: PackageInfo in packages){
-            if(packageManager.getLaunchIntentForPackage(info.packageName) != null && info.applicationInfo.name != null) {
-                val iticon: Drawable = info.applicationInfo.loadIcon(packageManager) ?: R.drawable.baseline_android_24.toDrawable()
-                val it = AppItem(info.packageName, iticon)
-                datas.add(it)
-                app_list.add(info.packageName)
-            }
-        }
-
-         */
-
-
 
         binding.menu.setOnClickListener{
             if(togle){
@@ -170,7 +156,7 @@ class ActiveLockService(): Service() {
         serviceIntent.putExtra("time", time)
         startService(serviceIntent)
 
-        val filter = IntentFilter("my-custom-action")
+        val filter = IntentFilter("remaining time")
         registerReceiver(receiver, filter)
 
 
@@ -181,7 +167,7 @@ class ActiveLockService(): Service() {
 
         val lockType = intent!!.getIntExtra("lockType", -1)
         val handler = Handler(Looper.getMainLooper()) // runnable 내에서 ui 관련 처리할 때 이거 통해서 해야 함!
-        val executor = Executors.newSingleThreadScheduledExecutor() // 타이머 같은거
+
 
         val runnable = Runnable {
             // UI 업데이트 코드를 여기에 작성
@@ -223,32 +209,30 @@ class ActiveLockService(): Service() {
                 System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)
             )
 
-            var topPackageName: String? = null
-
             if (stats != null) { //사실 Null이면 뭐 그동안 상태 변화 없었다는거니까 괜찮을 것
                 val mySortedMap = TreeMap<Long, UsageStats>()
                 for (usageStats in stats) {
                     mySortedMap[usageStats.lastTimeUsed] = usageStats
                 }
                 if (mySortedMap.isNotEmpty()) {
-                    topPackageName = mySortedMap[mySortedMap.lastKey()]?.packageName
-                    if (topPackageName != "com.example.cool_time") { // 일단 그냥 테스트 겸 자사 앱은 로직에서 예외처리 해놨음
-                        if (!app_list!!.contains(topPackageName)) { // 예외 리스트 앱에 포함되어 있지 않은 앱이 현재 죄상위(오버레이 제외) 레이아웃에서 실행되고 있다면
-                            if(!flag) { // 오버레이가 작동하고 있지 않다면
-                                handler.post { // Ui 작업 관련이니까 handler 실행
-                                    flag = true
-                                    windowManager.addView(view, params) // 오버레이 실행
-                                    // 근데 밀리 초 단위로 실행시키다 보니까 오버레이 실행 코드와 변수 변경하는 코드를 전부 실행하기 전에 Context Switch가 일어나는건지(확실 X)
-                                    // 이미 오버레이 있는데 flag 값이 변경 되기 전이었는지 여기 조건문으로 들어와 다시 띄우려고 하다가 충돌이 일어나는 현상 있는 것 같음, 확실하진 않고 만약 맞다면 신기
-                                    // 그래서 flag를 먼저 우선 변경해주고, 만들기로 해서 중복 만들기 방지
-                                }
+                    val topPackageName = mySortedMap[mySortedMap.lastKey()]?.packageName
+                    val intent = Intent(Intent.ACTION_DIAL)
+                    val callPackageName = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)!!.activityInfo.packageName
+                    if (callPackageName!= topPackageName && topPackageName != "com.samsung.android.messaging" && !app_list!!.contains(topPackageName)) { // 예외 리스트 앱에 포함되어 있지 않은 앱이 현재 죄상위(오버레이 제외) 레이아웃에서 실행되고 있다면
+                        if(!flag) { // 오버레이가 작동하고 있지 않다면
+                            handler.post { // Ui 작업 관련이니까 handler 실행
+                                flag = true
+                                windowManager.addView(view, params) // 오버레이 실행
+                                // 근데 밀리 초 단위로 실행시키다 보니까 오버레이 실행 코드와 변수 변경하는 코드를 전부 실행하기 전에 Context Switch가 일어나는건지(확실 X)
+                                // 이미 오버레이 있는데 flag 값이 변경 되기 전이었는지 여기 조건문으로 들어와 다시 띄우려고 하다가 충돌이 일어나는 현상 있는 것 같음, 확실하진 않고 만약 맞다면 신기
+                                // 그래서 flag를 먼저 우선 변경해주고, 만들기로 해서 중복 만들기 방지
                             }
-                        } else {
-                            if(flag) { // 오버레이 있을 때만 오버레이 해제, 없는데 없애려고 하거나, 있는데 또 만드려고 하면 충돌 생김
-                                handler.post {
-                                    windowManager.removeView(view)
-                                    flag = false
-                                }
+                        }
+                    } else {
+                        if(flag) { // 오버레이 있을 때만 오버레이 해제, 없는데 없애려고 하거나, 있는데 또 만드려고 하면 충돌 생김
+                            handler.post {
+                                windowManager.removeView(view)
+                                flag = false
                             }
                         }
                     }
@@ -266,6 +250,7 @@ class ActiveLockService(): Service() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(receiver)
+        executor.shutdown() // 타이머 종료
         if(flag){ // 만약 잠금 시간 다 끝나서 서비스 종료하려고 할 때 오버레이가 작동중이었다면 해제하고 종료
             windowManager.removeView(view)
         }

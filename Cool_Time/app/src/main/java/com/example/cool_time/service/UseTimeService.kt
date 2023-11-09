@@ -114,10 +114,13 @@ class UseTimeService : LifecycleService() {
                         }
 
                         val lastEvent = value[value.size - 1]
+
                         if(lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED){
+                            Log.d("tstst", packageName)
                             val prev = appUsageMap[packageName] ?: 0L
                             appUsageMap[packageName] = prev + (getTodayNow().timeInMillis - lastEvent.third) /1000.toLong()
                         }
+
 
                     }
                 }
@@ -203,6 +206,7 @@ class UseTimeService : LifecycleService() {
 
                 if(lockType != POSSIBLE){   //현재 잠겨야 하는 상황인 경우
                     val intent = Intent(this@UseTimeService, ActiveLockService::class.java)
+                    intent.action = "remaining time"
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     intent.putExtra("lockType", lockType)   //잠금 유형
 
