@@ -441,7 +441,6 @@ class ChartAppFragment(private var appList : List<Pair<String, Long>>  = ArrayLi
                 }
             }
 
-
             val appIcon = packageManager.getApplicationIcon(packageName)
             //if(isAppInstalled(packageName, packageManager)){
                 map.add(appIcon.toBitmap())

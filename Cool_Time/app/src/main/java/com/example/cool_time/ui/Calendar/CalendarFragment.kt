@@ -138,7 +138,9 @@ class CalendarFragment : Fragment(){
             date_time ->
             lockViewModel!!.lock_list.observe(this, Observer<List<PhoneLock>>{
                     list -> //조건에 맞는 list만 filtering 작업
-                val filteredList = list.filter{ elem -> elem.start_date <= date_time && date_time <= elem.end_date}
+                val filteredList = list.filter{ elem -> (elem.start_date == -1L && elem.end_date == -1L) ||
+                        date_time in elem.start_date..elem.end_date
+                }
                 if(filteredList.isNullOrEmpty()) {  //조건에 맞는 잠금 정보가 없는 경우
                     binding.tvLock.text = "잠금 정보가 존재하지 않습니다"
                 }

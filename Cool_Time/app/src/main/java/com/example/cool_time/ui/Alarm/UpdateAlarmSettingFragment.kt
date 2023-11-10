@@ -1,6 +1,7 @@
 package com.example.cool_time.ui.Alarm
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.cool_time.R
 import com.example.cool_time.data.AlarmRepository
 import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.databinding.FragmentUpdateAlarmSettingBinding
@@ -109,6 +111,7 @@ class UpdateAlarmSettingFragment : Fragment() {
                         _, _ ->
                 }
                 .create()
+
             dialog.show()
         }
         return binding.root

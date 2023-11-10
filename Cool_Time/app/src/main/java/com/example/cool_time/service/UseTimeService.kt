@@ -16,6 +16,7 @@ import com.example.cool_time.MyApplication.Companion.waitCheck
 import com.example.cool_time.data.LockRepository
 import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.model.PhoneLock
+import com.example.cool_time.utils.getAppUsageStats
 import com.example.cool_time.utils.getTodayNow
 import com.example.cool_time.utils.getTodayStart
 import com.example.cool_time.utils.getTomorrowStart
@@ -44,88 +45,14 @@ class UseTimeService : LifecycleService() {
         myRunnable = object : Runnable{
             override fun run(){
 
-                val usageStatsManager =
-                    getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-                val packageManager = packageManager
-
                 val lockDao = UserDatabase.getInstance(applicationContext)!!.phoneLockDao()
                 val lockRepository =  LockRepository(lockDao)
                 val lockViewModel = LockViewModel(lockRepository)
 
-                val appUsageMap = mutableMapOf<String, Long>()
                 val beginTime = getTodayStart().timeInMillis
                 val endTime = getTodayNow().timeInMillis
 
-                val usageEvents = usageStatsManager.queryEvents(beginTime, endTime)
-
-                val list: MutableMap<String, ArrayList<Triple<String, Int, Long>>> =
-                    mutableMapOf<String, ArrayList<Triple<String, Int, Long>>>()
-
-                while (usageEvents.hasNextEvent()) {
-                    val currentEvent = UsageEvents.Event()
-                    usageEvents.getNextEvent(currentEvent)
-                    if (currentEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED
-                        || currentEvent.eventType == UsageEvents.Event.ACTIVITY_PAUSED
-                    ) {
-                        if (list[currentEvent.packageName] == null) {
-                            list.putIfAbsent(
-                                currentEvent.packageName,
-                                ArrayList<Triple<String, Int, Long>>()
-                            )
-                            list[currentEvent.packageName]!!.add(
-                                Triple(
-                                    currentEvent.className,
-                                    currentEvent.eventType,
-                                    currentEvent.timeStamp
-                                )
-                            )
-                        } else {
-                            list[currentEvent.packageName]!!.add(
-                                Triple(
-                                    currentEvent.className,
-                                    currentEvent.eventType,
-                                    currentEvent.timeStamp
-                                )
-                            )
-                        }
-                    }
-                }
-
-                for ((key, value) in list) {
-                    val packageName = key
-                    if(packageName == "com.example.cool_time") continue //CoolTime앱은 제외
-                    if (packageManager.getLaunchIntentForPackage(packageName) != null) {
-                        if (appUsageMap[packageName] == null) {
-                            appUsageMap.putIfAbsent(packageName, 0L)
-                        }
-
-                        for (i in 0 until value.size - 1) {
-                            val E0 = value[i]
-                            val E1 = value[i + 1]
-
-                            if (//E0.first == E1.first &&
-                                E0.second == UsageEvents.Event.ACTIVITY_RESUMED
-                                && E1.second == UsageEvents.Event.ACTIVITY_PAUSED
-                            ) {
-                                val diff = ((E1.third - E0.third)) / 1000.toLong()
-                                val prev = appUsageMap[packageName] ?: 0L
-                                appUsageMap[packageName] = prev + diff
-                            }
-                        }
-
-                        val lastEvent = value[value.size - 1]
-
-                        if(lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED){
-                            val prev = appUsageMap[packageName] ?: 0L
-                            appUsageMap[packageName] = prev + (getTodayNow().timeInMillis - lastEvent.third) /1000.toLong()
-                        }
-
-
-                    }
-                }
-
-
-                val totalTime = getTotalTime(appUsageMap.toList().sortedBy { it.second }.toMap().toList())
+                val totalTime = getTotalTime(getAppUsageStats(this@UseTimeService, beginTime ,endTime).toList())
 
                 CoroutineScope(Dispatchers.Main).launch {
                     MyApplication.getInstance().getDataStore()

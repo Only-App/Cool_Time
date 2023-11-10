@@ -1,6 +1,7 @@
 package com.example.cool_time.ui.PhoneLock
 
 import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.cool_time.R
 import com.example.cool_time.ui.Calendar.CustomCalendarPickerDialog
 import com.example.cool_time.ui.CustomTimePickerDialog
 import com.example.cool_time.data.LockRepository
@@ -139,29 +141,63 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
 
         //수정 버튼을 눌렀을 때
         binding.btnUpdateSetting.setOnClickListener {
-            //TODO: 업데이트 로직
+
 
             //다이얼로그 출력
             val dialog = AlertDialog.Builder(activity)
                 .setTitle("수정")
                 .setMessage("수정하시겠습니까?")
                 .setPositiveButton("예") { _, _ ->
-                    //TODO: null check 함수 만들어서 값들이 채워져 있는지를 확인한 후 업데이트 작업할 수 있도록
                     if(contentCheck()){
                         //update 작업, 다시 돌아가기
-                        lockViewModel!!.updateLock(
-                            PhoneLock(
-                                id = lock.id,
-                                total_time = total_time,
-                                min_time = min_time,
-                                lock_on = lock_on,
-                                lock_off = lock_off,
-                                lock_day = dayToBit(),
-                                start_date = start_date,
-                                end_date = end_date
+                        var duplicateCheck = false
+
+                        lockViewModel!!.lock_list.observe(this){
+                            it.forEach{
+                                if(lock.id != it.id) {
+                                    if (start_date != -1L && end_date != -1L) {  //현재 추가하려는 잠금 정보가 잠금 기간을 설정한 경우
+
+                                        if ((it.start_date == -1L && it.end_date == -1L)    //탐색한 잠금 정보가 잠금 기간을 설정하지 않았거나
+                                            || (start_date <= it.start_date && end_date <= it.end_date)
+                                        ) { //탐색한 잠금 정보의 잠금 기간이 현재 추가하려는 잠금 정보의 잠금 기간을 포함할 때
+                                            if (dayToBit() and it.lock_day != 0) {    //겹치는 요일이 존재할 때
+                                                Toast.makeText(
+                                                    activity,
+                                                    "현재 겹치는 잠금 정보가 존재합니다.",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                                duplicateCheck = true
+                                            }
+                                        }
+                                    } else {   //현재 추가하려는 잠금 정보가 잠금 기간을 설정하지 않은 경우
+                                        if (dayToBit() and it.lock_day != 0) {
+                                            Toast.makeText(
+                                                activity,
+                                                "현재 겹치는 잠금 정보가 존재합니다.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            duplicateCheck = true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if(!duplicateCheck) {
+                            lockViewModel!!.updateLock(
+                                PhoneLock(
+                                    id = lock.id,
+                                    total_time = total_time,
+                                    min_time = min_time,
+                                    lock_on = lock_on,
+                                    lock_off = lock_off,
+                                    lock_day = dayToBit(),
+                                    start_date = start_date,
+                                    end_date = end_date
+                                )
                             )
-                        )
-                        findNavController().popBackStack()
+                            findNavController().popBackStack()
+                        }
+
                     }
                     else Toast.makeText(activity, "잘못된 형식의 입력입니다", Toast.LENGTH_SHORT).show()
                 }
@@ -170,7 +206,6 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                         _, _ ->
                 }
                 .create()
-
             dialog.show()
 
         }

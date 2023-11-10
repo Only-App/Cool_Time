@@ -3,6 +3,7 @@ package com.example.cool_time.utils
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -116,6 +117,15 @@ fun getAppUsageStatsAsync(context : Context, beginTime : Long, endTime : Long)
                     appUsageMap[packageName] = prev + diff
                 }
             }
+            val lastEvent = value[value.size - 1]
+
+            if(lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED){
+                val prev = appUsageMap[packageName] ?: 0L
+                appUsageMap[packageName] = prev + (getTodayNow().timeInMillis - lastEvent.third) /1000.toLong()
+            }
+
+
+
         }
     }
     appUsageMap.toList().sortedBy { it.second }.toMap()
@@ -161,8 +171,20 @@ fun getAppUsageStats(context : Context, beginTime : Long, endTime : Long): Map<S
                     appUsageMap[packageName] = prev + diff
                 }
             }
+            val lastEvent = value[value.size - 1]
+
+            if(lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED){
+                val prev = appUsageMap[packageName] ?: 0L
+                appUsageMap[packageName] = prev + (getTodayNow().timeInMillis - lastEvent.third) /1000.toLong()
+                Log.d("packageName",  packageName)
+            }
+
         }
+
+
+
     }
+
     return appUsageMap.toList().sortedBy { it.second }.toMap()
 }
 

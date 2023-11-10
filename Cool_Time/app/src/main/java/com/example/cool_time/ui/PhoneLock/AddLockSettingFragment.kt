@@ -15,6 +15,8 @@ import com.example.cool_time.data.LockRepository
 import com.example.cool_time.data.UserDatabase
 import com.example.cool_time.databinding.FragmentLockSettingBinding
 import com.example.cool_time.model.PhoneLock
+import com.example.cool_time.utils.getTodayNow
+import com.example.cool_time.utils.getTodayStart
 import com.example.cool_time.viewmodel.LockViewModel
 import com.example.cool_time.viewmodel.LockViewModelFactory
 import java.text.SimpleDateFormat
@@ -74,16 +76,40 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
 
         binding!!.btnAddSetting.setOnClickListener {
                 if(contentCheck()){
-                    lockViewModel!!.insertLock(
-                        PhoneLock(
-                            total_time = total_time, min_time = min_time,
-                            lock_on = lock_on, lock_off = lock_off, lock_day = dayToBit(),
-                            start_date = start_date, end_date = end_date
-                        )
-                    )
+                    var duplicateCheck = false
 
-                    Toast.makeText(activity, "잠금이 설정되었습니다!", Toast.LENGTH_SHORT).show()
-                    findNavController().popBackStack()
+                    lockViewModel!!.lock_list.observe(this){
+                        it.forEach{
+                            if(start_date != -1L && end_date != -1L) {  //현재 추가하려는 잠금 정보가 잠금 기간을 설정한 경우
+
+                                if ((it.start_date == -1L && it.end_date == -1L)    //탐색한 잠금 정보가 잠금 기간을 설정하지 않았거나
+                                    || (start_date <= it.start_date && end_date <= it.end_date)){ //탐색한 잠금 정보의 잠금 기간이 현재 추가하려는 잠금 정보의 잠금 기간을 포함할 때
+                                    if (dayToBit() and it.lock_day != 0) {    //겹치는 요일이 존재할 때
+                                        Toast.makeText(activity, "현재 겹치는 잠금 정보가 존재합니다.",Toast.LENGTH_SHORT).show()
+                                        duplicateCheck =true
+                                    }
+                                }
+                            }
+                            else{   //현재 추가하려는 잠금 정보가 잠금 기간을 설정하지 않은 경우
+                                if(dayToBit() and it.lock_day != 0){
+                                    Toast.makeText(activity, "현재 겹치는 잠금 정보가 존재합니다.", Toast.LENGTH_SHORT).show()
+                                    duplicateCheck = true
+                                }
+                            }
+                        }
+                    }
+                    if(!duplicateCheck){
+                        lockViewModel!!.insertLock(
+                            PhoneLock(
+                                total_time = total_time, min_time = min_time,
+                                lock_on = lock_on, lock_off = lock_off, lock_day = dayToBit(),
+                                start_date = start_date, end_date = end_date
+                            )
+                        )
+
+                        Toast.makeText(activity, "잠금이 설정되었습니다!", Toast.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    }
                 }
                 else{
                     Toast.makeText(activity, "잘못된 형식의 입력입니다", Toast.LENGTH_SHORT).show()
@@ -220,8 +246,9 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
                 SimpleDateFormat("yyyy.MM.dd").parse(binding.tvStartDay.text.toString())!!.time >
                 SimpleDateFormat("yyyy.MM.dd").parse(binding.tvEndDay.text.toString())!!.time
             -> return false
-
         }
+
+
         return true
     }
 

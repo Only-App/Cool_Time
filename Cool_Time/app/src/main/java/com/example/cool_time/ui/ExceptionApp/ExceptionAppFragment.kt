@@ -1,5 +1,7 @@
 package com.example.cool_time.ui.ExceptionApp
 
+import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -44,11 +46,19 @@ class ExceptionAppFragment : Fragment(){
             val packages: List<PackageInfo> = async(Dispatchers.IO) {
                 packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
             }.await()
+            val apps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+
+            val launcherIntent = Intent(Intent.ACTION_MAIN)
+            launcherIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+
+            val resolveInfoList = packageManager.queryIntentActivities(launcherIntent, 0)
 
             withContext(Dispatchers.IO) {
+                /*
                 for (info: PackageInfo in packages) {
                     val packageName : String? = info.packageName
-                    if (packageName != null && info.applicationInfo.name != null) {
+                    if(packageName == "com.example.cool_time") continue
+                    if (packageName != null && info.applicationInfo.name != null ) {
                         val result = exceptViewModel.getApp(packageName)
                         if (result != null) continue
                         else {  //설치되어 있는 앱인데 아직 DB에 들어있지 않은 앱이라면 insert
@@ -61,6 +71,25 @@ class ExceptionAppFragment : Fragment(){
                         }
                     }
                 }
+                 */
+
+                for(resolveInfo in resolveInfoList){
+                    val appInfo = resolveInfo.activityInfo.applicationInfo
+                    val packageName = appInfo.packageName
+                    if(packageName == "com.example.cool_time") continue
+                    val result = exceptViewModel.getApp(packageName)
+                    if (result != null) continue
+                    else {  //설치되어 있는 앱인데 아직 DB에 들어있지 않은 앱이라면 insert
+                        exceptViewModel.insertApp(
+                            ExceptApp(
+                                packageName = packageName,
+                                checked = false
+                            )
+                        )
+                    }
+
+                }
+
             }
 
             CoroutineScope(Dispatchers.Main).launch {
@@ -72,10 +101,10 @@ class ExceptionAppFragment : Fragment(){
                     Observer<List<ExceptApp>> {
                         CoroutineScope(Dispatchers.Main).launch {
                             val exceptAppList = mutableListOf<ExceptAppItem>()
-
                             withContext(Dispatchers.IO) {
                                     it.forEach {
                                         try {
+                                            Log.d("exceptApp", it.toString())
                                             val appInfo =
                                                 packageManager.getApplicationInfo(
                                                     it.packageName,
