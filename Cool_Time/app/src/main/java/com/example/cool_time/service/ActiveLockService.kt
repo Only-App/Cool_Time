@@ -242,7 +242,7 @@ class ActiveLockService(): Service() {
 
         CoroutineScope(Dispatchers.Main).launch{
             loadIconJob.await()
-            executor.scheduleAtFixedRate(runnable, 0, 30, TimeUnit.MILLISECONDS) // 30밀리초마다 스케쥴 돌아가도록 함
+            executor.scheduleWithFixedDelay(runnable, 0, 300, TimeUnit.MILLISECONDS) // 30밀리초마다 스케쥴 돌아가도록 함
         }
         return START_STICKY
     }
