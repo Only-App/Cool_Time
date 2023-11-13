@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import com.example.cool_time.MyApplication
 import com.example.cool_time.MyApplication.Companion.waitCheck
+import com.example.cool_time.service.UseTimeService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -39,5 +40,9 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                 MyApplication.getInstance().getDataStore().onDateChanged()  //정보 초기화
             }
         }
+        else if(intent!!.action == Intent.ACTION_BOOT_COMPLETED){ //부팅됐다는 알람 왔을 때 처리할 로직
+                context!!.startService(Intent(context, UseTimeService::class.java))
+        }
+
     }
 }

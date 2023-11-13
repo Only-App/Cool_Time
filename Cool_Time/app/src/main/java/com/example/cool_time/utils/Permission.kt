@@ -66,7 +66,7 @@ class Permission(val activity: Activity){
         return checkUsageStatsPermission()&&
                 checkOverlayPermission()&&
                 checkNotificationPermission()&&
-                checkCallPermission()
+                checkCallPermission()&&
                 checkBatteryPermission()
     }
     internal fun requestOverlayPermission() {
