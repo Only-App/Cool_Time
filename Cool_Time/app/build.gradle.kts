@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cool_time"
+    namespace = "com.onlyapp.cooltime"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.example.cool_time"
+        applicationId = "com.onlyapp.cooltime"
         minSdk = 30
         targetSdk = 33
         versionCode = 1
