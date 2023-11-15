@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         setUpNavViewController()
 
         // 모든 권한이 다 설정되었는지 체크하고 만약 안되어 있는게 있다면 권한 설정하는 화면으로 이동
-        if(!Permission(this).checkAllPermission())
+        if(!Permission.checkAllPermission(this))
             startActivityForResult(Intent(this, CheckPermissionActivity::class.java), 0)
 
         startService(Intent(this, UseTimeService::class.java))
