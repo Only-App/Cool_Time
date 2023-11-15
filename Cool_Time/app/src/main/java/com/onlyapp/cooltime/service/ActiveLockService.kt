@@ -12,7 +12,6 @@ import android.graphics.PixelFormat
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -27,8 +26,8 @@ import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentActiveLockBinding
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.view.adapter.AppItem
-import com.onlyapp.cooltime.view.adapter.GridSpacingItemDecoration
 import com.onlyapp.cooltime.view.adapter.LockScreenAdapter
+import com.onlyapp.cooltime.view.itemdecoration.GridSpacingItemDecoration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -61,17 +60,16 @@ class ActiveLockService: Service() {
     }
 
     private val  receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent != null && intent.action == "remainingTime") {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == "remainingTime") {
                 val receivedData = intent.getIntExtra("time", 0)
                 // 데이터를 처리
-                if (receivedData != null) {
-                    // receivedData를 사용
-                    // 예: TextView에 표시
-                    binding.lockUseTime.text = "${receivedData / 3600}시간 ${receivedData % 3600 / 60}분 ${receivedData % 60}초 남았습니다"
-                    if(receivedData == 0){
-                        stopSelf()
-                    }
+                // receivedData를 사용
+                // 예: TextView에 표시
+                val useTime = "${receivedData / 3600}시간 ${receivedData % 3600 / 60}분 ${receivedData % 60}초 남았습니다"
+                binding.lockUseTime.text = useTime
+                if(receivedData == 0){
+                    stopSelf()
                 }
             }
         }
