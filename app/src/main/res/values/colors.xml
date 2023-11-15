@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name= "colorPrimary">#EE3D43</color>
     <color name= "lock_color">#EC5C61</color>
+    <color name= "alarm_color">#5C7CEC</color>
     <color name= "colorPrimaryDark">#D6442D</color>
     <color name= "background">#ECECEC</color>
     <color name="light_gray">#6A6A6A</color>

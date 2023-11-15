@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Today's Use Stats !-->
+    <androidx.cardview.widget.CardView
+        android:id= "@+id/cv_statistics_today"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        android:layout_marginTop="10dp"
+        app:cardElevation="2dp"
+        android:background="@android:color/transparent"
+        android:layout_marginHorizontal="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <LinearLayout
+            android:id ="@+id/ll_statistics_today"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding = "10dp"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text= "오늘의 통계"
+                android:textStyle="bold"
+                android:textSize= "15dp"
+                />
+
+            <LinearLayout
+                android:id = "@+id/ll_use_time"
+                android:layout_width = "match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "사용시간"
+                    android:textSize= "20dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+                <TextView
+                    android:id ="@+id/tv_use_time"
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "00 : 00 : 00"
+                    android:textSize= "25dp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+                <TextView
+                    android:id ="@+id/tv_cmp_use_time"
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "어제보다 2시간 5분 더 사용"
+                    android:textSize= "15dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id = "@+id/ll_use_count"
+                android:layout_width = "match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                >
+
+                <TextView
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "사용 횟수"
+                    android:textSize= "20dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+                <TextView
+                    android:id ="@+id/tv_use_count"
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "00"
+                    android:textSize= "25dp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+                <TextView
+                    android:id = "@+id/tv_compare_use_cnt"
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "어제보다 5번 더 사용"
+                    android:textSize= "15dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id = "@+id/ll_endured_time"
+                android:layout_width = "match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                >
+
+                <TextView
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "인내의 시간"
+                    android:textSize= "20dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+                <TextView
+                    android:id ="@+id/tv_endured_time"
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "00: 00: 00"
+                    android:textSize= "25dp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+                <TextView
+                    android:id = "@+id/tv_compare_endure"
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "어제보다 5분 더 잠금"
+                    android:textSize= "15dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id = "@+id/ll_recent_time"
+                android:layout_width = "match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                >
+
+                <TextView
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "가장 최근 사용 시간"
+                    android:textSize= "20dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+                <TextView
+                    android:id ="@+id/tv_recent_time"
+                    android:layout_width = "wrap_content"
+                    android:layout_height=  "match_parent"
+                    android:text = "00: 00"
+                    android:textSize= "25dp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id= "@+id/lock_setting_today"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="2dp"
+        android:background="@android:color/transparent"
+        android:layout_margin="10dp"
+        app:layout_constraintTop_toBottomOf="@id/cv_statistics_today"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                android:padding="10dp"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text= "오늘의 잠금"
+                    android:textStyle="bold"
+                    android:textSize= "15dp"
+                    android:id = "@+id/today_lock"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id = "@+id/ll_today_lock_text"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/today_lock"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    >
+                    <TextView
+                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="오늘 설정된 잠금이 없습니다!"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id = "@+id/ll_today_lock"
+                    app:layout_constraintTop_toBottomOf="@id/today_lock"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="visible"
+                    >
+                <LinearLayout
+                    android:id = "@+id/ll_today_total_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf= "parent"
+                    android:layout_marginTop = "5dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text = "하루 총 사용량"
+                        android:textSize= "20dp"
+                        />
+
+                    <TextView
+                        android:id = "@+id/tv_today_total_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop = "5dp"
+                        android:background="@drawable/radius"
+                        android:text = "0 시간 00 분"
+                        android:textSize= "20dp"
+                        android:padding = "8dp"
+                        android:layout_gravity="center_horizontal"
+                        android:textAlignment="center"
+                        />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id = "@+id/ll_interval_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/ll_today_total_time"
+                    android:layout_marginTop = "10dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text = "최소 사용 간격 시간"
+                        android:textSize= "20dp"
+                        />
+                    <TextView
+                        android:id = "@+id/tv_interval_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop = "5dp"
+                        android:background="@drawable/radius"
+                        android:text = "0 시간 00 분"
+                        android:textSize= "20dp"
+                        android:padding = "8dp"
+                        android:layout_gravity="center_horizontal"
+                        android:textAlignment="center"
+                        />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/ll_time_lock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/ll_interval_time"
+                    android:layout_marginTop = "10dp"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text = "특정 시간 잠금"
+                        android:textSize= "20dp"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop = "5dp"
+                        >
+                        <TextView
+                            android:id="@+id/tv_start_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="5dp"
+                            android:layout_weight="1.5"
+                            android:background="@drawable/radius"
+                            android:padding="8dp"
+                            android:text="00:00"
+                            android:textAlignment="center"
+                            android:textSize="20dp" />
+
+                        <TextView
+                            android:padding="8dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="-"
+                            android:textSize="20dp"
+                            android:textAlignment="center"
+                            />
+                        <TextView
+                            android:id="@+id/tv_end_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="5dp"
+                            android:layout_weight="1.5"
+                            android:background="@drawable/radius"
+                            android:padding="8dp"
+                            android:text="00:00"
+                            android:textAlignment="center"
+                            android:textSize="20dp" />
+                    </LinearLayout>
+                </LinearLayout>
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
