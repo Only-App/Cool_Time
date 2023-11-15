@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
@@ -18,10 +19,6 @@ import com.onlyapp.cooltime.utils.getTotalTime
 import com.onlyapp.cooltime.utils.getYesterdayEnd
 import com.onlyapp.cooltime.utils.getYesterdayStart
 import com.onlyapp.cooltime.utils.loadUsage
-//import com.example.cool_time.utils.load_usage
-import com.onlyapp.cooltime.utils.totalTimetoText
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -65,7 +62,7 @@ class MainFragment : Fragment() {
             findNavController().navigate(R.id.action_main_to_use_stat)
         }
 
-        CoroutineScope(Dispatchers.Main).launch{//사용 횟수 출력
+        lifecycleScope.launch{//사용 횟수 출력
             MyApplication.getInstance().getDataStore().todayCnt.collect{
                 val yesterdayCnt =MyApplication.getInstance().getDataStore().yesterdayCnt.first()
                 binding.tvUseCount.text = it.toString()
@@ -79,7 +76,7 @@ class MainFragment : Fragment() {
             }
         }
 
-        CoroutineScope(Dispatchers.Main).launch{
+        lifecycleScope.launch{
             MyApplication.getInstance().getDataStore().latestUseTime.collect {   //최근 사용 시간 출력
                 val sdf = SimpleDateFormat("HH:mm")
                 binding.tvRecentTime.text = sdf.format(it)
@@ -87,7 +84,7 @@ class MainFragment : Fragment() {
             }
         }
 
-        CoroutineScope(Dispatchers.Main).launch{    //인내의 시간 출력
+        lifecycleScope.launch{    //인내의 시간 출력
             MyApplication.getInstance().getDataStore().enduredTime.collect{
                 val yesterdayEnduredTime = MyApplication.getInstance().getDataStore().yesterdayEnduredTime.first()
                 binding.tvEnduredTime.text = "%02d:%02d".format(it / 60, it % 60)
@@ -101,7 +98,7 @@ class MainFragment : Fragment() {
             }
         }
 
-        CoroutineScope(Dispatchers.Main).launch{    //총 사용 시간 출력
+        lifecycleScope.launch{    //총 사용 시간 출력
             MyApplication.getInstance().getDataStore().todayUseTime.collect{
                 Log.d("TotalTimeChanged", it.toString())
                 val yesterdayUseTime = MyApplication.getInstance().getDataStore().yesterdayUseTime.first()
@@ -119,33 +116,22 @@ class MainFragment : Fragment() {
     }
 
 
-    override fun onResume() {
-
-        super.onResume()
-    }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
     override fun onStart() {
         super.onStart()
 
-            val startday = getTodayStart().timeInMillis
-            val endday = getTodayNow().timeInMillis
-            val today_list = loadUsage(this@MainFragment.context!!, startday, endday)
-            val totalTime = getTotalTime(today_list)
+            val startDay = getTodayStart().timeInMillis
+            val endDay = getTodayNow().timeInMillis
+            val todayList = loadUsage(this@MainFragment.context!!, startDay, endDay)
+            val totalTime = getTotalTime(todayList)
 
-            val displayTotalTime = totalTimetoText(totalTime)
-            //binding.tvUseTime.text = displayTotalTime
+            val startYesterday = getYesterdayStart().timeInMillis
+            val endYesterday = getYesterdayEnd().timeInMillis
+            val yesterdayList = loadUsage(this@MainFragment.context!!, startYesterday, endYesterday)
+            val yesterdayTotalTime = getTotalTime(yesterdayList)
 
-            val startyesterday = getYesterdayStart().timeInMillis
-            val endyesterday = getYesterdayEnd().timeInMillis
-            val yesterday_list = loadUsage(this@MainFragment.context!!, startyesterday, endyesterday)
-            val yesterdayTotalTime = getTotalTime(yesterday_list)
-
-            val displaydiffTime = getDiff(totalTime, yesterdayTotalTime)
-            binding.tvCmpUseTime.text = displaydiffTime
-            childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment(today_list)).commit()
+            val displayDiffTime = getDiff(totalTime, yesterdayTotalTime)
+            binding.tvCmpUseTime.text = displayDiffTime
+            childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment(todayList)).commit()
 
     }
 

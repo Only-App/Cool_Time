@@ -15,15 +15,11 @@ import com.onlyapp.cooltime.utils.ChartAppFragment
 import com.onlyapp.cooltime.utils.ChartHourFragment
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.utils.getTodayStart
-import com.onlyapp.cooltime.utils.getTotalTime
-import com.onlyapp.cooltime.utils.loadTimeUsageAsync
-import com.onlyapp.cooltime.utils.loadUsageAsync
-//import com.example.cool_time.utils.load_time_usage
-//import com.example.cool_time.utils.load_usage
-import com.onlyapp.cooltime.utils.totalTimetoText
-import kotlinx.coroutines.CoroutineScope
+import com.onlyapp.cooltime.utils.loadTimeUsage
+import com.onlyapp.cooltime.utils.loadUsage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 
 // TODO: Rename parameter arguments, choose names that match
@@ -56,20 +52,6 @@ class UseStatFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        /*
-        val startday = getTodayStart().timeInMillis
-        val endday = getTodayNow().timeInMillis
-        val list = load_usage(this.context!!, startday, endday)
-
-        val hourList = load_time_usage(this.context!!, getTodayStart())
-
-
-        childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
-        childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment(list)).commit()
-
-
-         */
 
         _binding = FragmentUseStatBinding.inflate(layoutInflater, container, false)
 
@@ -77,27 +59,24 @@ class UseStatFragment : Fragment() {
         childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment()).commit()
 
 
-        CoroutineScope(Dispatchers.Main).launch{    //사용 횟수 출력
+        lifecycleScope.launch{    //사용 횟수 출력
             MyApplication.getInstance().getDataStore().todayCnt.collect{
                 binding.tvStatUseCount.text = it.toString()
             }
         }
-        CoroutineScope(Dispatchers.Main).launch{
+        lifecycleScope.launch{
             MyApplication.getInstance().getDataStore().latestUseTime.collect{   //최근 사용 시간 출력
                 val sdf= SimpleDateFormat("HH:mm")
                 binding.tvStatRecentTime.text = sdf.format(it)
             }
         }
 
-        CoroutineScope(Dispatchers.Main).launch{    //총 사용 시간 출력
+        lifecycleScope.launch{    //총 사용 시간 출력
             MyApplication.getInstance().getDataStore().todayUseTime.collect{
                 binding.tvUseTime.text =  "%02d : %02d : %02d".format(it / 3600, it % 3600 /  60, it % 60)
             }
 
         }
-
-
-
 
 
         return binding.root
@@ -110,15 +89,17 @@ class UseStatFragment : Fragment() {
             val startDay = getTodayStart().timeInMillis
             val endDay = getTodayNow().timeInMillis
             val todayList =
-                loadUsageAsync(this@UseStatFragment.context!!, startDay, endDay).await()
+                withContext(Dispatchers.IO) {
+                    loadUsage(this@UseStatFragment.context!!, startDay, endDay)//.await()
+                }
             val hourList =
-                loadTimeUsageAsync(this@UseStatFragment.context!!, getTodayStart()).await()
-
+                withContext(Dispatchers.IO) {
+                    loadTimeUsage(this@UseStatFragment.context!!, getTodayStart())
+                }
             childFragmentManager.beginTransaction()
                 .replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
             childFragmentManager.beginTransaction()
                 .replace(R.id.app_chart_fragment, ChartAppFragment(todayList)).commit()
-            val actionbar = (requireActivity() as AppCompatActivity).supportActionBar
         }
 
 

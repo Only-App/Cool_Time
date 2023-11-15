@@ -4,9 +4,6 @@ import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import java.util.Calendar
 
 fun getTodayStart(): Calendar {
@@ -18,8 +15,7 @@ fun getTodayStart(): Calendar {
     return calendar
 }
 fun getTodayNow(): Calendar {
-    val calendar = Calendar.getInstance()
-    return calendar
+    return Calendar.getInstance()
 }
 
 fun getTomorrowStart() : Calendar{
@@ -76,60 +72,7 @@ fun getSomedayEnd(year : Int,  month : Int,  day:Int): Calendar{
     return calendar
 }
 
-fun getAppUsageStatsAsync(context : Context, beginTime : Long, endTime : Long)
-    = CoroutineScope(Dispatchers.Default).async{
-    val appUsageMap = mutableMapOf<String, Long>()
-    val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-    val packageManager = context.packageManager
-    val usageEvents = usageStatsManager.queryEvents(beginTime, endTime)
 
-    val list :MutableMap<String, ArrayList<Triple<String, Int, Long>>> = mutableMapOf<String, ArrayList<Triple<String, Int,Long>>>()
-    while (usageEvents.hasNextEvent()) {
-        val currentEvent = UsageEvents.Event()
-        usageEvents.getNextEvent(currentEvent)
-        if(currentEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED
-            || currentEvent.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {
-            if (list[currentEvent.packageName] == null) {
-                list.putIfAbsent(currentEvent.packageName, ArrayList<Triple<String, Int, Long>>())
-                list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
-            } else {
-                list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
-            }
-        }
-    }
-
-    for((key, value) in list){
-        val packageName = key
-        if(packageName == "com.onlyapp.cooltime") continue
-        if(packageManager.getLaunchIntentForPackage(packageName) != null ) {
-            if (appUsageMap[packageName] == null) {
-                appUsageMap.putIfAbsent(packageName, 0L)
-            }
-            for (i in 0 until value.size - 1) {
-                val E0 = value[i]
-                val E1 = value[i + 1]
-                if (//E0.first == E1.first &&
-                    E0.second == UsageEvents.Event.ACTIVITY_RESUMED
-                    && E1.second == UsageEvents.Event.ACTIVITY_PAUSED
-                ) {
-                    val diff = ((E1.third - E0.third)) / 1000.toLong()
-                    val prev = appUsageMap[packageName] ?: 0L
-                    appUsageMap[packageName] = prev + diff
-                }
-            }
-            val lastEvent = value[value.size - 1]
-
-            if(lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED){
-                val prev = appUsageMap[packageName] ?: 0L
-                appUsageMap[packageName] = prev + (getTodayNow().timeInMillis - lastEvent.third) /1000.toLong()
-            }
-
-
-
-        }
-    }
-    appUsageMap.toList().sortedBy { it.second }.toMap()
-}
 
 fun getAppUsageStats(context : Context, beginTime : Long, endTime : Long): Map<String, Long> {
     val appUsageMap = mutableMapOf<String, Long>()
@@ -153,8 +96,7 @@ fun getAppUsageStats(context : Context, beginTime : Long, endTime : Long): Map<S
         }
     }
 
-    for((key, value) in list){
-        val packageName = key
+    for((packageName, value) in list){
         if(packageName == "com.onlyapp.cooltime") continue
         if(packageManager.getLaunchIntentForPackage(packageName) != null ) {
             if (appUsageMap[packageName] == null) {
@@ -182,8 +124,6 @@ fun getAppUsageStats(context : Context, beginTime : Long, endTime : Long): Map<S
 
         }
 
-
-
     }
 
     return appUsageMap.toList().sortedBy { it.second }.toMap()
@@ -194,37 +134,29 @@ fun loadUsage(context : Context, startDay : Long, endDay : Long): List<Pair<Stri
         return stats.toList()
 }
 
-fun loadUsageAsync(context : Context, startDay : Long, endDay : Long) =
-    CoroutineScope(Dispatchers.Default).async{
-        val stats = getAppUsageStatsAsync(context, startDay, endDay).await()
-        stats.toList()
-}
+fun loadTimeUsage(context : Context, calendar : Calendar): ArrayList<Long> {
+    val list = ArrayList<Long>()
+    for (i in 0 until 24) {
+        val startDay = calendar.clone() as Calendar
+        startDay.set(Calendar.HOUR_OF_DAY, i)
+        val endDay = calendar.clone() as Calendar
+        endDay.set(Calendar.HOUR_OF_DAY, i)
+        endDay.set(Calendar.MINUTE, 59)
+        endDay.set(Calendar.SECOND, 59)
+        endDay.set(Calendar.MILLISECOND, 999)
+        var totalTime = 0L
 
-
-fun loadTimeUsageAsync(context : Context, calendar : Calendar) =
-    CoroutineScope(Dispatchers.Default).async{
-        val list = ArrayList<Long>()
-        for (i in 0 until 24) {
-            val startDay = calendar.clone() as Calendar
-            startDay.set(Calendar.HOUR_OF_DAY, i)
-            val endDay = calendar.clone() as Calendar
-            endDay.set(Calendar.HOUR_OF_DAY, i)
-            endDay.set(Calendar.MINUTE, 59)
-            endDay.set(Calendar.SECOND, 59)
-            endDay.set(Calendar.MILLISECOND, 999)
-            var totalTime = 0L
-
-            val tmp = getAppUsageStatsAsync(
-                context!!,
-                startDay.timeInMillis,
-                endDay.timeInMillis
-            ).await()
-            for(i in tmp) {
-                totalTime += i.value
-            }
-            list.add(totalTime)
+        val tmp = getAppUsageStats(
+            context!!,
+            startDay.timeInMillis,
+            endDay.timeInMillis
+        )
+        for(i in tmp) {
+            totalTime += i.value
         }
-        list
+        list.add(totalTime)
+    }
+    return list
 }
 
 
@@ -237,20 +169,11 @@ fun getTotalTime(list :  List<Pair<String, Long>>): Long {
     return totalTime
 }
 
-fun totalTimetoText(totalTime:Long): String {
-    val totalHour = (totalTime/3600).toString()
-    val totalMin = (totalTime/60%60).toString()
-    val totalSec = (totalTime%60).toString()
-    val displayTotalTime = totalHour+" : " + totalMin + " : " + totalSec
-    return displayTotalTime
-}
-
 fun getDiff( totalTime:Long, yesterdayTotalTime:Long ): String {
     var diff = yesterdayTotalTime - totalTime
-    var moreOrless = if(diff < 0){"더 사용"} else{ "덜 사용"}
+    var moreOrLess = if(diff < 0){"더 사용"} else{ "덜 사용"}
     diff = Math.abs(diff)
-    val difftotalHour = (diff/3600).toString()
-    val difftotalMin = (diff/60%60).toString()
-    val displaydiffTime = "어제보다 " + difftotalHour+"시간 " + difftotalMin + "분 " + moreOrless
-    return displaydiffTime
+    val diffTotalHour = (diff/3600).toString()
+    val diffTotalMin = (diff/60%60).toString()
+    return "어제보다 " + diffTotalHour+"시간 " + diffTotalMin + "분 " + moreOrLess
 }
