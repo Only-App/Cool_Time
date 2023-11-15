@@ -1,10 +1,10 @@
 package com.onlyapp.cooltime.data
 
 import androidx.lifecycle.LiveData
-import com.onlyapp.cooltime.model.PhoneLock
+import com.onlyapp.cooltime.data.entity.PhoneLock
 
 class LockRepository(private val lockDAO : LockDAO) {
-    var allLock : LiveData<List<PhoneLock>> = lockDAO.getAll()
+    val allLock : LiveData<List<PhoneLock>> = lockDAO.getAll()
     fun getLock(id: Int){
         lockDAO.getLock(id)
     }

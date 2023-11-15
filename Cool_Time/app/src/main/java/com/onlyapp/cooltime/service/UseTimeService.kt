@@ -10,7 +10,7 @@ import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.MyApplication.Companion.waitCheck
 import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.data.UserDatabase
-import com.onlyapp.cooltime.model.PhoneLock
+import com.onlyapp.cooltime.data.entity.PhoneLock
 import com.onlyapp.cooltime.utils.getAppUsageStats
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.utils.getTodayStart
@@ -55,15 +55,15 @@ class UseTimeService : LifecycleService() {
 
                     val lockStatus = MyApplication.getInstance().getDataStore().lockStatus.first() //현재 잠금 상태
 
-                    lockViewModel.lock_list.observe(
+                    lockViewModel.lockList.observe(
                         this@UseTimeService,
                         Observer<List<PhoneLock>> {
                             it.forEach {
                                 val lockInfo = it
-                                val startDate = lockInfo.start_date
-                                var endDate = lockInfo.end_date
-                                val lockDay = lockInfo.lock_day
-                                val minTime = lockInfo.min_time
+                                val startDate = lockInfo.startDate
+                                var endDate = lockInfo.endDate
+                                val lockDay = lockInfo.lockDay
+                                val minTime = lockInfo.minTime
 
                                 if(endDate != -1L) {
                                     val endDateCalendar = Calendar.getInstance()
@@ -87,24 +87,24 @@ class UseTimeService : LifecycleService() {
                                         val lockOnDate = Calendar.getInstance()
                                         lockOnDate.set(
                                             Calendar.HOUR_OF_DAY,
-                                            lockInfo.lock_on / 60
+                                            lockInfo.lockOn / 60
                                         )
-                                        lockOnDate.set(Calendar.MINUTE, lockInfo.lock_on % 60)
+                                        lockOnDate.set(Calendar.MINUTE, lockInfo.lockOn % 60)
 
                                         val lockOffDate = Calendar.getInstance()
 
                                         lockOffDate.set(
                                             Calendar.HOUR_OF_DAY,
-                                            lockInfo.lock_off / 60
+                                            lockInfo.lockOff / 60
                                         )
 
-                                        lockOffDate.set(Calendar.MINUTE, lockInfo.lock_off % 60)
+                                        lockOffDate.set(Calendar.MINUTE, lockInfo.lockOff % 60)
 
                                         if (getTodayNow().timeInMillis in lockOnDate.timeInMillis..lockOffDate.timeInMillis) {   //잠금 시작 시간과 잠금 종료 시간에 포함되는지
                                             lockType = LOCK_DURATION
                                             reuseTime = ((lockOffDate.timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
                                             return@Observer
-                                        } else if (totalTime >= lockInfo.total_time * 60) {  //총 사용 시간을 모두 사용한 경우
+                                        } else if (totalTime >= lockInfo.totalTime * 60) {  //총 사용 시간을 모두 사용한 경우
                                             lockType = EXCEED
                                             reuseTime = ((getTomorrowStart().timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
                                             return@Observer
@@ -113,7 +113,7 @@ class UseTimeService : LifecycleService() {
                                         else if (minTime != -1L && !lockStatus && !waitCheck) {  //최소 사용 시간 간격이 설정되어 있는 경우,
                                             lockType = WAIT
                                             waitCheck = true
-                                            reuseTime = (lockInfo.min_time * 60).toInt()
+                                            reuseTime = (lockInfo.minTime * 60).toInt()
                                             return@Observer
                                         }
 

@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.onlyapp.cooltime.model.ExceptApp
+import com.onlyapp.cooltime.data.entity.ExceptApp
 
 @Dao
 interface ExceptAppDAO {

@@ -6,11 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.onlyapp.cooltime.utils.StringListConverter
-import com.onlyapp.cooltime.model.Alarm
-import com.onlyapp.cooltime.model.ExceptApp
-import com.onlyapp.cooltime.model.PhoneLock
+import com.onlyapp.cooltime.data.entity.Alarm
+import com.onlyapp.cooltime.data.entity.ExceptApp
+import com.onlyapp.cooltime.data.entity.PhoneLock
 
-@Database(entities = [Alarm::class, PhoneLock::class, ExceptApp::class], version = 7)
+@Database(entities = [Alarm::class, PhoneLock::class, ExceptApp::class], version = 8)
 @TypeConverters(StringListConverter::class)
 abstract class UserDatabase : RoomDatabase(){
     abstract fun alarmDao() : AlarmDAO  //알람 객체 DAO(Data Access Object)

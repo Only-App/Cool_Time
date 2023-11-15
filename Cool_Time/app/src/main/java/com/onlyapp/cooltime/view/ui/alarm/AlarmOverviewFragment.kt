@@ -14,7 +14,7 @@ import com.onlyapp.cooltime.data.AlarmRepository
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentAlarmBinding
-import com.onlyapp.cooltime.model.Alarm
+import com.onlyapp.cooltime.data.entity.Alarm
 import com.onlyapp.cooltime.view.adapter.AlarmAdapter
 import com.onlyapp.cooltime.view.adapter.OnAlarmItemOnClickListener
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
@@ -71,7 +71,7 @@ class AlarmOverviewFragment : Fragment() {
 
         binding.rvAlarmSet.layoutManager = LinearLayoutManager(this.context)
 
-        alarmViewModel!!.alarm_list.observe(this, Observer<List<Alarm>>{
+        alarmViewModel!!.alarmList.observe(this, Observer<List<Alarm>>{
             list -> binding.rvAlarmSet.adapter = AlarmAdapter(list, object : OnAlarmItemOnClickListener {
             override fun onItemClick(alarm: Alarm, pos: Int) {
                 val bundle  = Bundle()

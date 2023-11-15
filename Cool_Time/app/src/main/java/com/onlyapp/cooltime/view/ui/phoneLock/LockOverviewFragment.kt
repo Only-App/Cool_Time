@@ -13,7 +13,7 @@ import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentPhoneLockBinding
-import com.onlyapp.cooltime.model.PhoneLock
+import com.onlyapp.cooltime.data.entity.PhoneLock
 import com.onlyapp.cooltime.view.adapter.LockAdapter
 import com.onlyapp.cooltime.view.adapter.OnLockItemOnClickListener
 import com.onlyapp.cooltime.view.factory.LockViewModelFactory
@@ -63,7 +63,7 @@ class LockOverviewFragment : Fragment() {
 
         binding.rvLockList.layoutManager = LinearLayoutManager(this.context)
 
-        lockViewModel!!.lock_list.observe(this, Observer<List<PhoneLock>>{
+        lockViewModel!!.lockList.observe(this, Observer<List<PhoneLock>>{
             list -> binding!!.rvLockList.adapter = LockAdapter(list, object : OnLockItemOnClickListener {
             override fun onItemClick(lock: PhoneLock, position: Int) {
                 val bundle  = Bundle()

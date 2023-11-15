@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.onlyapp.cooltime.data.ExceptAppRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentExceptionAppBinding
-import com.onlyapp.cooltime.model.ExceptApp
+import com.onlyapp.cooltime.data.entity.ExceptApp
 import com.onlyapp.cooltime.model.ExceptAppItem
 import com.onlyapp.cooltime.view.adapter.AppAdapter
 import com.onlyapp.cooltime.view.adapter.OnCheckBoxChangedListener

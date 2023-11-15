@@ -1,12 +1,12 @@
 package com.onlyapp.cooltime.data
 
 import androidx.lifecycle.LiveData
-import com.onlyapp.cooltime.model.ExceptApp
+import com.onlyapp.cooltime.data.entity.ExceptApp
 
 class ExceptAppRepository(private val exceptAppDAO : ExceptAppDAO) {
     val allApps : LiveData<List<ExceptApp>> = exceptAppDAO.getAll()
 
-    fun getApp(packageName : String) : ExceptApp{
+    fun getApp(packageName : String) : ExceptApp {
         return exceptAppDAO.getApp(packageName)
     }
     fun getAllApps() : List<ExceptApp>{

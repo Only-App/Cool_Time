@@ -14,7 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.onlyapp.cooltime.data.AlarmRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentUpdateAlarmSettingBinding
-import com.onlyapp.cooltime.model.Alarm
+import com.onlyapp.cooltime.data.entity.Alarm
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 

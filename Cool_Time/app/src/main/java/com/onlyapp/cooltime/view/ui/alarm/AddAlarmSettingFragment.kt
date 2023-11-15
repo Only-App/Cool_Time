@@ -2,7 +2,6 @@ package com.onlyapp.cooltime.view.ui.alarm
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -12,14 +11,13 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.NumberPicker
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.onlyapp.cooltime.data.AlarmRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentAlarmSettingBinding
-import com.onlyapp.cooltime.model.Alarm
+import com.onlyapp.cooltime.data.entity.Alarm
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 
@@ -52,7 +50,6 @@ class AddAlarmSettingFragment : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M) //timePicker에서 hour와 minute property 사용이 최소 API를 요구함
     override fun onCreateView( //Fragment가 실행될 때 생명주기에 따라 onCreate 다음으로 자동 실행되는 함수, View 관련 내용을 세팅하기에 적합
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -110,7 +107,6 @@ class AddAlarmSettingFragment : Fragment() {
         minPick.maxValue = 59
     }
 
-    @RequiresApi(Build.VERSION_CODES.M) //timePicker에서 hour와 minute property 사용이 최소 API를 요구함
     private fun addAlarmSetting() {
         //db 객체 가져오기
         db = UserDatabase.getInstance(activity!!.applicationContext)

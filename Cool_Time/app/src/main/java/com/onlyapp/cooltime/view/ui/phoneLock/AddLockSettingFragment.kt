@@ -13,10 +13,11 @@ import com.onlyapp.cooltime.view.ui.dialog.CustomTimePickerDialog
 import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentLockSettingBinding
-import com.onlyapp.cooltime.model.PhoneLock
+import com.onlyapp.cooltime.data.entity.PhoneLock
 import com.onlyapp.cooltime.view.factory.LockViewModelFactory
 import com.onlyapp.cooltime.view.ui.dialog.CustomCalendarPickerDialog
 import com.onlyapp.cooltime.view.viewmodel.LockViewModel
+
 
 import java.text.SimpleDateFormat
 
@@ -77,20 +78,20 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
                 if(contentCheck()){
                     var duplicateCheck = false
 
-                    lockViewModel!!.lock_list.observe(this){
+                    lockViewModel!!.lockList.observe(this){
                         it.forEach{
                             if(start_date != -1L && end_date != -1L) {  //현재 추가하려는 잠금 정보가 잠금 기간을 설정한 경우
 
-                                if ((it.start_date == -1L && it.end_date == -1L)    //탐색한 잠금 정보가 잠금 기간을 설정하지 않았거나
-                                    || (start_date <= it.start_date && end_date <= it.end_date)){ //탐색한 잠금 정보의 잠금 기간이 현재 추가하려는 잠금 정보의 잠금 기간을 포함할 때
-                                    if (dayToBit() and it.lock_day != 0) {    //겹치는 요일이 존재할 때
+                                if ((it.startDate == -1L && it.endDate == -1L)    //탐색한 잠금 정보가 잠금 기간을 설정하지 않았거나
+                                    || (start_date <= it.startDate && end_date <= it.endDate)){ //탐색한 잠금 정보의 잠금 기간이 현재 추가하려는 잠금 정보의 잠금 기간을 포함할 때
+                                    if (dayToBit() and it.lockDay != 0) {    //겹치는 요일이 존재할 때
                                         Toast.makeText(activity, "현재 겹치는 잠금 정보가 존재합니다.",Toast.LENGTH_SHORT).show()
                                         duplicateCheck =true
                                     }
                                 }
                             }
                             else{   //현재 추가하려는 잠금 정보가 잠금 기간을 설정하지 않은 경우
-                                if(dayToBit() and it.lock_day != 0){
+                                if(dayToBit() and it.lockDay != 0){
                                     Toast.makeText(activity, "현재 겹치는 잠금 정보가 존재합니다.", Toast.LENGTH_SHORT).show()
                                     duplicateCheck = true
                                 }
@@ -100,9 +101,9 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
                     if(!duplicateCheck){
                         lockViewModel!!.insertLock(
                             PhoneLock(
-                                total_time = total_time, min_time = min_time,
-                                lock_on = lock_on, lock_off = lock_off, lock_day = dayToBit(),
-                                start_date = start_date, end_date = end_date
+                                totalTime = total_time, minTime = min_time,
+                                lockOn = lock_on, lockOff = lock_off, lockDay = dayToBit(),
+                                startDate = start_date, endDate = end_date
                             )
                         )
 

@@ -141,13 +141,14 @@ fun getAppUsageStats(context : Context, beginTime : Long, endTime : Long): Map<S
     while (usageEvents.hasNextEvent()) {
         val currentEvent = UsageEvents.Event()
         usageEvents.getNextEvent(currentEvent)
-        if(currentEvent.eventType == UsageEvents.Event.ACTIVITY_RESUMED
-            || currentEvent.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {
-            if (list[currentEvent.packageName] == null) {
-                list.putIfAbsent(currentEvent.packageName, ArrayList<Triple<String, Int, Long>>())
-                list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
-            } else {
-                list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
+        when (currentEvent.eventType) {
+            UsageEvents.Event.ACTIVITY_RESUMED, UsageEvents.Event.ACTIVITY_PAUSED -> {
+                if (list[currentEvent.packageName] == null) {
+                    list.putIfAbsent(currentEvent.packageName, ArrayList<Triple<String, Int, Long>>())
+                    list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
+                } else {
+                    list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
+                }
             }
         }
     }
@@ -204,19 +205,19 @@ fun loadTimeUsageAsync(context : Context, calendar : Calendar) =
     CoroutineScope(Dispatchers.Default).async{
         val list = ArrayList<Long>()
         for (i in 0 until 24) {
-            val startday = calendar.clone() as Calendar
-            startday.set(Calendar.HOUR_OF_DAY, i)
-            var endday = calendar.clone() as Calendar
-            endday.set(Calendar.HOUR_OF_DAY, i)
-            endday.set(Calendar.MINUTE, 59)
-            endday.set(Calendar.SECOND, 59)
-            endday.set(Calendar.MILLISECOND, 999)
+            val startDay = calendar.clone() as Calendar
+            startDay.set(Calendar.HOUR_OF_DAY, i)
+            val endDay = calendar.clone() as Calendar
+            endDay.set(Calendar.HOUR_OF_DAY, i)
+            endDay.set(Calendar.MINUTE, 59)
+            endDay.set(Calendar.SECOND, 59)
+            endDay.set(Calendar.MILLISECOND, 999)
             var totalTime = 0L
 
             val tmp = getAppUsageStatsAsync(
                 context!!,
-                startday.timeInMillis,
-                endday.timeInMillis
+                startDay.timeInMillis,
+                endDay.timeInMillis
             ).await()
             for(i in tmp) {
                 totalTime += i.value

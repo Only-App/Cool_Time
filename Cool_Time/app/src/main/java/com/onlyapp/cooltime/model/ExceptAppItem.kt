@@ -6,5 +6,5 @@ data class ExceptAppItem(
     val appName : String,
     val packageName : String,
     val appIcon : Drawable,
-    var checked : Boolean
+    val checked : Boolean
 )

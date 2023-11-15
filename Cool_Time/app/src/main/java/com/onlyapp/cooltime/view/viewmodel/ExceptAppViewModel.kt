@@ -2,10 +2,8 @@ package com.onlyapp.cooltime.view.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.onlyapp.cooltime.data.ExceptAppRepository
-import com.onlyapp.cooltime.model.ExceptApp
-import java.lang.IllegalArgumentException
+import com.onlyapp.cooltime.data.entity.ExceptApp
 
 class ExceptAppViewModel(private val repository: ExceptAppRepository) : ViewModel() {
     val exceptApp : LiveData<List<ExceptApp>> = repository.allApps
@@ -17,7 +15,7 @@ class ExceptAppViewModel(private val repository: ExceptAppRepository) : ViewMode
     fun deleteApp(packageName : String){
         repository.deleteApp(packageName)
     }
-    fun getApp(packageName : String) : ExceptApp{
+    fun getApp(packageName : String) : ExceptApp {
         return repository.getApp(packageName)
     }
 

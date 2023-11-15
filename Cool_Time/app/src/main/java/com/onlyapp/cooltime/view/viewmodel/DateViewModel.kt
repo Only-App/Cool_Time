@@ -5,7 +5,4 @@ import androidx.lifecycle.ViewModel
 
 class DateViewModel : ViewModel() {
     val date : MutableLiveData<Long> = MutableLiveData()
-
-
-
 }

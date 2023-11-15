@@ -1,4 +1,4 @@
-package com.onlyapp.cooltime.model
+package com.onlyapp.cooltime.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -14,8 +14,8 @@ import com.onlyapp.cooltime.data.AlarmRepository
 import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentCalendarBinding
-import com.onlyapp.cooltime.model.Alarm
-import com.onlyapp.cooltime.model.PhoneLock
+import com.onlyapp.cooltime.data.entity.Alarm
+import com.onlyapp.cooltime.data.entity.PhoneLock
 import com.onlyapp.cooltime.utils.ChartAppFragment
 import com.onlyapp.cooltime.utils.ChartHourFragment
 import com.onlyapp.cooltime.utils.getSomedayEnd
@@ -134,10 +134,10 @@ class CalendarFragment : Fragment(){
         //date 값이 변경되는지 관찰
         dateViewModel.date.observe(this, Observer<Long>{
             date_time ->
-            lockViewModel!!.lock_list.observe(this, Observer<List<PhoneLock>>{
+            lockViewModel!!.lockList.observe(this, Observer<List<PhoneLock>>{
                     list -> //조건에 맞는 list만 filtering 작업
-                val filteredList = list.filter{ elem -> (elem.start_date == -1L && elem.end_date == -1L) ||
-                        date_time in elem.start_date..elem.end_date
+                val filteredList = list.filter{ elem -> (elem.startDate == -1L && elem.endDate == -1L) ||
+                        date_time in elem.startDate..elem.endDate
                 }
                 if(filteredList.isNullOrEmpty()) {  //조건에 맞는 잠금 정보가 없는 경우
                     binding.tvLock.text = "잠금 정보가 존재하지 않습니다"
@@ -149,7 +149,7 @@ class CalendarFragment : Fragment(){
 
             })
 
-            alarmViewModel!!.alarm_list.observe(this, Observer<List<Alarm>>{
+            alarmViewModel!!.alarmList.observe(this, Observer<List<Alarm>>{
                     list ->
                 val filteredList = list.filter{elem ->
                     var cal = Calendar.getInstance()

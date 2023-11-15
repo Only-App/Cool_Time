@@ -13,10 +13,11 @@ import com.onlyapp.cooltime.view.ui.dialog.CustomTimePickerDialog
 import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentUpdateLockSettingBinding
-import com.onlyapp.cooltime.model.PhoneLock
+import com.onlyapp.cooltime.data.entity.PhoneLock
 import com.onlyapp.cooltime.view.factory.LockViewModelFactory
 import com.onlyapp.cooltime.view.ui.dialog.CustomCalendarPickerDialog
 import com.onlyapp.cooltime.view.viewmodel.LockViewModel
+
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -150,15 +151,15 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                         //update 작업, 다시 돌아가기
                         var duplicateCheck = false
 
-                        lockViewModel!!.lock_list.observe(this){
+                        lockViewModel!!.lockList.observe(this){
                             it.forEach{
                                 if(lock.id != it.id) {
                                     if (start_date != -1L && end_date != -1L) {  //현재 추가하려는 잠금 정보가 잠금 기간을 설정한 경우
 
-                                        if ((it.start_date == -1L && it.end_date == -1L)    //탐색한 잠금 정보가 잠금 기간을 설정하지 않았거나
-                                            || (start_date <= it.start_date && end_date <= it.end_date)
+                                        if ((it.startDate == -1L && it.endDate == -1L)    //탐색한 잠금 정보가 잠금 기간을 설정하지 않았거나
+                                            || (start_date <= it.startDate && end_date <= it.endDate)
                                         ) { //탐색한 잠금 정보의 잠금 기간이 현재 추가하려는 잠금 정보의 잠금 기간을 포함할 때
-                                            if (dayToBit() and it.lock_day != 0) {    //겹치는 요일이 존재할 때
+                                            if (dayToBit() and it.lockDay != 0) {    //겹치는 요일이 존재할 때
                                                 Toast.makeText(
                                                     activity,
                                                     "현재 겹치는 잠금 정보가 존재합니다.",
@@ -168,7 +169,7 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                                             }
                                         }
                                     } else {   //현재 추가하려는 잠금 정보가 잠금 기간을 설정하지 않은 경우
-                                        if (dayToBit() and it.lock_day != 0) {
+                                        if (dayToBit() and it.lockDay != 0) {
                                             Toast.makeText(
                                                 activity,
                                                 "현재 겹치는 잠금 정보가 존재합니다.",
@@ -184,13 +185,13 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                             lockViewModel!!.updateLock(
                                 PhoneLock(
                                     id = lock.id,
-                                    total_time = total_time,
-                                    min_time = min_time,
-                                    lock_on = lock_on,
-                                    lock_off = lock_off,
-                                    lock_day = dayToBit(),
-                                    start_date = start_date,
-                                    end_date = end_date
+                                    totalTime = total_time,
+                                    minTime = min_time,
+                                    lockOn = lock_on,
+                                    lockOff = lock_off,
+                                    lockDay = dayToBit(),
+                                    startDate = start_date,
+                                    endDate = end_date
                                 )
                             )
                             findNavController().popBackStack()
@@ -234,10 +235,10 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
 
     private fun receiveLockData(lock: PhoneLock){
 
-        binding.tvTodayTotalTime.text = "${lock.total_time / 60}시간 ${lock.total_time % 60}분"
-        binding.tvIntervalTime.text =  "${lock.min_time / 60}시간 ${lock.min_time % 60}분"
+        binding.tvTodayTotalTime.text = "${lock.totalTime / 60}시간 ${lock.totalTime % 60}분"
+        binding.tvIntervalTime.text =  "${lock.minTime / 60}시간 ${lock.minTime % 60}분"
 
-        var temp = lock.lock_day
+        var temp = lock.lockDay
 
         binding.updateLockCheckMon.isChecked = temp >= 64
         temp -= if(temp >= 64) 64 else 0
@@ -258,9 +259,9 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         temp -= if(temp >= 2) 2 else 0
 
         binding.updateLockCheckSun.isChecked = temp >= 1
-        temp -= if(lock.lock_day >= 1) 1 else 0
+        temp -= if(lock.lockDay >= 1) 1 else 0
 
-        if(lock.lock_on == -1 && lock.lock_off == -1){  //특정 시간 잠금 설정하지 않았을 경우
+        if(lock.lockOn == -1 && lock.lockOff == -1){  //특정 시간 잠금 설정하지 않았을 경우
             binding.cbNotIntervalSetting.isChecked = true
             binding.tvStartTime.isEnabled = false
             binding.tvEndTime.isEnabled = false
@@ -269,11 +270,11 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
             binding.tvEndTime.text = "0시간 0분"
         }
         else {  //특정 시간 잠금을 설정했을 경우
-            binding.tvStartTime.text = "${lock.lock_on / 60}시간 ${lock.lock_on % 60}분"
-            binding.tvEndTime.text = "${lock.lock_off / 60}시간 ${lock.lock_off % 60}분"
+            binding.tvStartTime.text = "${lock.lockOn / 60}시간 ${lock.lockOn % 60}분"
+            binding.tvEndTime.text = "${lock.lockOff / 60}시간 ${lock.lockOff % 60}분"
         }
 
-        if(lock.start_date == -1L && lock.end_date == -1L){ //특정 날짜 잠금 설정하지 않은 경우
+        if(lock.startDate == -1L && lock.endDate == -1L){ //특정 날짜 잠금 설정하지 않은 경우
             binding.cbNotDaySetting.isChecked = true
             binding.tvStartDay.isEnabled = false
             binding.tvEndDay.isEnabled = false
@@ -282,15 +283,15 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
             binding.tvEndDay.text = "종료 날짜"
         }
         else {  //특정 날짜 잠금 설정한 경우
-            binding.tvStartDay.text = SimpleDateFormat("yyyy.MM.dd").format(Date(lock.start_date))
-            binding.tvEndDay.text = SimpleDateFormat("yyyy.MM.dd").format(Date(lock.end_date))
+            binding.tvStartDay.text = SimpleDateFormat("yyyy.MM.dd").format(Date(lock.startDate))
+            binding.tvEndDay.text = SimpleDateFormat("yyyy.MM.dd").format(Date(lock.endDate))
         }
-        total_time = lock.total_time
-        min_time = lock.min_time
-        lock_on = lock.lock_on
-        lock_off = lock.lock_off
-        start_date = lock.start_date
-        end_date = lock.end_date
+        total_time = lock.totalTime
+        min_time = lock.minTime
+        lock_on = lock.lockOn
+        lock_off = lock.lockOff
+        start_date = lock.startDate
+        end_date = lock.endDate
 
     }
 
