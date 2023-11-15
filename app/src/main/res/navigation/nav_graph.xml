@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/main">
+
+    <fragment
+        android:id="@+id/main"
+        android:name="com.onlyapp.cooltime.view.ui.main.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_main_to_use_stat"
+            app:destination="@id/use_stat" />
+    </fragment>
+    <fragment
+        android:id="@+id/exception"
+        android:name="com.onlyapp.cooltime.view.ui.exceptionApp.ExceptionAppFragment"
+        android:label="exception_app"
+        tools:layout="@layout/fragment_exception_app" />
+
+    <fragment
+        android:id="@+id/use_stat"
+        android:name="com.onlyapp.cooltime.view.ui.useStat.UseStatFragment"
+        android:label="fragment_use_stat"
+        tools:layout="@layout/fragment_use_stat" />
+
+    <include app:graph = "@navigation/alarm" />
+    <fragment
+        android:id="@+id/calendar"
+        android:name="com.onlyapp.cooltime.view.ui.calendar.CalendarFragment"
+        android:label="fragment_calendar"
+        tools:layout="@layout/fragment_calendar" >
+
+    </fragment>
+    <include app:graph = "@navigation/activate_lock"/>
+
+    <include app:graph = "@navigation/phone_lock"/>
+
+</navigation>

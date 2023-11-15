@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/alarm"
+    app:startDestination="@id/alarm_main">
+
+    <fragment
+        android:id="@+id/alarm_main"
+        android:name="com.onlyapp.cooltime.view.ui.alarm.AlarmOverviewFragment"
+        android:label="fragment_alarm"
+        tools:layout="@layout/fragment_alarm" >
+        <action
+            android:id="@+id/action_alarm_main_to_alarm_setting"
+            app:destination="@id/alarm_setting" />
+        <action
+            android:id="@+id/action_alarm_main_to_update_alarm_setting"
+            app:destination="@id/update_alarm_setting" />
+
+
+    </fragment>
+    <fragment
+        android:id="@+id/alarm_setting"
+        android:name="com.onlyapp.cooltime.view.ui.alarm.AddAlarmSettingFragment"
+        android:label="fragment_alarm_setting"
+        tools:layout="@layout/fragment_alarm_setting" >
+        <action
+            android:id="@+id/action_alarm_setting_to_alarm_main"
+            app:destination="@id/alarm_main" />
+    </fragment>
+    <fragment
+        android:id="@+id/update_alarm_setting"
+        android:name="com.onlyapp.cooltime.view.ui.alarm.UpdateAlarmSettingFragment"
+        android:label="UpdateAlarmSettingFragment" />
+</navigation>
