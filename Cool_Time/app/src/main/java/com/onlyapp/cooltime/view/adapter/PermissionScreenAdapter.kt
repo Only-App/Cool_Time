@@ -26,6 +26,7 @@ class PermissionViewHolder(val binding: PermissionItemBinding) :
 
 class PermissionScreenAdapter(private val permissionItems:MutableList<PermissionItem>, private val activity: Activity, private val permissionBinding: ActivityPermissionCheckBinding) :
     RecyclerView.Adapter<ViewHolder>(){
+
     private var recyclerView: RecyclerView = permissionBinding.permissionList // RecyclerView 변수
 
     override fun getItemCount(): Int {
