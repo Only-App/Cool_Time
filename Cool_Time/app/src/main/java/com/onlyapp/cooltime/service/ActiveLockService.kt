@@ -147,7 +147,6 @@ class ActiveLockService: Service() {
         }
 
         val time = intent.getIntExtra("time", 0)
-        Log.d("tstst", time.toString())
         val serviceIntent = Intent(this, RemainingTimeService::class.java)
         serviceIntent.putExtra("time", time)
         startService(serviceIntent)

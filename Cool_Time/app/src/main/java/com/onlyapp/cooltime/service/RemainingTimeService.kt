@@ -17,7 +17,6 @@ class RemainingTimeService(): Service(){
                 if (variable >= 0) {
                     val timeIntent = Intent("remainingTime")
                     timeIntent.putExtra("time", variable)
-                    Log.d("tstst", "variable" + variable.toString())
                     sendBroadcast(timeIntent)
                     variable--
                 } else {

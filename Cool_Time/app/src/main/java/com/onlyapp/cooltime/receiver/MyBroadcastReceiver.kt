@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 
 class MyBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d("tstst", "intent.action은"+ intent.action)
         when(intent.action){
             Intent.ACTION_USER_PRESENT -> //잠금 해제 상황에서
                 CoroutineScope(Dispatchers.Main).launch{
