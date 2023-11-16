@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
+import androidx.lifecycle.lifecycleScope
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.databinding.FragmentDirectLockBinding
 import com.onlyapp.cooltime.service.ActiveLockService
@@ -57,7 +58,7 @@ class DirectLockFragment : Fragment() {
         timeInit()
         binding.fabAddSetting.setOnClickListener{
             //Toast.makeText(activity, "DIRECT LOCK", Toast.LENGTH_SHORT).show()
-            CoroutineScope(Dispatchers.Main).launch{    //지정한 시간만큼 인내의 시간 증가
+            lifecycleScope.launch{    //지정한 시간만큼 인내의 시간 증가
                 MyApplication.getInstance().getDataStore().increaseEnduredTime(hourPick.value * 60  + minPick.value)
             }
 

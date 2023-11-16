@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.data.AlarmRepository
@@ -20,8 +21,8 @@ import com.onlyapp.cooltime.utils.ChartAppFragment
 import com.onlyapp.cooltime.utils.ChartHourFragment
 import com.onlyapp.cooltime.utils.getSomedayEnd
 import com.onlyapp.cooltime.utils.getSomedayStart
-import com.onlyapp.cooltime.utils.loadTimeUsageAsync
-import com.onlyapp.cooltime.utils.loadUsageAsync
+import com.onlyapp.cooltime.utils.loadTimeUsage
+import com.onlyapp.cooltime.utils.loadUsage
 import com.onlyapp.cooltime.view.adapter.AlarmAdapter
 import com.onlyapp.cooltime.view.adapter.LockAdapter
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
@@ -29,9 +30,9 @@ import com.onlyapp.cooltime.view.factory.LockViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 import com.onlyapp.cooltime.view.viewmodel.DateViewModel
 import com.onlyapp.cooltime.view.viewmodel.LockViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -95,19 +96,21 @@ class CalendarFragment : Fragment(){
         binding.calendarView.setOnDateChangeListener {  //캘린더 뷰 날짜 변경 리스너 설정
                 calendarView, year, month, day ->
 
-            CoroutineScope(Dispatchers.Main).launch {
+            lifecycleScope.launch {
                 val date = Date(binding.calendarView.date)
 
                 val startday = getSomedayStart(year, month, day)
                 val endday = getSomedayEnd(year, month, day)
 
-                val appList = loadUsageAsync(
-                    this@CalendarFragment.context!!,
-                    startday.timeInMillis,
-                    endday.timeInMillis
-                ).await()
-                val hourList =
-                    loadTimeUsageAsync(
+                val appList = withContext(Dispatchers.IO) {
+                    loadUsage(
+                        this@CalendarFragment.context!!,
+                        startday.timeInMillis,
+                        endday.timeInMillis
+                    )
+                }
+                val hourList = withContext(Dispatchers.IO) {
+                    loadTimeUsage(
                         this@CalendarFragment.context!!,
                         getSomedayStart(
                             startday.get(Calendar.YEAR),
@@ -115,7 +118,7 @@ class CalendarFragment : Fragment(){
                             startday.get(Calendar.DAY_OF_MONTH)
                         )
                     )
-                        .await()
+                }
                 childFragmentManager.beginTransaction()
                     .replace(binding.hourChartFragment.id, ChartHourFragment(hourList)).commit()
                 childFragmentManager.beginTransaction()
@@ -133,7 +136,7 @@ class CalendarFragment : Fragment(){
 
         //date 값이 변경되는지 관찰
         dateViewModel.date.observe(this, Observer<Long>{
-            date_time ->
+                date_time ->
             lockViewModel!!.lockList.observe(this, Observer<List<PhoneLock>>{
                     list -> //조건에 맞는 list만 filtering 작업
                 val filteredList = list.filter{ elem -> (elem.startDate == -1L && elem.endDate == -1L) ||
@@ -176,7 +179,7 @@ class CalendarFragment : Fragment(){
 
 
         binding.radioGroup.setOnCheckedChangeListener{
-            _, _ ->
+                _, _ ->
             if(binding.btnLockAndAlarm.isChecked) {
                 binding.llLockAndAlarmSet.visibility = View.VISIBLE
                 binding.llChart.visibility = View.GONE
@@ -192,31 +195,36 @@ class CalendarFragment : Fragment(){
 
     override fun onStart() {
         super.onStart()
-        CoroutineScope(Dispatchers.Main).launch{
+        lifecycleScope.launch{
             val date = Date(binding.calendarView.date)
 
-            val startday = getSomedayStart(date.year + 1900, date.month, date.date)
-            val endday = getSomedayEnd(date.year + 1900, date.month, date.date)
+            val startDay = getSomedayStart(date.year + 1900, date.month, date.date)
+            val endDay = getSomedayEnd(date.year + 1900, date.month, date.date)
 
-            val appList =
-                loadUsageAsync(this@CalendarFragment.context!!, startday.timeInMillis, endday.timeInMillis).await()
-
-            val hourList =
-                loadTimeUsageAsync(
+            val appList = withContext(Dispatchers.IO) {
+                loadUsage(
                     this@CalendarFragment.context!!,
-                    getSomedayStart(
-                        startday.get(Calendar.YEAR),
-                        startday.get(Calendar.MONTH),
-                        startday.get(Calendar.DAY_OF_MONTH)
+                    startDay.timeInMillis,
+                    endDay.timeInMillis
+                )
+            }
+            val hourList =
+                withContext(Dispatchers.IO) {
+                    loadTimeUsage(
+                        this@CalendarFragment.context!!,
+                        getSomedayStart(
+                            startDay.get(Calendar.YEAR),
+                            startDay.get(Calendar.MONTH),
+                            startDay.get(Calendar.DAY_OF_MONTH)
+                        )
                     )
-                ).await()
+                }
             childFragmentManager.beginTransaction()
                 .replace(R.id.hour_chart_fragment, ChartHourFragment(hourList)).commit()
             childFragmentManager.beginTransaction()
                 .replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
         }
-        //childFragmentManager.beginTransaction().replace(R.id.hour_chart_fragment, ChartHourFragment()).commit()
-        //childFragmentManager.beginTransaction().replace(R.id.app_chart_fragment, ChartAppFragment()).commit()
+
     }
 
     companion object {

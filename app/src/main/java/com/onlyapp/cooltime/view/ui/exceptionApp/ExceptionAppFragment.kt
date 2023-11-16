@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.onlyapp.cooltime.data.ExceptAppRepository
 import com.onlyapp.cooltime.data.UserDatabase
@@ -40,7 +41,7 @@ class ExceptionAppFragment : Fragment(){
 
         val packageManager = this@ExceptionAppFragment.activity!!.packageManager
 
-        CoroutineScope(Dispatchers.Main).launch {
+        lifecycleScope.launch {
             val packages: List<PackageInfo> = async(Dispatchers.IO) {
                 packageManager.getInstalledPackages(PackageManager.MATCH_DEFAULT_ONLY)
             }.await()
@@ -71,7 +72,7 @@ class ExceptionAppFragment : Fragment(){
 
             }
 
-            CoroutineScope(Dispatchers.Main).launch {
+            lifecycleScope.launch {
                 binding.checkedException.layoutManager =
                     LinearLayoutManager(this@ExceptionAppFragment.context)
 
@@ -81,26 +82,26 @@ class ExceptionAppFragment : Fragment(){
                         CoroutineScope(Dispatchers.Main).launch {
                             val exceptAppList = mutableListOf<ExceptAppItem>()
                             withContext(Dispatchers.IO) {
-                                    it.forEach {
-                                        try {
-                                            Log.d("exceptApp", it.toString())
-                                            val appInfo =
-                                                packageManager.getApplicationInfo(
-                                                    it.packageName,
-                                                    PackageManager.GET_META_DATA)
+                                it.forEach {
+                                    try {
+                                        Log.d("exceptApp", it.toString())
+                                        val appInfo =
+                                            packageManager.getApplicationInfo(
+                                                it.packageName,
+                                                PackageManager.GET_META_DATA)
 
-                                            exceptAppList.add(
-                                                ExceptAppItem(
-                                                    appInfo.loadLabel(packageManager)!!.toString(),
-                                                    it.packageName,
-                                                    appInfo.loadIcon(packageManager),
-                                                    it.checked
-                                                )
+                                        exceptAppList.add(
+                                            ExceptAppItem(
+                                                appInfo.loadLabel(packageManager)!!.toString(),
+                                                it.packageName,
+                                                appInfo.loadIcon(packageManager),
+                                                it.checked
                                             )
-                                        } catch (e: Exception) {   //삭제되었는데 table에 저장되어 있는 앱인 경우
-                                            exceptViewModel.deleteApp(it.packageName)
-                                        }
+                                        )
+                                    } catch (e: Exception) {   //삭제되었는데 table에 저장되어 있는 앱인 경우
+                                        exceptViewModel.deleteApp(it.packageName)
                                     }
+                                }
                             }
 
 
