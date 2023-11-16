@@ -2,22 +2,24 @@ package com.onlyapp.cooltime.data
 
 import androidx.lifecycle.LiveData
 import com.onlyapp.cooltime.data.entity.PhoneLock
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class LockRepository(private val lockDAO : LockDAO) {
     val allLock : LiveData<List<PhoneLock>> = lockDAO.getAll()
-    fun getLock(id: Int){
-        lockDAO.getLock(id)
+    suspend fun getLock(id: Int){
+        withContext(Dispatchers.IO){ lockDAO.getLock(id) }
     }
 
-    fun insertLock(lock : PhoneLock){
-        lockDAO.insertLock(lock)
+    suspend fun insertLock(lock : PhoneLock){
+        withContext(Dispatchers.IO){ lockDAO.insertLock(lock) }
     }
-    fun updateLock(lock : PhoneLock){
-        lockDAO.updateLock(lock)
+    suspend fun updateLock(lock : PhoneLock){
+        withContext(Dispatchers.IO){ lockDAO.updateLock(lock) }
     }
 
-    fun deleteLock(lock : PhoneLock){
-        lockDAO.deleteLock(lock)
+    suspend fun deleteLock(lock : PhoneLock){
+        withContext(Dispatchers.IO){ lockDAO.deleteLock(lock) }
     }
 
 

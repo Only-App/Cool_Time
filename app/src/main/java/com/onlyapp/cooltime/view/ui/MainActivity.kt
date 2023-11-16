@@ -25,6 +25,7 @@ import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.utils.getTodayStart
 import com.onlyapp.cooltime.utils.getTotalTime
 import com.onlyapp.cooltime.view.adapter.PermissionScreenAdapter
+import com.onlyapp.cooltime.view.ui.dialog.ShareDialog
 import com.onlyapp.cooltime.view.ui.permission.CheckPermissionActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -171,8 +172,8 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.share -> {  //share button 누른게 공유 아이콘 버튼일 때 작성할 메소드
-                Toast.makeText(this, "Click Share Button", Toast.LENGTH_SHORT).show()
-                //TODO KAKAOTALK SHARE FUNCTION
+                val dialog = ShareDialog()
+                ShareDialog().show(supportFragmentManager, null)
             }
         }
         return  super.onOptionsItemSelected(item)

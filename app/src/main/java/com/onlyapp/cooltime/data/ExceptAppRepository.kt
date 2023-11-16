@@ -2,24 +2,26 @@ package com.onlyapp.cooltime.data
 
 import androidx.lifecycle.LiveData
 import com.onlyapp.cooltime.data.entity.ExceptApp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ExceptAppRepository(private val exceptAppDAO : ExceptAppDAO) {
     val allApps : LiveData<List<ExceptApp>> = exceptAppDAO.getAll()
 
-    fun getApp(packageName : String) : ExceptApp {
-        return exceptAppDAO.getApp(packageName)
+    suspend fun getApp(packageName : String) : ExceptApp {
+        return withContext(Dispatchers.IO){ exceptAppDAO.getApp(packageName) }
     }
-    fun getAllApps() : List<ExceptApp>{
-        return exceptAppDAO.getAllNotLive()
+    suspend fun getAllApps() : List<ExceptApp>{
+        return withContext(Dispatchers.IO){ exceptAppDAO.getAllNotLive() }
     }
-    fun insertApp(exceptApp: ExceptApp){
-        exceptAppDAO.insertApp(exceptApp)
+    suspend fun insertApp(exceptApp: ExceptApp){
+        withContext(Dispatchers.IO){ exceptAppDAO.insertApp(exceptApp) }
     }
-    fun deleteApp(packageName : String){
-        exceptAppDAO.deleteApp(packageName)
+    suspend fun deleteApp(packageName : String){
+        withContext(Dispatchers.IO){ exceptAppDAO.deleteApp(packageName) }
     }
 
-    fun updateApp(exceptApp: ExceptApp){
-        exceptAppDAO.updateApp(exceptApp)
+    suspend fun updateApp(exceptApp: ExceptApp){
+        withContext(Dispatchers.IO){ exceptAppDAO.updateApp(exceptApp) }
     }
 }
