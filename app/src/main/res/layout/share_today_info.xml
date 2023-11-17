@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!-- Today's Use Stats !-->
+
     <androidx.cardview.widget.CardView
         android:id= "@+id/cv_statistics_today"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="10dp"
-        android:layout_marginTop="10dp"
         app:cardElevation="2dp"
+        android:layout_margin="10dp"
+
         android:background="@android:color/transparent"
-        android:layout_marginHorizontal="10dp"
+
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cv_lock_setting_today"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         >
 
         <LinearLayout
@@ -41,7 +48,7 @@
 
                 <TextView
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "사용시간"
                     android:textSize= "20dp"
                     android:layout_gravity="center_horizontal"
@@ -50,7 +57,7 @@
                 <TextView
                     android:id ="@+id/tv_use_time"
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "00 : 00 : 00"
                     android:textSize= "25dp"
                     android:textStyle="bold"
@@ -60,7 +67,7 @@
                 <TextView
                     android:id ="@+id/tv_cmp_use_time"
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "어제보다 2시간 5분 더 사용"
                     android:textSize= "15dp"
                     android:layout_gravity="center_horizontal"
@@ -78,7 +85,7 @@
 
                 <TextView
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "사용 횟수"
                     android:textSize= "20dp"
                     android:layout_gravity="center_horizontal"
@@ -87,7 +94,7 @@
                 <TextView
                     android:id ="@+id/tv_use_count"
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "00"
                     android:textSize= "25dp"
                     android:textStyle="bold"
@@ -97,7 +104,7 @@
                 <TextView
                     android:id = "@+id/tv_compare_use_cnt"
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "어제보다 5번 더 사용"
                     android:textSize= "15dp"
                     android:layout_gravity="center_horizontal"
@@ -115,7 +122,7 @@
 
                 <TextView
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "인내의 시간"
                     android:textSize= "20dp"
                     android:layout_gravity="center_horizontal"
@@ -124,7 +131,7 @@
                 <TextView
                     android:id ="@+id/tv_endured_time"
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "00: 00: 00"
                     android:textSize= "25dp"
                     android:textStyle="bold"
@@ -134,7 +141,7 @@
                 <TextView
                     android:id = "@+id/tv_compare_endure"
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "어제보다 5분 더 잠금"
                     android:textSize= "15dp"
                     android:layout_gravity="center_horizontal"
@@ -152,7 +159,7 @@
 
                 <TextView
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "가장 최근 사용 시간"
                     android:textSize= "20dp"
                     android:layout_gravity="center_horizontal"
@@ -161,7 +168,7 @@
                 <TextView
                     android:id ="@+id/tv_recent_time"
                     android:layout_width = "wrap_content"
-                    android:layout_height=  "match_parent"
+                    android:layout_height=  "wrap_content"
                     android:text = "00: 00"
                     android:textSize= "25dp"
                     android:textStyle="bold"
@@ -175,15 +182,19 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id= "@+id/lock_setting_today"
+        android:id= "@+id/cv_lock_setting_today"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="2dp"
         android:background="@android:color/transparent"
         android:layout_margin="10dp"
-        app:layout_constraintTop_toBottomOf="@id/cv_statistics_today"
+
+
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
         >
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -209,7 +220,6 @@
                     android:id = "@+id/ll_today_lock_text"
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@id/today_lock"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     >
@@ -348,4 +358,5 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
