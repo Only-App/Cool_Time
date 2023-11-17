@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.onlyapp.cooltime.data.entity.Alarm
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AlarmDAO {
@@ -21,6 +22,8 @@ interface AlarmDAO {
     @Query("SELECT * FROM alarm")
     fun getAll() : LiveData<List<Alarm>>
 
+    @Query("SELECT * FROM alarm")
+    fun getAllFlow() : Flow<List<Alarm>>
     @Query("SELECT * FROM alarm WHERE id= :id")
     fun getAlarm(id : Int) : Alarm
 }

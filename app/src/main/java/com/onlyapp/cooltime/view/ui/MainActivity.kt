@@ -1,35 +1,28 @@
 package com.onlyapp.cooltime.view.ui
-import android.app.usage.UsageEvents
-import android.app.usage.UsageStatsManager
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.onlyapp.cooltime.R
-import com.onlyapp.cooltime.service.ActiveLockService
+import com.onlyapp.cooltime.receiver.MyBroadcastReceiver
 import com.onlyapp.cooltime.service.UseTimeService
 import com.onlyapp.cooltime.utils.Permission
 import com.onlyapp.cooltime.utils.getTodayNow
-import com.onlyapp.cooltime.utils.getTodayStart
-import com.onlyapp.cooltime.utils.getTotalTime
 import com.onlyapp.cooltime.view.adapter.PermissionScreenAdapter
 import com.onlyapp.cooltime.view.ui.dialog.ShareDialog
 import com.onlyapp.cooltime.view.ui.permission.CheckPermissionActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 var backTime : Long = 0
@@ -37,7 +30,6 @@ var backTime : Long = 0
 class MainActivity : AppCompatActivity() {
     private var binding : ActivityMainBinding? = null
     private var appBarConfiguration : AppBarConfiguration? = null
-    //private var test : ActivityPermissionCheckBinding? = null
 
 
     lateinit var adapter: PermissionScreenAdapter// = PermissionScreenAdapter(datas = datas, this, test!!)
@@ -55,7 +47,32 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(Intent(this, CheckPermissionActivity::class.java), 0)
 
         startService(Intent(this, UseTimeService::class.java))
-        //calAppUseStats()
+
+
+        /*  구현용 테스트 코드
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val currentTime = getTodayNow().apply{
+            add(Calendar.SECOND, 10)
+        }.timeInMillis
+
+        val intent = Intent(this, MyBroadcastReceiver::class.java).apply{
+            action = "Reserved Alarm"
+        }
+        intent.putExtra("message", "알람 내용입니다")
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            currentTime.toInt(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.set(
+            AlarmManager.RTC_WAKEUP,
+            currentTime,
+            pendingIntent
+        )
+        */
+
+
     }
 
 
@@ -74,19 +91,22 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.frag_container) as NavHostFragment
         val navController = navHostFragment.navController
         var navDestination = navController.currentDestination
-        if(navDestination!!.id == R.id.main) {
-            if (System.currentTimeMillis() - com.onlyapp.cooltime.view.ui.backTime >= 2000 || com.onlyapp.cooltime.view.ui.backTime == 0.toLong()){ //2초내에 다시 누른게 아니면
-                com.onlyapp.cooltime.view.ui.backTime = System.currentTimeMillis() // 마지막으로 back버튼을 누른 시간 갱신
-                Snackbar.make(binding!!.root, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Snackbar.LENGTH_LONG).show()
-                //뒤로가기 버튼 한번 더 누르면 종료된다고 메세지 띄우기
+
+        navDestination?.let{
+            if(it.id == R.id.main) {
+                if (System.currentTimeMillis() - com.onlyapp.cooltime.view.ui.backTime >= 2000 || com.onlyapp.cooltime.view.ui.backTime == 0.toLong()) { //2초내에 다시 누른게 아니면
+                    com.onlyapp.cooltime.view.ui.backTime =
+                        System.currentTimeMillis() // 마지막으로 back버튼을 누른 시간 갱신
+                    Snackbar.make(binding!!.root, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Snackbar.LENGTH_LONG)
+                        .show()
+                    //뒤로가기 버튼 한번 더 누르면 종료된다고 메세지 띄우기
+                } else {
+                    super.onBackPressed()
+                }
             }
-            else{
-                super.onBackPressed()
-            }
+            else super.onBackPressed()
         }
-        else{
-            super.onBackPressed()// 메인화면 외에는 원래 버튼 기능대로 작동하도록
-        }
+        
     }
 
     //메뉴 옵션을 클릭하였을 때 처리하는 함수
@@ -172,7 +192,6 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.share -> {  //share button 누른게 공유 아이콘 버튼일 때 작성할 메소드
-                val dialog = ShareDialog()
                 ShareDialog().show(supportFragmentManager, null)
             }
         }

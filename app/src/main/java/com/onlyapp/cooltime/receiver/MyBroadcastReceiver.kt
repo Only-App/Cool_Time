@@ -5,11 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Toast
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.MyApplication.Companion.waitCheck
 import com.onlyapp.cooltime.databinding.FragmentActiveLockBinding
 import com.onlyapp.cooltime.service.ActiveLockService
 import com.onlyapp.cooltime.service.UseTimeService
+import com.onlyapp.cooltime.view.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -43,6 +45,16 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
             Intent.ACTION_BOOT_COMPLETED -> //부팅됐다는 알람 왔을 때 처리할 로직
                 context.startService(Intent(context, UseTimeService::class.java))
+
+            "Reserved Alarm" -> {   //알람 상황에서
+                val message = intent.getStringExtra("message")
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+                context.startActivity(Intent(context, MainActivity::class.java).apply{
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                })
+            }
+
         }
     }
 }

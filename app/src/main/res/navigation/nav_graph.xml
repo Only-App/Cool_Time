@@ -16,13 +16,13 @@
     </fragment>
     <fragment
         android:id="@+id/exception"
-        android:name="com.onlyapp.cooltime.view.ui.exceptionApp.ExceptionAppFragment"
+        android:name="com.onlyapp.cooltime.view.ui.exceptionapp.ExceptionAppFragment"
         android:label="exception_app"
         tools:layout="@layout/fragment_exception_app" />
 
     <fragment
         android:id="@+id/use_stat"
-        android:name="com.onlyapp.cooltime.view.ui.useStat.UseStatFragment"
+        android:name="com.onlyapp.cooltime.view.ui.usestat.UseStatFragment"
         android:label="fragment_use_stat"
         tools:layout="@layout/fragment_use_stat" />
 

@@ -19,7 +19,7 @@ class ExceptAppViewModel(private val repository: ExceptAppRepository) : ViewMode
         viewModelScope.launch{ repository.deleteApp(packageName) }
     }
     suspend fun getApp(packageName : String) : ExceptApp {
-        return viewModelScope.async { repository.getApp(packageName) }.await()
+        return repository.getApp(packageName)
     }
 
     fun updateApp(app : ExceptApp){

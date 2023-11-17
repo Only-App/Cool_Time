@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/lock_setting"
-        android:name="com.onlyapp.cooltime.view.ui.phoneLock.AddLockSettingFragment"
+        android:name="com.onlyapp.cooltime.view.ui.phonelock.AddLockSettingFragment"
         android:label="fragment_lock_setting"
         tools:layout="@layout/fragment_lock_setting" >
         <action
@@ -19,7 +19,7 @@
     <fragment
 
         android:id="@+id/phone_lock_main"
-        android:name="com.onlyapp.cooltime.view.ui.phoneLock.LockOverviewFragment"
+        android:name="com.onlyapp.cooltime.view.ui.phonelock.LockOverviewFragment"
         android:label="fragment_phone_lock"
         tools:layout="@layout/fragment_phone_lock" >
 
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/update_lock_setting"
-        android:name="com.onlyapp.cooltime.view.ui.phoneLock.UpdateLockSettingFragment"
+        android:name="com.onlyapp.cooltime.view.ui.phonelock.UpdateLockSettingFragment"
         android:label="fragment_update_lock_setting"
         tools:layout = "@layout/fragment_update_lock_setting"/>
 </navigation>

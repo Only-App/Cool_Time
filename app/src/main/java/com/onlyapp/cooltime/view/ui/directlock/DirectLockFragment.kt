@@ -1,4 +1,4 @@
-package com.onlyapp.cooltime.view.ui.directLock
+package com.onlyapp.cooltime.view.ui.directlock
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,8 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.databinding.FragmentDirectLockBinding
 import com.onlyapp.cooltime.service.ActiveLockService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match

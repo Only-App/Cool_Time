@@ -1,4 +1,4 @@
-package com.onlyapp.cooltime.view.ui.phoneLock
+package com.onlyapp.cooltime.view.ui.phonelock
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

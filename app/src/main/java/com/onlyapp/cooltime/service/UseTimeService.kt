@@ -84,21 +84,17 @@ class UseTimeService : LifecycleService() {
                                         Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
 
                                     if ((1 shl (6 - (dayOfWeek + 5) % 7)) and lockDay != 0) { //오늘이 설정한 요일에 포함되는지
-                                        val lockOnDate = Calendar.getInstance()
-                                        lockOnDate.set(
-                                            Calendar.HOUR_OF_DAY,
-                                            lockInfo.lockOn / 60
-                                        )
-                                        lockOnDate.set(Calendar.MINUTE, lockInfo.lockOn % 60)
+                                        val lockOnDate = Calendar.getInstance().apply{
+                                            set(Calendar.HOUR_OF_DAY, lockInfo.lockOn / 60)
+                                            set(Calendar.MINUTE, lockInfo.lockOn % 60)
+                                        }
 
-                                        val lockOffDate = Calendar.getInstance()
+                                        val lockOffDate = Calendar.getInstance().apply{
+                                            set(Calendar.HOUR_OF_DAY, lockInfo.lockOff / 60)
+                                            set(Calendar.MINUTE, lockInfo.lockOff % 60)
+                                        }
 
-                                        lockOffDate.set(
-                                            Calendar.HOUR_OF_DAY,
-                                            lockInfo.lockOff / 60
-                                        )
-
-                                        lockOffDate.set(Calendar.MINUTE, lockInfo.lockOff % 60)
+                                        if(lockOffDate < lockOnDate) lockOffDate.add(Calendar.DAY_OF_YEAR, 1)   //종료 시간이 시작 시간 보다 빠르면 종료 날짜 + 1
 
                                         if (getTodayNow().timeInMillis in lockOnDate.timeInMillis..lockOffDate.timeInMillis) {   //잠금 시작 시간과 잠금 종료 시간에 포함되는지
                                             lockType = LOCK_DURATION

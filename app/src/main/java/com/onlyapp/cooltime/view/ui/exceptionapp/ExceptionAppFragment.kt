@@ -1,4 +1,4 @@
-package com.onlyapp.cooltime.view.ui.exceptionApp
+package com.onlyapp.cooltime.view.ui.exceptionapp
 
 import android.content.Intent
 import android.content.pm.PackageInfo
@@ -57,7 +57,7 @@ class ExceptionAppFragment : Fragment(){
                     val appInfo = resolveInfo.activityInfo.applicationInfo
                     val packageName = appInfo.packageName
                     if(packageName == "com.onlyapp.cooltime") continue
-                    val result = exceptViewModel.getApp(packageName)
+                    val result = async { exceptViewModel.getApp(packageName) }.await()
                     if (result != null) continue
                     else {  //설치되어 있는 앱인데 아직 DB에 들어있지 않은 앱이라면 insert
                         exceptViewModel.insertApp(

@@ -59,10 +59,11 @@ class AddAlarmSettingFragment : Fragment() {
         hourPick = binding.alaTimePicker.hourPicker // _binding이 init 되고 난 후에 값 지정해야 함!
         minPick = binding.alaTimePicker.minPicker   // 아니면 그냥 이 페이지 들어오려고 하면 튕김
 
-        db = UserDatabase.getInstance(activity!!.applicationContext)
-        repository = AlarmRepository(db!!.alarmDao())
-        alarmViewModel = ViewModelProvider(activity!!, AlarmViewModelFactory(repository!!)).get(AlarmViewModel::class.java)
-
+        activity?.let{ db = UserDatabase.getInstance(it.applicationContext) }
+        db?.let{ repository = AlarmRepository(it.alarmDao()) }
+        if(activity != null && repository != null) {
+            alarmViewModel = ViewModelProvider(activity!!, AlarmViewModelFactory(repository!!))[AlarmViewModel::class.java]
+        }
         hide() // 다른 곳 누르면 키보드 사라지는 함수
         timeInit() // 시간 설정하는 TimePicker 관련 옵션 설정(숫자 범위 등)
         addAlarmSetting()

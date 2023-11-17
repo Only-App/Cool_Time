@@ -90,6 +90,12 @@
             android:name=".service.RemainingTimeService"
             android:excludeFromRecents="true"
             />
+        <service
+            android:name=".service.AlarmCheckService"
+            android:excludeFromRecents = "true"
+            android:enabled = "true"
+            />
+
     </application>
 
 </manifest>

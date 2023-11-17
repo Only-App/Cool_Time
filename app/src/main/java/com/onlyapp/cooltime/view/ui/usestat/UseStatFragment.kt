@@ -1,4 +1,4 @@
-package com.onlyapp.cooltime.view.ui.useStat
+package com.onlyapp.cooltime.view.ui.usestat
 
 import android.os.Bundle
 
@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
