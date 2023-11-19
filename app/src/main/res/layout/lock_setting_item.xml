@@ -16,7 +16,7 @@
             android:id = "@+id/tv_lock_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text = "6시간"
+            android:text = "@string/time_expression1"
             android:textSize = "20dp"
             />
         <TextView
@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text = "23.00.00 ~ 23.00.00"
+            android:text = "@string/time_init4"
             android:textSize = "15dp"
 
             />
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text = "매일"
+            android:text = "@string/select_day"
             android:textSize = "15dp"
             />
 
@@ -43,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text = "0분 내로 재사용 시도시 잠금"
+            android:text = "@string/lock_interval"
             android:textSize = "15dp"
             android:textColor = "@color/light_gray"
             />
@@ -51,7 +51,7 @@
             android:id = "@+id/tv_lock_remain_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text = "0시간 사용시 잠금"
+            android:text = "@string/lock_limit_time"
             android:textSize = "15dp"
             android:textColor = "@color/light_gray"
             />

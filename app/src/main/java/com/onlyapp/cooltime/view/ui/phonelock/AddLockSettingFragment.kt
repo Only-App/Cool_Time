@@ -43,12 +43,9 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
 
     private lateinit var timeDialog : CustomTimePickerDialog
     private lateinit var dayDialog : CustomCalendarPickerDialog
-
     private var db : UserDatabase? = null
     private var repository : LockRepository?= null
-
     private var lockViewModel : LockViewModel? = null
-
     private var totalTime : Long = 0
     private var minTime : Long = 0
     private var lockOn : Int = 0
@@ -71,10 +68,16 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
         // Inflate the layout for this fragment
 
         _binding = FragmentLockSettingBinding.inflate(inflater, container, false)
-        db = UserDatabase.getInstance(activity!!.applicationContext)
-        repository = LockRepository(db!!.phoneLockDao())    
-        lockViewModel = ViewModelProvider(activity!!, LockViewModelFactory(repository!!))[LockViewModel::class.java]
+        activity?.let{ activity ->
+            db = UserDatabase.getInstance(activity.applicationContext)
+            db?.let {db ->
+                repository = LockRepository(db.phoneLockDao())
+                repository?.let {repository ->
+                    lockViewModel = ViewModelProvider(activity, LockViewModelFactory(repository))[LockViewModel::class.java]
+                }
+            }
 
+        }
 
         binding.btnAddSetting.setOnClickListener {
                 if(contentCheck()){
@@ -117,30 +120,42 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
                     Toast.makeText(activity, "잘못된 형식의 입력입니다", Toast.LENGTH_SHORT).show()
                 }
             }
-
         binding.tvTodayTotalTime.setOnClickListener{
             timeDialog = CustomTimePickerDialog(this)
-            timeDialog.show(activity!!.supportFragmentManager, "TotalDialog")
+            activity?.let {
+                timeDialog.show(it.supportFragmentManager, "TotalDialog")
+            }
+
         }
         binding.tvIntervalTime.setOnClickListener{
             timeDialog = CustomTimePickerDialog(this)
-            timeDialog.show(activity!!.supportFragmentManager, "IntervalDialog")
+            activity?.let {
+                timeDialog.show(it.supportFragmentManager, "IntervalDialog")
+            }
         }
         binding.tvStartTime.setOnClickListener{
             timeDialog = CustomTimePickerDialog(this)
-            timeDialog.show(activity!!.supportFragmentManager, "StartTimeDialog")
+            activity?.let {
+                timeDialog.show(it.supportFragmentManager, "StartTimeDialog")
+            }
         }
         binding.tvEndTime.setOnClickListener{
             timeDialog = CustomTimePickerDialog(this)
-            timeDialog.show(activity!!.supportFragmentManager, "EndTimeDialog")
+            activity?.let {
+                timeDialog.show(it.supportFragmentManager, "EndTimeDialog")
+            }
         }
         binding.tvStartDay.setOnClickListener{
             dayDialog = CustomCalendarPickerDialog(this)
-            dayDialog.show(activity!!.supportFragmentManager, "StartDayDialog")
+            activity?.let {
+                dayDialog.show(it.supportFragmentManager, "StartDayDialog")
+            }
         }
         binding.tvEndDay.setOnClickListener{
             dayDialog = CustomCalendarPickerDialog(this)
-            dayDialog.show(activity!!.supportFragmentManager, "EndDayDialog")
+            activity?.let {
+                dayDialog.show(it.supportFragmentManager, "EndDayDialog")
+            }
         }
 
         binding.cbNotIntervalSetting.setOnClickListener { //최소 시간 간격 설정 체크박스에 대한 리스너
@@ -161,61 +176,61 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
             if(binding.cbNotDaySetting.isChecked){  //체크한 경우
                 binding.tvStartDay.isEnabled = false    //시작 날짜와 종료 날짜 텍스트 뷰의 리스너를 비활성화
                 binding.tvEndDay.isEnabled = false
-
                 //유효하지 않은 값 == -1로 처리
                 startDate = -1L
                 endDate = -1L
-
             }
-
             else{
                 binding.tvStartDay.isEnabled = true //시작 날짜와 종료 날짜 텍스트 뷰의 텍스트를 활성화
                 binding.tvEndDay.isEnabled = true
-
             }
         }
-
         return binding.root
     }
     override fun onYesButtonClick(hour:Int, min:Int){
-        when(timeDialog.tag!!){
-            "TotalDialog" -> {
-                totalTime = hour * 60L + min
-                binding.tvTodayTotalTime.text = getString(R.string.amount_of_time, hour, min)
-            }
-            "IntervalDialog" -> {
-                minTime = hour* 60L + min
-                binding.tvIntervalTime.text = getString(R.string.amount_of_time, hour, min)
-            }
-            "StartTimeDialog" -> {
-                lockOn = hour * 60 + min
-                binding.tvStartTime.text = getString(R.string.time_expression, String.format("%02d",hour), String.format("%02d",min))//String.format("%02d", hour) + " : " + String.format("%02d", min)
-                binding.cbNotIntervalSetting.isChecked = false
+        timeDialog.tag?.let {tag->
+            when(tag){
+                "TotalDialog" -> {
+                    totalTime = hour * 60L + min
+                    binding.tvTodayTotalTime.text = getString(R.string.amount_of_time, hour, min)
+                }
+                "IntervalDialog" -> {
+                    minTime = hour* 60L + min
+                    binding.tvIntervalTime.text = getString(R.string.amount_of_time, hour, min)
+                }
+                "StartTimeDialog" -> {
+                    lockOn = hour * 60 + min
+                    binding.tvStartTime.text = getString(R.string.time_expression1, String.format("%02d",hour), String.format("%02d",min))//String.format("%02d", hour) + " : " + String.format("%02d", min)
+                    binding.cbNotIntervalSetting.isChecked = false
 
-            }
-            "EndTimeDialog" -> {
-                lockOff = hour * 60 + min
-                binding.tvEndTime.text = getString(R.string.time_expression, String.format("%02d",hour), String.format("%02d",min))//String.format("%02d", hour) + " : " + String.format("%02d", min)
-                binding.cbNotIntervalSetting.isChecked = false
+                }
+                "EndTimeDialog" -> {
+                    lockOff = hour * 60 + min
+                    binding.tvEndTime.text = getString(R.string.time_expression1, String.format("%02d",hour), String.format("%02d",min))//String.format("%02d", hour) + " : " + String.format("%02d", min)
+                    binding.cbNotIntervalSetting.isChecked = false
+                }
             }
         }
-
     }
     override fun onYesButtonClick(date:String){
-        when(dayDialog.tag!!){
-            "StartDayDialog" -> {
-                binding.tvStartDay.text = date
-                SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(date)?.let {
-                    startDate = it.time
+        dayDialog.tag?.let {tag->
+            when(tag){
+                "StartDayDialog" -> {
+                    binding.tvStartDay.text = date
+                    SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(date)?.let {
+                        startDate = it.time
+                    }
                 }
-            }
-            "EndDayDialog" -> {
-                binding.tvEndDay.text = date
-                SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(date)?.let {
-                    endDate = it.time
+                "EndDayDialog" -> {
+                    binding.tvEndDay.text = date
+                    SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(date)?.let {
+                        endDate = it.time
+                    }
                 }
+                else -> {}
             }
         }
+
     }
 
 
@@ -240,16 +255,20 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
         return result
     }
     private fun contentCheck() : Boolean{
-        when{
-            dayToBit() == 0 -> return false //요일 정보를 선택하지 않았을 때
-            totalTime < minTime -> return false   // 최소 사용 간격 시간이 총 사용량 시간을 초과할 때
-            totalTime == 0L -> return false // 총 사용 시간이 0시간 0분인 경우
-            !binding.cbNotDaySetting.isChecked && //설정 안함을 체크하지 않았는데 시작 날짜나 종료 날짜를 선택하지 않았을 때
-                    (binding.tvStartDay.text == "시작 날짜" || binding.tvEndDay.text == "종료 날짜") -> return false
-            startDate != -1L && endDate != -1L &&     //시작 날짜가 종료 날짜보다 늦을 때
-                SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(binding.tvStartDay.text.toString())!!.time >
-                SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(binding.tvEndDay.text.toString())!!.time
-            -> return false
+        if(SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(binding.tvStartDay.text.toString()) != null
+            && SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(binding.tvEndDay.text.toString()) != null) {
+            when {
+                dayToBit() == 0 -> return false //요일 정보를 선택하지 않았을 때
+                totalTime < minTime -> return false   // 최소 사용 간격 시간이 총 사용량 시간을 초과할 때
+                totalTime == 0L -> return false // 총 사용 시간이 0시간 0분인 경우
+                !binding.cbNotDaySetting.isChecked && //설정 안함을 체크하지 않았는데 시작 날짜나 종료 날짜를 선택하지 않았을 때
+                        (binding.tvStartDay.text == "시작 날짜" || binding.tvEndDay.text == "종료 날짜") -> return false
+
+                startDate != -1L && endDate != -1L &&     //시작 날짜가 종료 날짜보다 늦을 때
+                        SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(binding.tvStartDay.text.toString())!!.time >
+                        SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(binding.tvEndDay.text.toString())!!.time
+                -> return false
+            }
         }
 
 

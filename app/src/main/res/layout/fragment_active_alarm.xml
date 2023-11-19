@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tool="http://schemas.android.com/tools"
     android:background="@color/alarm_color"
     >
 
@@ -26,7 +25,7 @@
         app:layout_constraintTop_toBottomOf="@id/alarm_icon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text= "00월 00일 0요일"
+        android:text= "@string/date_info"
         android:textSize="20dp"
         android:textColor="@color/white"
         />
@@ -39,7 +38,7 @@
         app:layout_constraintTop_toBottomOf="@id/alarm_today"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text= "오후 00시 00분"
+        android:text= "@string/time_info"
         android:textSize="24dp"
         android:textColor="@color/white"
         />
@@ -65,7 +64,7 @@
         app:layout_constraintBottom_toBottomOf="@id/background"
         app:layout_constraintStart_toStartOf="@id/background"
         app:layout_constraintEnd_toEndOf="@id/background"
-        android:text="알람 내용"
+        android:text="@string/alarm_title"
         android:textSize="25dp"
         android:textColor="@color/black"
         app:layout_constraintVertical_chainStyle="packed"

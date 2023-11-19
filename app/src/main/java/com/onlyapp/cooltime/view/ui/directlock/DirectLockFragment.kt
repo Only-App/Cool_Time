@@ -52,20 +52,16 @@ class DirectLockFragment : Fragment() {
         _binding = FragmentDirectLockBinding.inflate(inflater, container, false)
         hourPick = binding.timePicker.hourPicker // _binding이 init 되고 난 후에 값 지정해야 함!
         minPick = binding.timePicker.minPicker
-
         timeInit()
+
         binding.fabAddSetting.setOnClickListener{
-            //Toast.makeText(activity, "DIRECT LOCK", Toast.LENGTH_SHORT).show()
             lifecycleScope.launch{    //지정한 시간만큼 인내의 시간 증가
                 MyApplication.getInstance().getDataStore().increaseEnduredTime(hourPick.value * 60  + minPick.value)
             }
-
             val intent = Intent(this.context, ActiveLockService::class.java)
             intent.putExtra("time", hourPick.value*60*60 + minPick.value*60)
             activity!!.startService(intent) // 잠금 서비스 실행
         }
-
-
         return binding.root
     }
 

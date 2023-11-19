@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +26,6 @@ import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
  * create an instance of this fragment.
  */
 class AlarmOverviewFragment : Fragment() {
-
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -35,13 +33,9 @@ class AlarmOverviewFragment : Fragment() {
     private val binding : FragmentAlarmBinding
         get() = _binding!!
 
-
     private var db : UserDatabase? = null
     private var repository : AlarmRepository?= null
-
-
     private var alarmViewModel : AlarmViewModel? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,26 +57,28 @@ class AlarmOverviewFragment : Fragment() {
             findNavController().navigate(R.id.action_alarm_main_to_alarm_setting)
         }
 
-
         //TODO: 현재 시간을 바탕으로 몇 시간 몇 분 남았는지를 출력해야 함, 그리고 계속 변할 수 있어야 함
-        db = UserDatabase.getInstance(activity!!.applicationContext)
-        repository = AlarmRepository(db!!.alarmDao())
-        alarmViewModel = ViewModelProvider(activity!!, AlarmViewModelFactory(repository!!)).get(AlarmViewModel::class.java)
-
-        binding.rvAlarmSet.layoutManager = LinearLayoutManager(this.context)
-
-        alarmViewModel!!.alarmList.observe(this, Observer<List<Alarm>>{
-            list -> binding.rvAlarmSet.adapter = AlarmAdapter(list, object : OnAlarmItemOnClickListener {
-            override fun onItemClick(alarm: Alarm, pos: Int) {
-                val bundle  = Bundle()
-                bundle.putSerializable("key", alarm)
-                findNavController().navigate(R.id.action_alarm_main_to_update_alarm_setting, bundle)
+        activity?.let{activity ->
+            db = UserDatabase.getInstance(activity.applicationContext)
+            db?.let{db ->
+                repository = AlarmRepository(db.alarmDao())
             }
-            })
-
-        })
-
-
+            repository?.let{repository ->
+                alarmViewModel = ViewModelProvider(activity, AlarmViewModelFactory(repository))[AlarmViewModel::class.java]
+            }
+        }
+        alarmViewModel?.let{
+            it.alarmList.observe(this) { list ->
+                binding.rvAlarmSet.adapter = AlarmAdapter(list, object : OnAlarmItemOnClickListener {
+                    override fun onItemClick(alarm: Alarm, pos: Int) {
+                        val bundle = Bundle()
+                        bundle.putSerializable("key", alarm)
+                        findNavController().navigate(R.id.action_alarm_main_to_update_alarm_setting, bundle)
+                    }
+                })
+            }
+        }
+        binding.rvAlarmSet.layoutManager = LinearLayoutManager(this.context)
 
         return binding.root
     }

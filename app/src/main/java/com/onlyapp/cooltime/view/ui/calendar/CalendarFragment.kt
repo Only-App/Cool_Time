@@ -6,17 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.data.AlarmRepository
 import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentCalendarBinding
-import com.onlyapp.cooltime.data.entity.Alarm
-import com.onlyapp.cooltime.data.entity.PhoneLock
 import com.onlyapp.cooltime.view.ui.chart.ChartAppFragment
 import com.onlyapp.cooltime.view.ui.chart.ChartHourFragment
 import com.onlyapp.cooltime.utils.getSomedayEnd
@@ -36,6 +34,7 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -51,16 +50,12 @@ class CalendarFragment : Fragment(){
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
     private var db : UserDatabase? = null
     private var lockRepository : LockRepository?= null
     private var alarmRepository: AlarmRepository? = null
-
     private var lockViewModel : LockViewModel? = null
     private var alarmViewModel : AlarmViewModel? = null
-
     private val dateViewModel : DateViewModel by viewModels()
-
     private var _binding : FragmentCalendarBinding? = null
     private val binding get() = _binding!!
 
@@ -75,57 +70,60 @@ class CalendarFragment : Fragment(){
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentCalendarBinding.inflate(inflater, container, false)
-
-
         binding.llLockAndAlarmSet.visibility = View.VISIBLE
         binding.llChart.visibility = View.GONE
+        activity?.let{activity ->
+            db= UserDatabase.getInstance(activity.applicationContext)
+            db?.let{db ->
+                lockRepository = LockRepository(db.phoneLockDao())
+                alarmRepository = AlarmRepository(db.alarmDao())
+                lockRepository?.let{ lockRepository ->
+                    lockViewModel = ViewModelProvider(activity, LockViewModelFactory(lockRepository))[LockViewModel::class.java]
+                }
+                alarmRepository?.let {alarmRepository ->
+                    alarmViewModel = ViewModelProvider(activity, AlarmViewModelFactory(alarmRepository))[AlarmViewModel::class.java]
+                }
+            }
 
-        db= UserDatabase.getInstance(activity!!.applicationContext)
-        lockRepository = LockRepository(db!!.phoneLockDao())
-        lockViewModel = ViewModelProvider(activity!!, LockViewModelFactory(lockRepository!!)).get(LockViewModel::class.java)
 
-        alarmRepository = AlarmRepository(db!!.alarmDao())
-        alarmViewModel = ViewModelProvider(activity!!, AlarmViewModelFactory(alarmRepository!!)).get(AlarmViewModel::class.java)
+        }
 
 
         dateViewModel.date.value = binding.calendarView.date    //dateViewModel date 속성 값 초기화
 
         binding.calendarView.setOnDateChangeListener {  //캘린더 뷰 날짜 변경 리스너 설정
-                calendarView, year, month, day ->
-
+                _, year, month, day ->
             lifecycleScope.launch {
-                val date = Date(binding.calendarView.date)
-
-                val startday = getSomedayStart(year, month, day)
-                val endday = getSomedayEnd(year, month, day)
-
-                val appList = withContext(Dispatchers.IO) {
-                    loadUsage(
-                        this@CalendarFragment.context!!,
-                        startday.timeInMillis,
-                        endday.timeInMillis
-                    )
-                }
-                val hourList = withContext(Dispatchers.IO) {
-                    loadTimeUsage(
-                        this@CalendarFragment.context!!,
-                        getSomedayStart(
-                            startday.get(Calendar.YEAR),
-                            startday.get(Calendar.MONTH),
-                            startday.get(Calendar.DAY_OF_MONTH)
+                val startDay = getSomedayStart(year, month, day)
+                val endDay = getSomedayEnd(year, month, day)
+                this@CalendarFragment.context?.let {
+                    val appList = withContext(Dispatchers.IO) {
+                        loadUsage(
+                            it,
+                            startDay.timeInMillis,
+                            endDay.timeInMillis
                         )
-                    )
+                    }
+                    val hourList = withContext(Dispatchers.IO) {
+                        loadTimeUsage(
+                            it,
+                            getSomedayStart(
+                                startDay.get(Calendar.YEAR),
+                                startDay.get(Calendar.MONTH),
+                                startDay.get(Calendar.DAY_OF_MONTH)
+                            )
+                        )
+                    }
+                    childFragmentManager.beginTransaction()
+                        .replace(binding.hourChartFragment.id, ChartHourFragment(hourList)).commit()
+                    childFragmentManager.beginTransaction()
+                        .replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
                 }
-                childFragmentManager.beginTransaction()
-                    .replace(binding.hourChartFragment.id, ChartHourFragment(hourList)).commit()
-                childFragmentManager.beginTransaction()
-                    .replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
-
                 dateViewModel.date.value =
-                    SimpleDateFormat("yyyy.MM.dd").parse("$year.${month + 1}.$day")!!.time
+                    SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse("$year.${month + 1}.$day")!!.time
                 //dateViewModel의 date 속성 값 변경
             }
         }
@@ -135,48 +133,42 @@ class CalendarFragment : Fragment(){
         binding.rvCalendarAlarmSet.layoutManager = LinearLayoutManager(this.context)
 
         //date 값이 변경되는지 관찰
-        dateViewModel.date.observe(this, Observer<Long>{
-                date_time ->
-            lockViewModel!!.lockList.observe(this, Observer<List<PhoneLock>>{
-                    list -> //조건에 맞는 list만 filtering 작업
-                val filteredList = list.filter{ elem -> (elem.startDate == -1L && elem.endDate == -1L) ||
-                        date_time in elem.startDate..elem.endDate
+        dateViewModel.date.observe(this) { dateTime ->
+            lockViewModel?.let {viewModel ->
+                viewModel.lockList.observe(this) { list -> //조건에 맞는 list만 filtering 작업
+                    val filteredList = list.filter { elem ->
+                        (elem.startDate == -1L && elem.endDate == -1L) ||
+                                dateTime in elem.startDate..elem.endDate
+                    }
+                    if (filteredList.isEmpty()) {  //조건에 맞는 잠금 정보가 없는 경우
+                        binding.tvLock.text = "잠금 정보가 존재하지 않습니다"
+                    } else {  //조건에 맞는 잠금 정보가 존재하는 경우
+                        binding.tvLock.text = "잠금"
+                    }
+                    lifecycleScope.launch {    //총 사용 시간 출력
+                        MyApplication.getInstance().getDataStore().todayUseTime.collect {currentUseTime ->
+                            binding.rvCalendarLockSet.adapter = LockAdapter(filteredList, currentUseTime, null) //filteredList를 가지고 어댑터 연결
+                        }
+                    }
+                    //LockAdapter(, null)
                 }
-                if(filteredList.isNullOrEmpty()) {  //조건에 맞는 잠금 정보가 없는 경우
-                    binding.tvLock.text = "잠금 정보가 존재하지 않습니다"
+            }
+            alarmViewModel?.let {
+                it.alarmList.observe(this) { list ->
+                    val filteredList = list.filter { elem ->
+                        val cal = Calendar.getInstance()
+                        cal.time = Date(dateTime)
+                        //비트 연산을 통해서 선택한 날짜의 요일이 알람 정보의 요일 정보에 포함되는지를 판단
+                        (1 shl (6 - (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7)) and elem.day != 0
+                    }
+                    //조건에 맞는 알람 정보가 존재하지 않은 경우
+                    if (filteredList.isEmpty()) {
+                        binding.tvAlarm.text = "알람 정보가 존재하지 않습니다"
+                    } else binding.tvAlarm.text = "알람"
+                    binding.rvCalendarAlarmSet.adapter = AlarmAdapter(filteredList, null)   //filteredList를 가지고 어댑터 연결
                 }
-                else {  //조건에 맞는 잠금 정보가 존재하는 경우
-                    binding.tvLock.text = "잠금"
-                }
-                binding.rvCalendarLockSet.adapter = LockAdapter(filteredList, null) //filteredList를 가지고 어댑터 연결
-
-            })
-
-            alarmViewModel!!.alarmList.observe(this, Observer<List<Alarm>>{
-                    list ->
-                val filteredList = list.filter{elem ->
-                    var cal = Calendar.getInstance()
-                    cal.time = Date(date_time)
-                    //비트 연산을 통해서 선택한 날짜의 요일이 알람 정보의 요일 정보에 포함되는지를 판단
-                    (1 shl  (6- (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7)) and elem.day != 0
-                }
-                //조건에 맞는 알람 정보가 존재하지 않은 경우
-                if(filteredList.isNullOrEmpty()){
-                    binding.tvAlarm.text = "알람 정보가 존재하지 않습니다"
-                }
-                else binding.tvAlarm.text= "알람"
-                binding.rvCalendarAlarmSet.adapter = AlarmAdapter(filteredList, null)   //filteredList를 가지고 어댑터 연결
-            })
-
-            val date = Date(date_time)
-
-
-
-        })
-
-
-
-
+            }
+        }
 
         binding.radioGroup.setOnCheckedChangeListener{
                 _, _ ->
@@ -189,7 +181,6 @@ class CalendarFragment : Fragment(){
                 binding.llChart.visibility = View.VISIBLE
             }
         }
-
         return binding.root
     }
 
@@ -197,10 +188,8 @@ class CalendarFragment : Fragment(){
         super.onStart()
         lifecycleScope.launch{
             val date = Date(binding.calendarView.date)
-
             val startDay = getSomedayStart(date.year + 1900, date.month, date.date)
             val endDay = getSomedayEnd(date.year + 1900, date.month, date.date)
-
             val appList = withContext(Dispatchers.IO) {
                 loadUsage(
                     this@CalendarFragment.context!!,
@@ -224,7 +213,6 @@ class CalendarFragment : Fragment(){
             childFragmentManager.beginTransaction()
                 .replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
         }
-
     }
 
     companion object {

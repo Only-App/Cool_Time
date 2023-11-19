@@ -10,13 +10,11 @@
         android:textAlignment="center"
         android:gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:text="사용 권한 체크"
+        android:text="@string/permission_check"
         android:textSize="25dp"
         android:id="@+id/title"
         app:layout_constraintTop_toTopOf="parent"
         />
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id = "@+id/permission_list"
         android:layout_width="match_parent"
@@ -28,7 +26,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         tool:listitem="@layout/permission_item"
         />
-
     <androidx.appcompat.widget.AppCompatButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,7 +33,7 @@
         android:background="@drawable/radius"
         android:backgroundTint="@color/colorPrimary"
         android:layout_marginBottom="20dp"
-        android:text="완료"
+        android:text="@string/complete"
         android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/permission_list"
         app:layout_constraintBottom_toBottomOf="parent"

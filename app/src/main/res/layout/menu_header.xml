@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize = "25dp"
-        android:text= "메뉴"
+        android:text= "@string/menu"
         android:textColor = "@color/light_gray"
         />
 </LinearLayout>

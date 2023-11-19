@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.alarm.AddAlarmSettingFragment">
+    tools:context=".view.ui.alarm.AddAlarmSettingFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.cardview.widget.CardView
@@ -32,14 +32,14 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text = "알람 내용"
+                    android:text = "@string/alarm_title_tab"
                     android:textSize = "20dp"
                     />
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
-                    android:hint="내용">
+                    android:hint="@string/info">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id = "@+id/et_alarm_description"
                         android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text = "시간 설정"
+                    android:text = "@string/time_tab"
                     android:textSize = "20dp"
                     />
 
@@ -81,7 +81,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=  "요일"
+                    android:text=  "@string/day"
                     android:textSize = "20dp"/>
 
                 <LinearLayout
@@ -95,7 +95,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "월"
+                        android:text = "@string/mon"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -108,7 +108,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "화"
+                        android:text = "@string/tue"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -121,7 +121,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "수"
+                        android:text = "@string/wed"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -134,7 +134,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "목"
+                        android:text = "@string/thu"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -147,7 +147,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "금"
+                        android:text = "@string/fri"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -160,7 +160,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "토"
+                        android:text = "@string/sat"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -173,7 +173,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "일"
+                        android:text = "@string/sun"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -194,7 +194,7 @@
                 android:backgroundTint="@color/purple"
                 android:layout_marginTop = "40dp"
                 android:padding="10dp"
-                android:text="삭제"
+                android:text="@string/delete"
                 android:textColor="@color/white"
                 android:textSize="20dp"
                 app:tint="@color/white" />
@@ -208,7 +208,7 @@
                 android:layout_marginTop="20dp"
                 android:backgroundTint="@color/colorPrimary"
                 android:padding="10dp"
-                android:text="확인"
+                android:text="@string/check"
                 android:textColor="@color/white"
                 android:textSize="20dp"
                 app:tint="@color/white" />

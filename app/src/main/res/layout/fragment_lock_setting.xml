@@ -19,9 +19,6 @@
             android:layout_height="match_parent"
             android:padding = "10dp"
             >
-
-
-
             <LinearLayout
                 android:id = "@+id/ll_today_total_time"
                 android:layout_width="match_parent"
@@ -35,7 +32,6 @@
                     android:text = "@string/total_time"
                     android:textSize= "20dp"
                     />
-
                 <TextView
                     android:id = "@+id/tv_today_total_time"
                     android:layout_width="match_parent"
@@ -49,8 +45,6 @@
                     android:textAlignment="center"
                     />
             </LinearLayout>
-
-
             <LinearLayout
                 android:id = "@+id/ll_interval_time"
                 android:layout_width="match_parent"
@@ -77,8 +71,6 @@
                     android:textAlignment="center"
                     />
             </LinearLayout>
-
-
            <LinearLayout
                android:id="@+id/ll_time_lock"
                android:layout_width="match_parent"
@@ -93,14 +85,12 @@
                    android:text = "@string/lock_time"
                    android:textSize= "20dp"
                    />
-
                <LinearLayout
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
                    android:orientation="horizontal"
                    android:layout_marginTop = "5dp"
                    >
-
                    <TextView
                        android:id="@+id/tv_start_time"
                        android:layout_width="wrap_content"
@@ -113,7 +103,6 @@
                        android:text="@string/time_init2"
                        android:textAlignment="center"
                        android:textSize="20dp" />
-
                    <TextView
                        android:padding="8dp"
                        android:layout_width="wrap_content"
@@ -123,7 +112,6 @@
                        android:textSize="20dp"
                        android:textAlignment="center"
                        />
-
                    <TextView
                        android:id="@+id/tv_end_time"
                        android:layout_width="wrap_content"
@@ -137,7 +125,6 @@
                        android:textAlignment="center"
                        android:textSize="20dp" />
                </LinearLayout>
-
                <LinearLayout
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
@@ -148,7 +135,6 @@
                        android:layout_height="0dp"
                        android:layout_weight="1"
                        />
-
                    <CheckBox
                        android:id="@+id/cb_not_interval_setting"
                        android:layout_width="20dp"
@@ -163,7 +149,6 @@
                     />
                </LinearLayout>
            </LinearLayout>
-
             <LinearLayout
                 android:id = "@+id/ll_select_day"
                 android:layout_width="match_parent"
@@ -275,9 +260,7 @@
                         android:layout_margin= "3dp"
                         />
                 </LinearLayout>
-
             </LinearLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -291,14 +274,12 @@
                     android:text = "@string/date"
                     android:textSize = "20dp"
                     />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginTop="5dp"
                     >
-
                     <TextView
                         android:id="@+id/tv_start_day"
                         android:layout_width="wrap_content"
@@ -311,7 +292,6 @@
                         android:text="@string/start_date"
                         android:textAlignment="center"
                         android:textSize="20dp" />
-
                     <TextView
                         android:padding="8dp"
                         android:layout_width="wrap_content"
@@ -321,7 +301,6 @@
                         android:textSize="20dp"
                         android:textAlignment="center"
                         android:gravity="center_horizontal" />
-
                     <TextView
                         android:id="@+id/tv_end_day"
                         android:layout_width="wrap_content"
@@ -335,7 +314,6 @@
                         android:textAlignment="center"
                         android:textSize="20dp" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -375,10 +353,7 @@
                 android:backgroundTint="@color/colorPrimary"
                 android:padding="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-
                 />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </androidx.cardview.widget.CardView>
 </FrameLayout>

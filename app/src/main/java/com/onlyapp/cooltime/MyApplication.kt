@@ -1,13 +1,9 @@
 package com.onlyapp.cooltime
 
-import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.onlyapp.cooltime.data.DataStoreModule
@@ -35,7 +31,7 @@ class MyApplication : Application() {
         //디버그 키는 컴퓨터마다 다르다! 그러므로 개발 팀원 모두의 디버그 키를 각각 등록해줘야 함
         // 그래서 한번 실행해보시구 찍힌 값 알려주세용!
         val keyHash = Utility.getKeyHash(this)
-        Log.d("keyHash", "$keyHash") //
+        Log.d("keyHash", keyHash) //
     }
     fun getDataStore() = dataStore
 

@@ -3,9 +3,7 @@ package com.onlyapp.cooltime.view.adapter
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.Rect
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
@@ -22,7 +20,6 @@ class PermissionViewHolder(val binding: PermissionItemBinding) :
     //각 리스트의 뷰와 데이터를 보유하는 객체
     //디자인한 리스트를 받아서 binding
     ViewHolder(binding.root)
-
 
 class PermissionScreenAdapter(private val permissionItems:MutableList<PermissionItem>, private val activity: Activity, private val permissionBinding: ActivityPermissionCheckBinding) :
     RecyclerView.Adapter<ViewHolder>(){
@@ -146,7 +143,6 @@ class PermissionScreenAdapter(private val permissionItems:MutableList<Permission
     }
 
     fun handleActivityResult(requestCode: Int) {
-
         val viewHolder = getViewHolderByRequestCode(requestCode)
         val binding = (viewHolder as PermissionViewHolder).binding
         val btn = binding.checkButton

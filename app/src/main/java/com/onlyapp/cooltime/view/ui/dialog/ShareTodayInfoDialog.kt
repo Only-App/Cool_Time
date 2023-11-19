@@ -13,6 +13,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.onlyapp.cooltime.MyApplication
+import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentShareTodayInfoDialogBinding
@@ -41,9 +42,8 @@ class ShareTodayInfoDialog : DialogFragment() {
     private fun saveImage() {
         try {
             context?.let {
-                it.externalCacheDir?.let{path -> path.mkdir()}
+                it.externalCacheDir?.mkdir()
                 val file = File(it.externalCacheDir, "today_info.jpg")
-
                 val bitmap =getViewToBitmap()
                 Log.d("cache", it.externalCacheDir.toString())
                 val outputStream = FileOutputStream(file)
@@ -96,7 +96,7 @@ class ShareTodayInfoDialog : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentShareTodayInfoDialogBinding.inflate(inflater, container, false)
-        binding.cancle.setOnClickListener{
+        binding.cancel.setOnClickListener{
             dismiss()
         }
         binding.check.setOnClickListener {
@@ -127,14 +127,12 @@ class ShareTodayInfoDialog : DialogFragment() {
         lifecycleScope.launch{    //인내의 시간 출력
             MyApplication.getInstance().getDataStore().enduredTime.collect{
                 val yesterdayEnduredTime = MyApplication.getInstance().getDataStore().yesterdayEnduredTime.first()
-                binding.info.tvEnduredTime.text = "%02d:%02d".format(it / 60, it % 60)
-
+                binding.info.tvEnduredTime.text = getString(R.string.time_expression1, String.format("%02d", it / 60), String.format("%02d", it % 60))
                 binding.info.tvCompareEndure.text =
                     if(it < yesterdayEnduredTime){
                         "어제보다 %02d시간 %02d분 덜 잠금".format((yesterdayEnduredTime -it) / 60, (yesterdayEnduredTime - it) % 60)
                     }
                     else "어제보다 %02d시간 %02d분 더 잠금".format((it - yesterdayEnduredTime) / 60, (it - yesterdayEnduredTime) % 60)
-
             }
         }
 
@@ -144,7 +142,7 @@ class ShareTodayInfoDialog : DialogFragment() {
                 val yesterdayUseTime = MyApplication.getInstance().getDataStore().yesterdayUseTime.first()
                 var diff = yesterdayUseTime - it
                 if(diff < 0) diff = -diff
-                binding.info.tvUseTime.text =  "%02d : %02d : %02d".format(it / 3600, (it % 3600) /  60, it % 60)
+                binding.info.tvUseTime.text = getString(R.string.time_expression2, String.format("%02d", it / 3600), String.format("%02d", (it % 3600)/60),String.format("%02d", (it % 60)))
                 binding.info.tvCmpUseTime.text =
                     if(it < yesterdayUseTime){
                         "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 덜 사용"

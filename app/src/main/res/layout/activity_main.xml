@@ -13,7 +13,6 @@
         android:layout_height="match_parent"
         android:background="@color/background"
         >
-
             <androidx.appcompat.widget.Toolbar
                 android:id = "@+id/toolbar"
                 android:layout_width="match_parent"
@@ -21,21 +20,16 @@
                 android:background = "@color/colorPrimary"
                 app:layout_constraintTop_toTopOf="parent"
                 >
-
                 <TextView
                     android:id = "@+id/tv_toolbar_name"
                     android:layout_width="wrap_content"
                     android:layout_height = "wrap_content"
-                    android:text = "CoolTime"
+                    android:text = "@string/app_name"
                     android:textSize= "16dp"
                     android:textColor ="@color/white"
                     android:textStyle="bold"
                     android:layout_gravity="center_horizontal" />
-
             </androidx.appcompat.widget.Toolbar>
-
-
-
         <androidx.fragment.app.FragmentContainerView
             android:id = "@+id/frag_container"
             android:name= "androidx.navigation.fragment.NavHostFragment"

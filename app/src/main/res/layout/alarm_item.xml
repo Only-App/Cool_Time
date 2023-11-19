@@ -15,7 +15,7 @@
         android:layout_height = "wrap_content"
         app:layout_constraintTop_toTopOf = "parent"
         android:textSize = "20dp"
-        android:text= "알람 내용"
+        android:text= "@string/alarm_title"
 
         />
 
@@ -26,7 +26,7 @@
         android:layout_height = "wrap_content"
         app:layout_constraintTop_toBottomOf = "@id/alarm_name"
         android:textSize = "18dp"
-        android:text= "오전 00:00"
+        android:text= "@string/time_init3"
 
         />
 
@@ -37,7 +37,7 @@
         app:layout_constraintTop_toBottomOf = "@id/alarm_time"
         android:textSize= "15dp"
         android:textColor = "@color/light_gray"
-        android:text= "매일"
+        android:text= "@string/date_init"
 
         />
 
@@ -48,7 +48,7 @@
         app:layout_constraintTop_toBottomOf = "@id/alarm_day"
         android:textSize ="15dp"
         android:textColor = "@color/light_gray"
-        android:text= "알람 0시간 0분 전"
+        android:text= "@string/alarm_remain_time"
 
         />
     <View

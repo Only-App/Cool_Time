@@ -16,7 +16,6 @@ class GridSpacingItemDecoration(
         state: RecyclerView.State
     ) {
         val position: Int = parent.getChildAdapterPosition(view)
-
         if (position >= 0) {
             val column = position % spanCount // item column
             outRect.apply {

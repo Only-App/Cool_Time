@@ -1,14 +1,27 @@
 <resources>
-    <string name="app_name">CoolTime</string>
-    <string name="use_stat">사용시간 통계</string>
+    <!-- 상수!-->
+    <string name="app_name">Cool Time</string>
+    <string name="use_stat">사용 시간 통계</string>
+    <string name="today_use_stat">오늘의 통계</string>
     <string name="alarm">알람</string>
+    <string name="lock_and_alarm">잠금 및 알람</string>
+    <string name="date_status">그 날 사용량</string>
+    <string name="alarm_title_tab">알람 내용</string>
+    <string name="time_tab">시간 설정</string>
+    <string name="today_use_time_tab">사용시간</string>
     <string name="direct_lock">바로 잠금</string>
+    <string name="use_count_tab">사용 횟수</string>
     <string name="phone_lock">폰 잠금</string>
+    <string name="endure_time_title">인내의 시간</string>
+    <string name="last_time_use">가장 최근 사용 시각</string>
     <string name="calendar">캘린더</string>
     <string name="total_time">하루 총 사용량</string>
     <string name="interval_time">최소 사용 간격 시간</string>
     <string name="lock_time">특정 시간 잠금</string>
+    <string name="app_use_time">앱별 사용 시간</string>
+    <string name="menu">메뉴</string>
     <string name="bar">-</string>
+    <string name="colon">:</string>
     <string name="mon">월</string>
     <string name="tue">화</string>
     <string name="wed">수</string>
@@ -20,15 +33,57 @@
     <string name="date">날짜</string>
     <string name="start_date">시작 날짜</string>
     <string name="end_date">종료 날짜</string>
+    <string name="allow">허용</string>
+    <string name="cancel">취소</string>
     <string name="check">확인</string>
+    <string name="complete">완료</string>
+    <string name="setting">설정</string>
+    <string name="delete">삭제</string>
+    <string name="edit">수정</string>
+    <string name="info">내용</string>
     <string name="nothing">설정 안함</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="close">닫기</string>
+    <string name="permission_check">사용 권한 체크</string>
+    <string name="count_open_phone_tab">폰 켠 횟수</string>
+    <string name="today_lock">오늘의 잠금</string>
+    <string name="today_lock_nothing">오늘 설정된 잠금이 없습니다!</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="time_init1">0시간 0분</string>
-    <string name="time_init2">00:00</string>
+    <string name="exception_app_list">예외 앱 리스트</string>
+    <string name="add_button">추가 버튼</string>
+    <string name="navigation">네비게이션 버튼</string>
+    <string name="choose_share">공유 방법을 선택해주세요</string>
+    <string name="image_share">이미지 공유</string>
+    <string name="kakao_share">카카오톡 공유</string>
+    <string name="lock_interval">0분 내로 재사용 시도시 잠금</string>
+    <string name="lock_limit_time">0시간 사용시 잠금</string>
+    <string name="x">x</string>
+    <string name="share_screen">공유될 화면</string>
+    <string name="time_init1">00시간 00분</string>
+    <string name="time_init2">00 : 00</string>
+    <string name="time_init3">오전 00시:00분</string>
+    <string name="time_init4">00.00.00</string>
+    <!-- 변수!-->
+    <string name="alarm_title">%s</string>
+    <string name="alarm_remain_time">알람 %1$d시간 %2$d분 전</string>
+    <string name="use_count">%s</string>
+    <string name="lock_title">%s</string>
+    <string name="date_init">%1$s</string>
+    <string name="date_info">"%1$s월 %2$s일 %3$s요일"</string>
+    <string name="time_info">"%1$s "%2$s시 "%3$s분"</string>
+    <string name="lock_status">"%s"</string>
     <string name="amount_of_time">%1$d시간 %2$d분</string>
-    <string name="time_expression">%1$s : %2$s</string>
+    <string name="time_expression1">%1$s : %2$s</string>
+    <string name="time_expression2">%1$s : %2$s : %3$s</string>
+    <string name="time_expression3">오전 %1$s:%2$s</string>
+    <string name="time_expression4">%1$s.%2$s.%3$s</string>
+
+    <string name="exception_app_name">%s</string>
+    <string name="cmp_total_time_before">어제보다 %s시간 %s분 $s 사용</string>
+    <string name="cmp_total_count_before">어제보다 %s번 $s 사용</string>
+    <string name="cmp_endure_time_before">어제보다 %s시간 %s분 $s 사용</string>
+    <string name="select_day">$s</string>
+    <string name="title">$s</string>
+    <string name="description">$s</string>
 </resources>

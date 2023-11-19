@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.onlyapp.cooltime.data.ExceptAppRepository
 import com.onlyapp.cooltime.data.entity.ExceptApp
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class ExceptAppViewModel(private val repository: ExceptAppRepository) : ViewModel() {
@@ -18,7 +17,7 @@ class ExceptAppViewModel(private val repository: ExceptAppRepository) : ViewMode
     fun deleteApp(packageName : String){
         viewModelScope.launch{ repository.deleteApp(packageName) }
     }
-    suspend fun getApp(packageName : String) : ExceptApp {
+    suspend fun getApp(packageName : String) : ExceptApp? {
         return repository.getApp(packageName)
     }
 

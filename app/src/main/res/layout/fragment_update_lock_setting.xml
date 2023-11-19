@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.phoneLock.AddLockSettingFragment">
+    tools:context=".view.ui.phonelock.AddLockSettingFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.cardview.widget.CardView
@@ -31,7 +31,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text = "하루 총 사용량"
+                    android:text = "@string/total_time"
                     android:textSize= "20dp"
                     />
 
@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop = "5dp"
                     android:background="@drawable/radius"
-                    android:text = "0 시간 00 분"
+                    android:text = "@string/amount_of_time"
                     android:textSize= "20dp"
                     android:padding = "8dp"
                     android:layout_gravity="center_horizontal"
@@ -60,7 +60,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text = "최소 사용 간격 시간"
+                    android:text = "@string/interval_time"
                     android:textSize= "20dp"
                     />
                 <TextView
@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop = "5dp"
                     android:background="@drawable/radius"
-                    android:text = "0 시간 00 분"
+                    android:text = "@string/amount_of_time"
                     android:textSize= "20dp"
                     android:padding = "8dp"
                     android:layout_gravity="center_horizontal"
@@ -89,7 +89,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text = "특정 시간 잠금"
+                    android:text = "@string/lock_time"
                     android:textSize= "20dp"
                     />
 
@@ -109,7 +109,7 @@
                         android:layout_weight="1.5"
                         android:background="@drawable/radius"
                         android:padding="8dp"
-                        android:text="00:00"
+                        android:text="@string/time_expression1"
                         android:textAlignment="center"
                         android:textSize="20dp" />
 
@@ -118,7 +118,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="-"
+                        android:text="@string/bar"
                         android:textSize="20dp"
                         android:textAlignment="center"
                         />
@@ -132,7 +132,7 @@
                         android:layout_weight="1.5"
                         android:background="@drawable/radius"
                         android:padding="8dp"
-                        android:text="00:00"
+                        android:text="@string/time_expression1"
                         android:textAlignment="center"
                         android:textSize="20dp" />
                 </LinearLayout>
@@ -141,7 +141,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_gravity="right">
+                    android:layout_gravity="end">
                     <View
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -152,13 +152,13 @@
                         android:id="@+id/cb_not_interval_setting"
                         android:layout_width="20dp"
                         android:layout_height="match_parent"
-                        android:layout_gravity="right"
-                        android:layout_marginRight="10dp" />
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="10dp" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text = "설정 안함"
+                        android:text = "@string/nothing"
                         />
                 </LinearLayout>
             </LinearLayout>
@@ -173,7 +173,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text = "요일"
+                    android:text = "@string/day"
                     android:textSize ="20dp"
                     />
                 <!--TODO AppCompatButton -> Custom Radio Button !-->
@@ -188,7 +188,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "월"
+                        android:text = "@string/mon"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -201,7 +201,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "화"
+                        android:text = "@string/tue"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -214,7 +214,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "수"
+                        android:text = "@string/wed"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -227,7 +227,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "목"
+                        android:text = "@string/thu"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -240,7 +240,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "금"
+                        android:text = "@string/fri"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -253,7 +253,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "토"
+                        android:text = "@string/sat"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -266,7 +266,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight = "1"
-                        android:text = "일"
+                        android:text = "@string/sun"
                         android:textAlignment="center"
                         android:button = "@null"
                         android:background="@drawable/selector_check_box"
@@ -288,7 +288,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text = "날짜"
+                    android:text = "@string/date"
                     android:textSize = "20dp"
                     />
 
@@ -308,7 +308,7 @@
                         android:layout_weight="1.5"
                         android:background="@drawable/radius"
                         android:padding="8dp"
-                        android:text="00:00"
+                        android:text="@string/time_expression1"
                         android:textAlignment="center"
                         android:textSize="20dp" />
 
@@ -317,7 +317,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="-"
+                        android:text="@string/bar"
                         android:textSize="20dp"
                         android:textAlignment="center"
                         />
@@ -331,7 +331,7 @@
                         android:layout_weight="1.5"
                         android:background="@drawable/radius"
                         android:padding="8dp"
-                        android:text="00:00"
+                        android:text="@string/time_expression1"
                         android:textAlignment="center"
                         android:textSize="20dp" />
                 </LinearLayout>
@@ -340,7 +340,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_gravity="right">
+                    android:layout_gravity="end">
                     <View
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -350,13 +350,13 @@
                         android:id="@+id/cb_not_day_setting"
                         android:layout_width="20dp"
                         android:layout_height="match_parent"
-                        android:layout_gravity="right"
-                        android:layout_marginRight="10dp" />
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="10dp" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text = "설정 안함"
+                        android:text = "@string/nothing"
                         />
                 </LinearLayout>
             </LinearLayout>
@@ -373,7 +373,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:tint = "@color/white"
-                    android:text = "삭제"
+                    android:text = "@string/delete"
                     android:textSize = "20dp"
                     android:textColor = "@color/white"
                     android:background="@drawable/radius"
@@ -387,7 +387,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:tint = "@color/white"
-                    android:text = "수정"
+                    android:text = "@string/edit"
                     android:textSize = "20dp"
                     android:textColor = "@color/white"
                     android:background="@drawable/radius"

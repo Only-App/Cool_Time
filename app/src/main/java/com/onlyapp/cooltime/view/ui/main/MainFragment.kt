@@ -22,7 +22,7 @@ import com.onlyapp.cooltime.utils.loadUsage
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-
+import java.util.Locale
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -53,7 +53,7 @@ class MainFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding= FragmentMainBinding.inflate(inflater, container, false)
         childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment()).commit()
@@ -78,23 +78,20 @@ class MainFragment : Fragment() {
 
         lifecycleScope.launch{
             MyApplication.getInstance().getDataStore().latestUseTime.collect {   //최근 사용 시간 출력
-                val sdf = SimpleDateFormat("HH:mm")
+                val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
                 binding.tvRecentTime.text = sdf.format(it)
-
             }
         }
 
         lifecycleScope.launch{    //인내의 시간 출력
             MyApplication.getInstance().getDataStore().enduredTime.collect{
                 val yesterdayEnduredTime = MyApplication.getInstance().getDataStore().yesterdayEnduredTime.first()
-                binding.tvEnduredTime.text = "%02d:%02d".format(it / 60, it % 60)
-
+                binding.tvEnduredTime.text = getString(R.string.time_expression1, String.format("%02d", it / 60), String.format("%02d", it % 60))
                 binding.tvCompareEndure.text =
                     if(it < yesterdayEnduredTime){
                         "어제보다 %02d시간 %02d분 덜 잠금".format((yesterdayEnduredTime -it) / 60, (yesterdayEnduredTime - it) % 60)
                     }
                     else "어제보다 %02d시간 %02d분 더 잠금".format((it - yesterdayEnduredTime) / 60, (it - yesterdayEnduredTime) % 60)
-
             }
         }
 
@@ -104,14 +101,13 @@ class MainFragment : Fragment() {
                 val yesterdayUseTime = MyApplication.getInstance().getDataStore().yesterdayUseTime.first()
                 var diff = yesterdayUseTime - it
                 if(diff < 0) diff = -diff
-                binding.tvUseTime.text =  "%02d : %02d : %02d".format(it / 3600, (it % 3600) /  60, it % 60)
+                binding.tvUseTime.text =  getString(R.string.time_expression2, String.format("%02d", it / 3600), String.format("%02d", (it % 3600)/60),String.format("%02d", (it % 60)))
                 binding.tvCmpUseTime.text =
                     if(it < yesterdayUseTime){
                         "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 덜 사용"
                     } else "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 더 사용"
             }
         }
-
         return binding.root
     }
 

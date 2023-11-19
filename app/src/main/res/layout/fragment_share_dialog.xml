@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:gravity="center"
     android:background="@drawable/rounded_layout"
-    android:padding = "20dp"
-    >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        >
+    xmlns:android="http://schemas.android.com/apk/res/android">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text = "공유 방법을 선택해주세요"
+            android:text = "@string/choose_share"
             android:textSize = "18dp"
             android:textStyle="bold"
             android:padding="20dp"
@@ -24,7 +18,7 @@
             android:id = "@+id/btn_image_share"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:text = "이미지 공유"
+            android:text = "@string/image_share"
             android:textColor="@color/white"
             android:background="@drawable/rounded_layout"
             android:backgroundTint="@color/lock_color"
@@ -34,7 +28,7 @@
             android:id = "@+id/btn_kakao_share"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:text= "카카오톡 공유"
+            android:text= "@string/kakao_share"
             android:textColor="@color/white"
             android:background="@drawable/rounded_layout"
             android:backgroundTint="@color/lock_color"
@@ -47,10 +41,9 @@
             android:layout_height="50dp"
             android:background="@drawable/round"
             android:backgroundTint="@color/colorPrimary"
-            android:hint = "X"
-            android:textColorHint="@color/white"
+            android:text = "@string/x"
+            android:textColor="@color/white"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="10dp"
             />
-    </LinearLayout>
 </LinearLayout>

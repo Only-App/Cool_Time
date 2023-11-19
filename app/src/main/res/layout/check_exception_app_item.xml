@@ -28,7 +28,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginHorizontal="15dp"
         app:layout_constraintHorizontal_weight="5"
-        android:text="app 이름"
+        android:text="@string/exception_app_name"
         android:textSize= "15dp"
         />
     <CheckBox

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.directLock.DirectLockFragment">
+    tools:context=".view.ui.directlock.DirectLockFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.cardview.widget.CardView
@@ -64,7 +64,7 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginBottom = "20dp"
                 app:tint = "@color/white"
-                android:text = "확인"
+                android:text = "@string/check"
                 android:textSize = "20dp"
                 android:textColor = "@color/white"
                 android:background="@drawable/radius"

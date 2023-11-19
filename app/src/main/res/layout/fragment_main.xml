@@ -35,7 +35,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text= "오늘의 통계"
+                android:text= "@string/today_use_stat"
                 android:textStyle="bold"
                 android:textSize= "15dp"
                 />
@@ -51,7 +51,7 @@
                 <TextView
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "사용시간"
+                    android:text = "@string/today_use_time_tab"
                     android:textSize= "20dp"
                     android:layout_gravity="center_horizontal"
                     />
@@ -60,7 +60,7 @@
                     android:id ="@+id/tv_use_time"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "00 : 00 : 00"
+                    android:text = "@string/time_expression2"
                     android:textSize= "25dp"
                     android:textStyle="bold"
                     android:layout_marginTop = "10dp"
@@ -71,7 +71,7 @@
                     android:id ="@+id/tv_cmp_use_time"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "어제보다 2시간 5분 더 사용"
+                    android:text = "@string/cmp_total_time_before"
                     android:textSize= "15dp"
                     android:layout_marginTop= "5dp"
                     android:layout_gravity="center_horizontal"
@@ -90,7 +90,7 @@
                 <TextView
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "사용 횟수"
+                    android:text = "@string/use_count_tab"
                     android:textSize= "20dp"
                     android:layout_gravity="center_horizontal"
                     />
@@ -99,7 +99,7 @@
                     android:id ="@+id/tv_use_count"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "00"
+                    android:text = "@string/time_expression1"
                     android:textSize= "25dp"
                     android:textStyle="bold"
                     android:layout_marginTop = "10dp"
@@ -110,7 +110,7 @@
                     android:id = "@+id/tv_compare_use_cnt"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "어제보다 5번 더 사용"
+                    android:text = "@string/cmp_total_count_before"
                     android:textSize= "15dp"
                     android:layout_marginTop= "5dp"
                     android:layout_gravity="center_horizontal"
@@ -129,7 +129,7 @@
                 <TextView
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "인내의 시간"
+                    android:text = "@string/endure_time_title"
                     android:textSize= "20dp"
                     android:layout_gravity="center_horizontal"
                     />
@@ -138,7 +138,7 @@
                     android:id ="@+id/tv_endured_time"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "00: 00: 00"
+                    android:text = "@string/time_expression2"
                     android:textSize= "25dp"
                     android:textStyle="bold"
                     android:layout_marginTop = "10dp"
@@ -149,7 +149,7 @@
                     android:id = "@+id/tv_compare_endure"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "어제보다 5분 더 잠금"
+                    android:text = "@string/cmp_endure_time_before"
                     android:textSize= "15dp"
                     android:layout_marginTop= "5dp"
                     android:layout_gravity="center_horizontal"
@@ -168,7 +168,7 @@
                 <TextView
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "가장 최근 사용 시간"
+                    android:text = "@string/last_time_use"
                     android:textSize= "20dp"
                     android:layout_gravity="center_horizontal"
                     />
@@ -177,21 +177,15 @@
                     android:id ="@+id/tv_recent_time"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "00: 00"
+                    android:text = "@string/time_expression1"
                     android:textSize= "25dp"
                     android:textStyle="bold"
                     android:layout_marginTop = "10dp"
                     android:layout_gravity="center_horizontal"
                     />
-
-
             </LinearLayout>
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
-
-
-
     <!--Time Statistics !-->
     <androidx.cardview.widget.CardView
         android:id = "@+id/cv_statistics_time"
@@ -204,8 +198,6 @@
         android:layout_marginHorizontal="10dp"
         app:cardElevation="2dp"
         android:background="@android:color/transparent"
-
-
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -218,16 +210,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_margin="10dp">
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="사용 시간 통계"
+                android:text="@string/use_stat"
                 android:textSize="15dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:textStyle="bold" />
-
             <ImageButton
                 android:id="@+id/btn_navigate_to_use_stat"
                 android:layout_width="20dp"
@@ -235,9 +225,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:background="@drawable/navigate_next_15dp"
-                />
+                android:contentDescription="@string/navigation" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
         <ScrollView
             android:layout_marginTop = "20dp"
             android:padding= "15dp"
@@ -248,7 +237,6 @@
             android:gravity = "center_vertical"
             android:nestedScrollingEnabled="true"
             >
-
         <!-- Chart View!-->
         <androidx.fragment.app.FragmentContainerView
             android:id = "@+id/chart_fragment"

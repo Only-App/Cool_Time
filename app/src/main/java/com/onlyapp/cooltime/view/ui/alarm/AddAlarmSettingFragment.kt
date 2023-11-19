@@ -38,8 +38,6 @@ class AddAlarmSettingFragment : Fragment() {
     private lateinit var minPick :NumberPicker // 분 입력하는 Numberpicker 관리하는 변수
     private var db : UserDatabase? = null
     private var repository : AlarmRepository?= null
-
-
     private var alarmViewModel : AlarmViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,14 +108,18 @@ class AddAlarmSettingFragment : Fragment() {
 
     private fun addAlarmSetting() {
         //db 객체 가져오기
-        db = UserDatabase.getInstance(activity!!.applicationContext)
-
-        repository = AlarmRepository(db!!.alarmDao())
-        alarmViewModel = ViewModelProvider(
-            activity!!,
-            AlarmViewModelFactory(repository!!)
-        ).get(AlarmViewModel::class.java)
-
+        activity?.let{activity->
+            db = UserDatabase.getInstance(activity.applicationContext)
+            db?.let {userDatabase ->
+                repository = AlarmRepository(userDatabase.alarmDao())
+                repository?.let{repository ->
+                    alarmViewModel = ViewModelProvider(
+                        activity,
+                        AlarmViewModelFactory(repository)
+                    )[AlarmViewModel::class.java]
+                }
+            }
+        }
         //등록 버튼을 누르면 입력한 값들을 바탕으로 Entity객체를 생성하고 Alarm 테이블에 Insert
         binding.btnAddSetting.setOnClickListener {
 
@@ -127,16 +129,16 @@ class AddAlarmSettingFragment : Fragment() {
             val minutes = minPick.value
 
             //설정한 시간 값(기준값: 분)
-            val time_result = hour * 60 + minutes
+            val timeResult = hour * 60 + minutes
 
             //요일 설정 값(비트 마스크 값)
-            val day_result = dayToBit()
+            val dayResult = dayToBit()
 
             //Alarm 객체 생성
-            val entity = Alarm(name = etAlarmDescription, day = day_result, time = time_result)
+            val entity = Alarm(name = etAlarmDescription, day = dayResult, time = timeResult)
 
             if (contentCheck()) {
-                alarmViewModel!!.insertAlarm(entity)
+                alarmViewModel?.insertAlarm(entity)
                 findNavController().popBackStack()
             } else {
                 Toast.makeText(activity, "정보를 전부 입력해주세요", Toast.LENGTH_SHORT).show()
@@ -146,7 +148,7 @@ class AddAlarmSettingFragment : Fragment() {
 
     private fun dayToBit() : Int{
         var result = 0
-        val list = Array<Boolean>(7){false}
+        val list = Array(7){false}
 
         list[0] = binding.checkMon.isChecked
         list[1] = binding.checkTues.isChecked

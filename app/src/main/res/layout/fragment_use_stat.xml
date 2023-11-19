@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.useStat.UseStatFragment"
-
+    tools:context=".view.ui.usestat.UseStatFragment"
     >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -27,7 +26,6 @@
             android:background="@android:color/transparent"
             android:layout_marginHorizontal="10dp"
             >
-
             <LinearLayout
                 android:id ="@+id/ll_stat_use_time"
                 android:layout_width="match_parent"
@@ -35,26 +33,22 @@
                 android:orientation="vertical"
                 android:padding = "10dp"
                 >
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text= "사용시간 통계"
+                    android:text= "@string/use_stat"
                     android:textStyle="bold"
                     android:textSize= "15dp"
                     />
-
                 <TextView
                     android:id ="@+id/tv_use_time"
                     android:layout_width = "wrap_content"
                     android:layout_height=  "match_parent"
-                    android:text = "00 : 00 : 00"
+                    android:text = "@string/time_expression2"
                     android:textSize= "30dp"
                     android:textStyle="bold"
                     android:layout_marginTop = "10dp"
                     android:layout_gravity="center_horizontal" />
-
-
                 <LinearLayout
                     android:id = "@+id/ll_use_count_and_recent_time"
                     android:layout_width = "match_parent"
@@ -62,35 +56,29 @@
                     android:orientation="horizontal"
                     android:layout_marginTop ="30dp"
                     >
-
                     <TextView
                         android:id = "@+id/tv_stat_use_count"
                         android:layout_width = "0dp"
                         android:layout_height=  "wrap_content"
                         android:layout_weight="1"
-                        android:text = "00"
+                        android:text = "@string/use_count"
                         android:textSize= "30dp"
                         android:textStyle=  "bold"
                         android:layout_gravity="center_horizontal"
                         android:textAlignment="center"
                         />
-
                     <TextView
                         android:id ="@+id/tv_stat_recent_time"
                         android:layout_width = "0dp"
                         android:layout_height=  "match_parent"
                         android:layout_weight="2"
-                        android:text = "00 : 00"
+                        android:text = "@string/time_expression1"
                         android:textSize= "30dp"
                         android:textStyle="bold"
                         android:layout_gravity="center_horizontal"
                         android:textAlignment="center"
                         />
-
                 </LinearLayout>
-
-
-
                 <LinearLayout
                     android:id = "@+id/ll_description_use_time_and_recent_time"
                     android:layout_width = "match_parent"
@@ -98,53 +86,34 @@
                     android:orientation="horizontal"
                     android:layout_margin ="10dp"
                     >
-
                     <TextView
                         android:id = "@+id/tv_description_use_time"
                         android:layout_width = "0dp"
                         android:layout_height=  "wrap_content"
                         android:layout_weight="1"
-                        android:text = "폰 켠 횟수"
+                        android:text = "@string/count_open_phone_tab"
                         android:textSize= "20dp"
                         android:layout_gravity="center_horizontal"
                         android:textAlignment="center"
                         />
-
                     <TextView
                         android:id ="@+id/tv_description_recent_time"
                         android:layout_width = "0dp"
                         android:layout_height=  "match_parent"
                         android:layout_weight="2"
-                        android:text = "가장 최근 사용 시간"
+                        android:text = "@string/last_time_use"
                         android:textSize= "20dp"
                         android:layout_gravity="center_horizontal"
                         android:textAlignment="center"
                         />
-
                 </LinearLayout>
-
-                <!--    차트 이미지 !-->
-                <ScrollView
+                <androidx.fragment.app.FragmentContainerView
+                    android:id = "@+id/hour_chart_fragment"
                     android:layout_width="match_parent"
-                    android:layout_height="175dp"
-                    android:gravity = "center_vertical"
-                    >
-                    <!-- Chart View!-->
-                    <androidx.fragment.app.FragmentContainerView
-                        android:id = "@+id/hour_chart_fragment"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-
-                        />
-
-                </ScrollView>
-
+                    android:layout_height="wrap_content"
+                    />
             </LinearLayout>
-
         </androidx.cardview.widget.CardView>
-
-
-
         <!--App Statistics !-->
         <androidx.cardview.widget.CardView
             android:id = "@+id/cv_app_statistics"
@@ -160,23 +129,18 @@
             card_view:cardElevation="2dp"
             android:background="@android:color/transparent"
             >
-
             <!--나중에 차트 넣으면 layout_height는 wrap_content로 바꿔야함 !-->
             <LinearLayout
-
                 android:id="@+id/ll_statistics_time"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 >
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="앱별 사용 시간"
+                    android:text="@string/app_use_time"
                     android:textSize="15dp"
-                    android:layout_alignParentTop = "true"
-                    android:layout_alignParentLeft="true"
                     android:layout_marginTop="10dp"
                     android:layout_marginHorizontal="10dp"
                     android:textStyle="bold" />
@@ -188,21 +152,15 @@
                     android:layout_height="wrap_content"
                     android:gravity = "center_vertical"
                     >
-
                     <!-- Chart View!-->
                     <androidx.fragment.app.FragmentContainerView
                         android:id = "@+id/app_chart_fragment"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:fillViewport="true"
                         />
                 </ScrollView>
-
             </LinearLayout>
-
-
         </androidx.cardview.widget.CardView>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

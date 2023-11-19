@@ -27,7 +27,6 @@ class LockScreenAdapter(private val activity: Context, private val appItems:Muta
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val binding=(holder as LockViewHolder).binding
-        //binding.appName.text = datas[position].name
         binding.appIcon.background = appItems[position].image
         binding.appIcon.setOnClickListener{
             val intent = packageManager.getLaunchIntentForPackage(appItems[position].name)

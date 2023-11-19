@@ -1,7 +1,6 @@
 package com.onlyapp.cooltime.view.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.onlyapp.cooltime.databinding.AlarmItemBinding
@@ -12,8 +11,8 @@ class AlarmAdapter(private val list : List<Alarm>, private var mListener : OnAla
     class AlarmViewHolder(val binding : AlarmItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(alarm : Alarm){    //알람 객체와 Alarm Item Layout을 바인딩
 
-            var dayStr : String=  getDayStr(alarm.day)
-            var timeStr : String = getTimeStr(alarm.time)
+            val dayStr : String=  getDayStr(alarm.day)
+            val timeStr : String = getTimeStr(alarm.time)
 
 
             binding.alarmName.text = alarm.name
@@ -38,9 +37,9 @@ class AlarmAdapter(private val list : List<Alarm>, private var mListener : OnAla
 
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         holder.bind(list[position])
-        holder.binding.clAlarmItem.setOnClickListener(View.OnClickListener {
+        holder.binding.clAlarmItem.setOnClickListener {
             mListener?.onItemClick(list[position], position)
-        })
+        }
     }
 
     companion object{
@@ -54,14 +53,14 @@ class AlarmAdapter(private val list : List<Alarm>, private var mListener : OnAla
                 return "매일"
             }
 
-            var dayStr : String= ""
+            var dayStr = ""
 
             var temp = data
             for(i in 0..6){
                 if(temp >= numList[i]){
                     if(dayStr.isNotEmpty())
                         dayStr+= ", "
-                    dayStr+= "${dayList[i]}"
+                    dayStr+= dayList[i]
                     temp -= numList[i]
                 }
             }
@@ -74,7 +73,7 @@ class AlarmAdapter(private val list : List<Alarm>, private var mListener : OnAla
             var timeStr = ""
 
             var hour : Int = time / 60
-            var minute : Int = time % 60
+            val minute : Int = time % 60
 
             if(hour >= 12){
                 timeStr += "오후 "

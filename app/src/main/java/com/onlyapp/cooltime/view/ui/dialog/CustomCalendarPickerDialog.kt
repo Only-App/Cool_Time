@@ -22,13 +22,19 @@ class CustomCalendarPickerDialog(confirmDialogInterface : OnDateChangeListener) 
     override fun onResume() {
         super.onResume()
         //androidx.window:window:1.0.0 를 이용해 custom dialog 사용시 내용물의 크기를 임의로 수정함(match parent쓰거나 해도 이상하게 레이아웃 구성 됐었음)
-        val windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity!!)
-        val currentBounds = windowMetrics.bounds // 네이게이션과 디스플레이 컷아웃 영역을 제외한 현재 띄워지고 있던 창이 차지하고 있던 영역의 크기를 받아옴(보통 화면 전체)
-        val width = (currentBounds.width() * 0.7).toInt() // 가로의 70프로를 채우도록 설정
-        val params = dialog!!.window!!.attributes // dialog 창 속성 받아옴
-        params.width = width //width를 원하던 값으로 변경해줌
-        params.horizontalMargin = 0.0f
-        dialog!!.window!!.attributes = params //다시 설정한 값으로 대입
+        activity?.let{activity ->
+            val windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity)
+            val currentBounds = windowMetrics.bounds // 네이게이션과 디스플레이 컷아웃 영역을 제외한 현재 띄워지고 있던 창이 차지하고 있던 영역의 크기를 받아옴(보통 화면 전체)
+            val width = (currentBounds.width() * 0.7).toInt() // 가로의 70프로를 채우도록 설정
+            dialog?.let{dialog ->
+                dialog.window?.let{window ->
+                    val params = window.attributes // dialog 창 속성 받아옴
+                    params.width = width //width를 원하던 값으로 변경해줌
+                    params.horizontalMargin = 0.0f
+                    window.attributes = params //다시 설정한 값으로 대입
+                }
+            }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -51,7 +57,7 @@ class CustomCalendarPickerDialog(confirmDialogInterface : OnDateChangeListener) 
             dismiss()
         }
         // 취소 버튼 클릭
-        binding.cancleButton.setOnClickListener {
+        binding.cancelButton.setOnClickListener {
             dismiss() // 취소 버튼을 누르면 볼일 끝났으니까 그냥 해제 시킴
         }
         return binding.root
