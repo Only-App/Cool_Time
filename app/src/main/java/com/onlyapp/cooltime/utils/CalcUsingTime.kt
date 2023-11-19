@@ -88,9 +88,9 @@ fun getAppUsageStats(context : Context, beginTime : Long, endTime : Long): Map<S
             UsageEvents.Event.ACTIVITY_RESUMED, UsageEvents.Event.ACTIVITY_PAUSED -> {
                 if (list[currentEvent.packageName] == null) {
                     list.putIfAbsent(currentEvent.packageName, ArrayList<Triple<String, Int, Long>>())
-                    list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
+                    list[currentEvent.packageName]?.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
                 } else {
-                    list[currentEvent.packageName]!!.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
+                    list[currentEvent.packageName]?.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
                 }
             }
         }
@@ -146,13 +146,13 @@ fun loadTimeUsage(context : Context, calendar : Calendar): ArrayList<Long> {
         endDay.set(Calendar.MILLISECOND, 999)
         var totalTime = 0L
 
-        val tmp = getAppUsageStats(
-            context!!,
+        val usageStats = getAppUsageStats(
+            context,
             startDay.timeInMillis,
             endDay.timeInMillis
         )
-        for(i in tmp) {
-            totalTime += i.value
+        for(app in usageStats) {
+            totalTime += app.value
         }
         list.add(totalTime)
     }
@@ -171,7 +171,7 @@ fun getTotalTime(list :  List<Pair<String, Long>>): Long {
 
 fun getDiff( totalTime:Long, yesterdayTotalTime:Long ): String {
     var diff = yesterdayTotalTime - totalTime
-    var moreOrLess = if(diff < 0){"더 사용"} else{ "덜 사용"}
+    val moreOrLess = if(diff < 0){"더 사용"} else{ "덜 사용"}
     diff = Math.abs(diff)
     val diffTotalHour = (diff/3600).toString()
     val diffTotalMin = (diff/60%60).toString()

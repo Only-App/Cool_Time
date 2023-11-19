@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.databinding.FragmentMainBinding
-import com.onlyapp.cooltime.utils.ChartAppFragment
+import com.onlyapp.cooltime.view.ui.chart.ChartAppFragment
 import com.onlyapp.cooltime.utils.getDiff
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.utils.getTodayStart

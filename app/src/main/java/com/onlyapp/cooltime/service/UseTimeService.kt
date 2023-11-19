@@ -30,7 +30,7 @@ class UseTimeService : LifecycleService() {
         const val LOCK_DURATION = 2 //잠금 시간이 적용된 상태
         const val WAIT = 3  //최소 사용 시간 간격으로 사용할 수 없는 상태
     }
-    private val handler = Handler(Looper.myLooper()!!)
+    private val handler = Looper.myLooper()?.let { Handler(it) }
     private lateinit var myRunnable: Runnable
     private var lockType = POSSIBLE
     private var reuseTime = 0
@@ -40,9 +40,9 @@ class UseTimeService : LifecycleService() {
         myRunnable = object : Runnable{
             override fun run(){
 
-                val lockDao = UserDatabase.getInstance(applicationContext)!!.phoneLockDao()
-                val lockRepository =  LockRepository(lockDao)
-                val lockViewModel = LockViewModel(lockRepository)
+                val lockDao = UserDatabase.getInstance(applicationContext)?.phoneLockDao()
+                val lockRepository =  lockDao?.let{LockRepository(it)}
+                val lockViewModel = lockRepository?.let{LockViewModel(it)}
 
                 val beginTime = getTodayStart().timeInMillis
                 val endTime = getTodayNow().timeInMillis
@@ -54,71 +54,71 @@ class UseTimeService : LifecycleService() {
                         .onUseTimeChanged(totalTime)  //DataStore에 총 사용 시간 저장
 
                     val lockStatus = MyApplication.getInstance().getDataStore().lockStatus.first() //현재 잠금 상태
+                    lockViewModel?.let { vm ->
+                        vm.lockList.observe(
+                            this@UseTimeService,
+                            Observer<List<PhoneLock>> { phoneLocks ->
+                                phoneLocks.forEach {
+                                    val lockInfo = it
+                                    val startDate = lockInfo.startDate
+                                    var endDate = lockInfo.endDate
+                                    val lockDay = lockInfo.lockDay
+                                    val minTime = lockInfo.minTime
 
-                    lockViewModel.lockList.observe(
-                        this@UseTimeService,
-                        Observer<List<PhoneLock>> {
-                            it.forEach {
-                                val lockInfo = it
-                                val startDate = lockInfo.startDate
-                                var endDate = lockInfo.endDate
-                                val lockDay = lockInfo.lockDay
-                                val minTime = lockInfo.minTime
+                                    if (endDate != -1L) {
+                                        val endDateCalendar = Calendar.getInstance()
+                                        endDateCalendar.timeInMillis = endDate
+                                        endDateCalendar.set(Calendar.HOUR_OF_DAY, 23)
+                                        endDateCalendar.set(Calendar.MINUTE, 59)
+                                        endDateCalendar.set(Calendar.SECOND, 59)
+                                        endDateCalendar.set(Calendar.MILLISECOND, 999)
 
-                                if(endDate != -1L) {
-                                    val endDateCalendar = Calendar.getInstance()
-                                    endDateCalendar.timeInMillis = endDate
-                                    endDateCalendar.set(Calendar.HOUR_OF_DAY, 23)
-                                    endDateCalendar.set(Calendar.MINUTE, 59)
-                                    endDateCalendar.set(Calendar.SECOND, 59)
-                                    endDateCalendar.set(Calendar.MILLISECOND, 999)
-
-                                    endDate = endDateCalendar.timeInMillis
-                                }
-
-
-                                if ((getTodayNow().timeInMillis in startDate..endDate)  //잠금 기간에 해당되는지
-                                    || (startDate == -1L && endDate == -1L) //잠금 기간이 없는 경우
-                                ) {
-                                    val dayOfWeek =
-                                        Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-
-                                    if ((1 shl (6 - (dayOfWeek + 5) % 7)) and lockDay != 0) { //오늘이 설정한 요일에 포함되는지
-                                        val lockOnDate = Calendar.getInstance().apply{
-                                            set(Calendar.HOUR_OF_DAY, lockInfo.lockOn / 60)
-                                            set(Calendar.MINUTE, lockInfo.lockOn % 60)
-                                        }
-
-                                        val lockOffDate = Calendar.getInstance().apply{
-                                            set(Calendar.HOUR_OF_DAY, lockInfo.lockOff / 60)
-                                            set(Calendar.MINUTE, lockInfo.lockOff % 60)
-                                        }
-
-                                        if(lockOffDate < lockOnDate) lockOffDate.add(Calendar.DAY_OF_YEAR, 1)   //종료 시간이 시작 시간 보다 빠르면 종료 날짜 + 1
-
-                                        if (getTodayNow().timeInMillis in lockOnDate.timeInMillis..lockOffDate.timeInMillis) {   //잠금 시작 시간과 잠금 종료 시간에 포함되는지
-                                            lockType = LOCK_DURATION
-                                            reuseTime = ((lockOffDate.timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
-                                            return@Observer
-                                        } else if (totalTime >= lockInfo.totalTime * 60) {  //총 사용 시간을 모두 사용한 경우
-                                            lockType = EXCEED
-                                            reuseTime = ((getTomorrowStart().timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
-                                            return@Observer
-                                        }
-
-                                        else if (minTime != -1L && !lockStatus && !waitCheck) {  //최소 사용 시간 간격이 설정되어 있는 경우,
-                                            lockType = WAIT
-                                            waitCheck = true
-                                            reuseTime = (lockInfo.minTime * 60).toInt()
-                                            return@Observer
-                                        }
-
-
+                                        endDate = endDateCalendar.timeInMillis
                                     }
-                                }
 
+
+                                    if ((getTodayNow().timeInMillis in startDate..endDate)  //잠금 기간에 해당되는지
+                                        || (startDate == -1L && endDate == -1L) //잠금 기간이 없는 경우
+                                    ) {
+                                        val dayOfWeek =
+                                            Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+
+                                        if ((1 shl (6 - (dayOfWeek + 5) % 7)) and lockDay != 0) { //오늘이 설정한 요일에 포함되는지
+                                            val lockOnDate = Calendar.getInstance().apply {
+                                                set(Calendar.HOUR_OF_DAY, lockInfo.lockOn / 60)
+                                                set(Calendar.MINUTE, lockInfo.lockOn % 60)
+                                            }
+
+                                            val lockOffDate = Calendar.getInstance().apply {
+                                                set(Calendar.HOUR_OF_DAY, lockInfo.lockOff / 60)
+                                                set(Calendar.MINUTE, lockInfo.lockOff % 60)
+                                            }
+
+                                            if (lockOffDate < lockOnDate) lockOffDate.add(Calendar.DAY_OF_YEAR, 1)   //종료 시간이 시작 시간 보다 빠르면 종료 날짜 + 1
+
+                                            if (getTodayNow().timeInMillis in lockOnDate.timeInMillis..lockOffDate.timeInMillis) {   //잠금 시작 시간과 잠금 종료 시간에 포함되는지
+                                                lockType = LOCK_DURATION
+                                                reuseTime = ((lockOffDate.timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
+                                                return@Observer
+                                            } else if (totalTime >= lockInfo.totalTime * 60) {  //총 사용 시간을 모두 사용한 경우
+                                                lockType = EXCEED
+                                                reuseTime = ((getTomorrowStart().timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
+                                                return@Observer
+                                            } else if (minTime != -1L && !lockStatus && !waitCheck) {  //최소 사용 시간 간격이 설정되어 있는 경우,
+                                                lockType = WAIT
+                                                waitCheck = true
+                                                reuseTime = (lockInfo.minTime * 60).toInt()
+                                                return@Observer
+                                            }
+
+
+                                        }
+                                    }
+
+                                }
                             }
-                        })
+                        )
+                    }
                 }
 
                 if(lockType != POSSIBLE){   //현재 잠겨야 하는 상황인 경우
@@ -142,23 +142,21 @@ class UseTimeService : LifecycleService() {
                     startService(intent)
                     stopSelf()  //서비스 종료
                 }
-
-                handler.postDelayed(this, 500)
-
+                handler?.postDelayed(this, 500)
             }
         }
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val intent = Intent(this, ActiveLockService::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val active = Intent(this, ActiveLockService::class.java)
+        active.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-        handler.post(myRunnable)
+        handler?.post(myRunnable)
 
-        return super.onStartCommand(intent, flags, startId)
+        return super.onStartCommand(active, flags, startId)
     }
 
     override fun onDestroy(){
-        handler.removeCallbacks(myRunnable)
+        handler?.removeCallbacks(myRunnable)
         super.onDestroy()
     }
     override fun onBind(intent: Intent): IBinder {

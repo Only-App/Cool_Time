@@ -9,8 +9,8 @@ import java.util.TimerTask
 
 
 class RemainingTimeService(): Service(){
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        var variable = intent!!.getIntExtra("time", 0) // 초기 변수 값 설정
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        var variable = intent.getIntExtra("time", 0) // 초기 변수 값 설정
         val timer = Timer()
         val task = object : TimerTask() {
             override fun run() {

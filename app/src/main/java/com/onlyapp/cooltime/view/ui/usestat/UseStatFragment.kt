@@ -10,8 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.databinding.FragmentUseStatBinding
-import com.onlyapp.cooltime.utils.ChartAppFragment
-import com.onlyapp.cooltime.utils.ChartHourFragment
+import com.onlyapp.cooltime.view.ui.chart.ChartAppFragment
+import com.onlyapp.cooltime.view.ui.chart.ChartHourFragment
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.utils.getTodayStart
 import com.onlyapp.cooltime.utils.loadTimeUsage

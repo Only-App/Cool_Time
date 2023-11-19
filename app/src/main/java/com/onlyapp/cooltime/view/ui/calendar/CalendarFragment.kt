@@ -17,8 +17,8 @@ import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentCalendarBinding
 import com.onlyapp.cooltime.data.entity.Alarm
 import com.onlyapp.cooltime.data.entity.PhoneLock
-import com.onlyapp.cooltime.utils.ChartAppFragment
-import com.onlyapp.cooltime.utils.ChartHourFragment
+import com.onlyapp.cooltime.view.ui.chart.ChartAppFragment
+import com.onlyapp.cooltime.view.ui.chart.ChartHourFragment
 import com.onlyapp.cooltime.utils.getSomedayEnd
 import com.onlyapp.cooltime.utils.getSomedayStart
 import com.onlyapp.cooltime.utils.loadTimeUsage

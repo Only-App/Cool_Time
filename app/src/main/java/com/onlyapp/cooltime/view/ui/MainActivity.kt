@@ -1,7 +1,4 @@
 package com.onlyapp.cooltime.view.ui
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -15,20 +12,17 @@ import androidx.navigation.ui.setupWithNavController
 import com.onlyapp.cooltime.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.onlyapp.cooltime.R
-import com.onlyapp.cooltime.receiver.MyBroadcastReceiver
 import com.onlyapp.cooltime.service.UseTimeService
 import com.onlyapp.cooltime.utils.Permission
-import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.view.adapter.PermissionScreenAdapter
 import com.onlyapp.cooltime.view.ui.dialog.ShareDialog
 import com.onlyapp.cooltime.view.ui.permission.CheckPermissionActivity
-import java.util.Calendar
-
 
 var backTime : Long = 0
 
 class MainActivity : AppCompatActivity() {
-    private var binding : ActivityMainBinding? = null
+    private var _binding : ActivityMainBinding? = null
+    val binding get() = _binding!!
     private var appBarConfiguration : AppBarConfiguration? = null
 
 
@@ -37,8 +31,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setUpActionBar()    //액션바 세팅
         setUpNavViewController()
 
@@ -90,14 +84,14 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {//뒤로 두번 눌렀을 때 종료되도록
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.frag_container) as NavHostFragment
         val navController = navHostFragment.navController
-        var navDestination = navController.currentDestination
+        val navDestination = navController.currentDestination
 
         navDestination?.let{
             if(it.id == R.id.main) {
-                if (System.currentTimeMillis() - com.onlyapp.cooltime.view.ui.backTime >= 2000 || com.onlyapp.cooltime.view.ui.backTime == 0.toLong()) { //2초내에 다시 누른게 아니면
-                    com.onlyapp.cooltime.view.ui.backTime =
+                if (System.currentTimeMillis() - backTime >= 2000 || backTime == 0.toLong()) { //2초내에 다시 누른게 아니면
+                    backTime =
                         System.currentTimeMillis() // 마지막으로 back버튼을 누른 시간 갱신
-                    Snackbar.make(binding!!.root, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Snackbar.LENGTH_LONG)
+                    Snackbar.make(binding.root, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Snackbar.LENGTH_LONG)
                         .show()
                     //뒤로가기 버튼 한번 더 누르면 종료된다고 메세지 띄우기
                 } else {
@@ -111,12 +105,12 @@ class MainActivity : AppCompatActivity() {
 
     //메뉴 옵션을 클릭하였을 때 처리하는 함수
     //Navigation을 통한 프래그먼트 이동 (메뉴 항목 당 프래그먼트 연결)
-    fun setUpNavViewController(){
+    private fun setUpNavViewController(){
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.frag_container) as NavHostFragment
         val navController = navHostFragment.navController
 
         //navigation view를 navigation 컨트롤러와 연결
-        binding!!.navView.setupWithNavController(navController)
+        binding.navView.setupWithNavController(navController)
 
         //드로워와 navigation graph를 연결
         //AppBarConfiguration()은 Navigation 메소드에 대한 옵션 설정 같은 것 **메소드 : 어떤 기능을 실행하는 코드 블록**
@@ -124,43 +118,45 @@ class MainActivity : AppCompatActivity() {
         //navController.graph 대신에 setOf(최상위 디렉토리들)로 설정해서 넘겨줘도 동작 본 앱에선 ex:) setOf(R.id.main)을 넘겨줘도 main화면에 위치해 있을 때 나오지 않음
         //두번째 인자는 Navigation 버튼이 토글되었을 때(눌러졌을 때) Drawer 메뉴를 열 수 있는 Drawer Layout을 지정, Navigation 버튼이 Up 버튼으로 설정되지 않을 때, Drawer버튼(햄버거 모양)으로 표시됨
         //=>따라서 시스템상에서 최상위 디렉토리에선 자동으로 햄버거 모양의 아이콘 생성 및 눌렀을 때 메뉴 튀어나오는 액션이 설정되고, 나머지 디렉토리에서는 자동으로 뒤로가기 아이콘과, 뒤로가는 액션이 설정됨.
-        appBarConfiguration = AppBarConfiguration(navController.graph, binding!!.dlMain)
+        appBarConfiguration = AppBarConfiguration(navController.graph, binding.dlMain)
 
         //액션바, 네비게이션 컨트롤러, 드로워 연결
         //커스텀한 Configuration값을 넣어서 Navigation Controller를 통해 ActionBar를 세팅해줌
         setupActionBarWithNavController(navController, appBarConfiguration!!)
 
-        navController.addOnDestinationChangedListener { _, navDestination, bundle ->
+        navController.addOnDestinationChangedListener { _, navDestination, _ ->
             //이미 이렇게 따로 setHomeAsUpIndicator 같은걸 쓰지 않아도 햄버거 아이콘과 뒤로가기 아이콘 및 액션 생성되지만, 하얀색 아이콘으로 바꾸기 위해
             // 이 코드가 없으면 검은 색 버튼들로 동작
 
-            if(navDestination.id !== R.id.main){ // ★이게 어떤 눌렀을 때 행동을 설정하는 것 X, 그냥 겉보기 디자인만 바꾸는 것
-                supportActionBar!!.setHomeAsUpIndicator(R.drawable.arrow_back_24dp)
-            }
-            else{
-                supportActionBar!!.setHomeAsUpIndicator(R.drawable.menu_24dp)
+            supportActionBar?.let{
+                if(navDestination.id != R.id.main){ // ★이게 어떤 눌렀을 때 행동을 설정하는 것 X, 그냥 겉보기 디자인만 바꾸는 것
+                    it.setHomeAsUpIndicator(R.drawable.arrow_back_24dp)
+                }
+                else{
+                    it.setHomeAsUpIndicator(R.drawable.menu_24dp)
+                }
             }
 
             //프래그먼트에 따라서 툴바 가운데 텍스트를 변경
             when(navDestination.id){
                 R.id.main -> {
-                    binding!!.tvToolbarName.text = "COOL TIME"
+                    binding.tvToolbarName.text = getString(R.string.app_name)
                 }
 
                 R.id.use_stat -> {
-                    binding!!.tvToolbarName.text = "사용시간 통계"
+                    binding.tvToolbarName.text = getString(R.string.use_stat)
                 }
                 R.id.alarm_main ->{
-                    binding!!.tvToolbarName.text = "알람"
+                    binding.tvToolbarName.text = getString(R.string.alarm)
                 }
                 R.id.direct_lock -> {
-                    binding!!.tvToolbarName.text= "바로 잠금"
+                    binding.tvToolbarName.text= getString(R.string.direct_lock)
                 }
                 R.id.phone_lock_main -> {
-                    binding!!.tvToolbarName.text = "폰 잠금"
+                    binding.tvToolbarName.text = getString(R.string.phone_lock)
                 }
                 R.id.calendar -> {
-                    binding!!.tvToolbarName.text = "캘린더"
+                    binding.tvToolbarName.text = getString(R.string.calendar)
                 }
             }
         }
@@ -174,12 +170,14 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration!!)
     }
 
-    fun setUpActionBar(){
-        setSupportActionBar(binding!!.toolbar) //toolbar -> actionbar
-        val actionbar = supportActionBar    //actionbar object (getSupportActionBar())
-        actionbar!!.setDisplayShowTitleEnabled(false) //Delete Title(App name)
-        //actionbar!!.setDisplayHomeAsUpEnabled(true) //Activate Menu Button
-        //actionbar!!.setHomeAsUpIndicator(R.drawable.menu_24dp)  //Replace Home button with Menu button
+    private fun setUpActionBar(){
+        setSupportActionBar(binding.toolbar) //toolbar -> actionbar
+        supportActionBar?.let {
+            val actionbar = it    //actionbar object (getSupportActionBar())
+            actionbar.setDisplayShowTitleEnabled(false) //Delete Title(App name)
+            //actionbar!!.setDisplayHomeAsUpEnabled(true) //Activate Menu Button
+            //actionbar!!.setHomeAsUpIndicator(R.drawable.menu_24dp)  //Replace Home button with Menu button
+        }
     }
 
     //onCreateOptionsMenu는 액티비티 실행될 때 딱 한번 호출,
