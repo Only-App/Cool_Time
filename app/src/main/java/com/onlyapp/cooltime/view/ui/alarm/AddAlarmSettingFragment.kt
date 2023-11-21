@@ -67,6 +67,8 @@ class AddAlarmSettingFragment : Fragment() {
         timePicker = binding.alarmTimePicker
         timePicker.setIs24HourView(true)
 
+        timePicker.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
+
         activity?.let { db = UserDatabase.getInstance(it.applicationContext) }
         db?.let { repository = AlarmRepository(it.alarmDao()) }
         if (activity != null && repository != null) {

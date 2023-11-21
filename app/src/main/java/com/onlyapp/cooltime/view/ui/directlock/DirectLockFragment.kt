@@ -67,6 +67,7 @@ class DirectLockFragment : Fragment() {
         timePicker = binding.directLockTimePicker
         timePicker.setIs24HourView(true)
 
+        timePicker.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
 
         return binding.root
     }
