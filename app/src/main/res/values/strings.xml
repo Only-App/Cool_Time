@@ -1,6 +1,6 @@
 <resources>
     <!-- 상수!-->
-    <string name="app_name">Cool Time</string>
+    <string name="app_name">COOL TIME</string>
     <string name="use_stat">사용 시간 통계</string>
     <string name="today_use_stat">오늘의 통계</string>
     <string name="alarm">알람</string>
@@ -79,7 +79,7 @@
     <string name="time_expression3">오전 %1$s:%2$s</string>
     <string name="time_expression4">%1$s.%2$s.%3$s</string>
 
-    <string name="exception_app_name">%s</string>
+    <string name="exception_app_name">예외 앱</string>
     <string name="cmp_total_time_before">어제보다 %s시간 %s분 $s 사용</string>
     <string name="cmp_total_count_before">어제보다 %s번 $s 사용</string>
     <string name="cmp_endure_time_before">어제보다 %s시간 %s분 $s 사용</string>

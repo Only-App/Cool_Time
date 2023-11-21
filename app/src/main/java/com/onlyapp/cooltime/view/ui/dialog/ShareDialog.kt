@@ -1,19 +1,27 @@
 package com.onlyapp.cooltime.view.ui.dialog
 import android.content.ActivityNotFoundException
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
 import com.kakao.sdk.common.util.KakaoCustomTabsClient
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
+import com.onlyapp.cooltime.common.dialogResize
 import com.onlyapp.cooltime.databinding.FragmentShareDialogBinding
+import java.lang.Exception
 
 class ShareDialog : DialogFragment() {
     private var _binding : FragmentShareDialogBinding? = null
@@ -31,7 +39,10 @@ class ShareDialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        this.dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val mContext = checkNotNull(context) {return}
+        val dialog =  checkNotNull(this.dialog){return}
+        mContext.dialogResize(dialog, 0.8f, 0.5f)
+
         binding.btnImageShare.setOnClickListener{
             ShareTodayInfoDialog().show(childFragmentManager, null)
             Toast.makeText(activity, "이미지 공유", Toast.LENGTH_SHORT).show()
@@ -43,7 +54,7 @@ class ShareDialog : DialogFragment() {
                 // 사용자 정의 메시지 ID
 
                 val templateId = 100861.toLong()
-// 카카오톡 설치여부 확인
+                // 카카오톡 설치여부 확인
                 if (ShareClient.instance.isKakaoTalkSharingAvailable(it)) {
                     // 카카오톡으로 카카오톡 공유 가능
                     ShareClient.instance.shareCustom(it, templateId) { sharingResult, error ->

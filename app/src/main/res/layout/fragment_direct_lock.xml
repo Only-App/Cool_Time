@@ -34,27 +34,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text = "지금부터 집중할 시간"
-                    android:textSize= "22dp"
+                    android:textSize= "25dp"
                     android:textAlignment="center"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginHorizontal="5dp"
                     />
-                <!--
-                <TextView
+
+
+                <TimePicker
+                    android:id = "@+id/direct_lock_time_picker"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop = "10dp"
-                    android:text = "0 시간 00 분"
-                    android:textSize = "25dp"
-                    android:textStyle = "bold"
-                    android:background = "@drawable/radius"
-                    android:padding = "10dp"
-                    android:textAlignment="center"
-                    android:layout_gravity="center_horizontal"
-
+                    android:timePickerMode= "spinner"
+                    android:layout_marginTop="20dp"
                     />
-                !-->
-                <include layout="@layout/time_picker" android:id="@+id/time_picker"/>
 
             </LinearLayout>
             <androidx.appcompat.widget.AppCompatButton

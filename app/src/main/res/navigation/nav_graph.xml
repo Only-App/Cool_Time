@@ -20,6 +20,7 @@
         android:label="exception_app"
         tools:layout="@layout/fragment_exception_app" />
 
+
     <fragment
         android:id="@+id/use_stat"
         android:name="com.onlyapp.cooltime.view.ui.usestat.UseStatFragment"

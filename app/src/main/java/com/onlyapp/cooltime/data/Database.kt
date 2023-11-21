@@ -10,7 +10,7 @@ import com.onlyapp.cooltime.data.entity.Alarm
 import com.onlyapp.cooltime.data.entity.ExceptApp
 import com.onlyapp.cooltime.data.entity.PhoneLock
 
-@Database(entities = [Alarm::class, PhoneLock::class, ExceptApp::class], version = 8)
+@Database(entities = [Alarm::class, PhoneLock::class, ExceptApp::class], version = 9)
 @TypeConverters(StringListConverter::class)
 abstract class UserDatabase : RoomDatabase(){
     abstract fun alarmDao() : AlarmDAO  //알람 객체 DAO(Data Access Object)

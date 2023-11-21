@@ -17,7 +17,7 @@
         android:background = "@drawable/baseline_android_24"
         app:layout_constraintHorizontal_weight="1"
         android:layout_marginStart = "5dp"
-    />
+        />
     <TextView
         android:id="@+id/app_name"
         android:layout_width="0dp"
@@ -35,6 +35,9 @@
         android:id ="@+id/except_checkbox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd = "5dp"
+        android:scaleX="1.3"
+        android:scaleY="1.3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/app_name"
         app:layout_constraintTop_toTopOf="parent"

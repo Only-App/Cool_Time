@@ -44,30 +44,6 @@ class MainActivity : AppCompatActivity() {
 
         startService(Intent(this, UseTimeService::class.java))
 
-
-        /*  구현용 테스트 코드
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val currentTime = getTodayNow().apply{
-            add(Calendar.SECOND, 10)
-        }.timeInMillis
-
-        val intent = Intent(this, MyBroadcastReceiver::class.java).apply{
-            action = "Reserved Alarm"
-        }
-        intent.putExtra("message", "알람 내용입니다")
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            currentTime.toInt(),
-            intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager.set(
-            AlarmManager.RTC_WAKEUP,
-            currentTime,
-            pendingIntent
-        )
-        */
-
         registerReceiver(MyBroadcastReceiver(), IntentFilter().apply{
             addAction(Intent.ACTION_USER_PRESENT)
             addAction(Intent.ACTION_SCREEN_OFF)
@@ -156,7 +132,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.alarm_main ->{
                     binding.tvToolbarName.text = getString(R.string.alarm)
                 }
-                R.id.direct_lock -> {
+                R.id.direct_lock_main -> {
                     binding.tvToolbarName.text= getString(R.string.direct_lock)
                 }
                 R.id.phone_lock_main -> {
@@ -164,6 +140,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.calendar -> {
                     binding.tvToolbarName.text = getString(R.string.calendar)
+                }
+                R.id.exception ->{
+                    binding.tvToolbarName.text = getString(R.string.exception_app_name)
                 }
             }
         }

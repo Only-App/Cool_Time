@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
+import com.onlyapp.cooltime.common.dialogResize
 import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentShareTodayInfoDialogBinding
@@ -85,9 +86,11 @@ class ShareTodayInfoDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //set dialog width
-        val width = (resources.displayMetrics.widthPixels * 0.8).toInt() // 80% of screen width
-        val height = (resources.displayMetrics.heightPixels * 0.6).toInt()
-        dialog?.window?.setLayout(width, height)
+
+        val mContext = checkNotNull(context) {return}
+        val dialog = checkNotNull(this.dialog){return}
+        mContext.dialogResize(dialog, 0.9f, 0.7f)
+
     }
 
     override fun onCreateView(
@@ -96,6 +99,7 @@ class ShareTodayInfoDialog : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentShareTodayInfoDialogBinding.inflate(inflater, container, false)
+
         binding.cancel.setOnClickListener{
             dismiss()
         }

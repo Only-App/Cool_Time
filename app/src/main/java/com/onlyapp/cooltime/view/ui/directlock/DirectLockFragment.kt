@@ -2,13 +2,15 @@ package com.onlyapp.cooltime.view.ui.directlock
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
+import android.widget.TimePicker
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.onlyapp.cooltime.MyApplication
+import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.databinding.FragmentDirectLockBinding
 import com.onlyapp.cooltime.service.ActiveLockService
 import kotlinx.coroutines.launch
@@ -29,13 +31,14 @@ class DirectLockFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    private var _binding : FragmentDirectLockBinding? = null
+    private var _binding: FragmentDirectLockBinding? = null
     private val binding
         get() = _binding!!
 
-    private lateinit var hourPick : NumberPicker   // 시간 입력하는 Numberpicker 관리하는 변수
-    private lateinit var minPick :NumberPicker // 분 입력하는 Numberpicker 관리하는 변수
+    private lateinit var hourPick: NumberPicker   // 시간 입력하는 Numberpicker 관리하는 변수
+    private lateinit var minPick: NumberPicker // 분 입력하는 Numberpicker 관리하는 변수
 
+    private lateinit var timePicker : TimePicker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -50,24 +53,29 @@ class DirectLockFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentDirectLockBinding.inflate(inflater, container, false)
-        hourPick = binding.timePicker.hourPicker // _binding이 init 되고 난 후에 값 지정해야 함!
-        minPick = binding.timePicker.minPicker
-        timeInit()
 
-        binding.fabAddSetting.setOnClickListener{
-            lifecycleScope.launch{    //지정한 시간만큼 인내의 시간 증가
-                MyApplication.getInstance().getDataStore().increaseEnduredTime(hourPick.value * 60  + minPick.value)
+        binding.fabAddSetting.setOnClickListener {
+            lifecycleScope.launch {    //지정한 시간만큼 인내의 시간 증가
+                MyApplication.getInstance().getDataStore()
+                    .increaseEnduredTime(timePicker.hour * 60 + timePicker.minute)
             }
             val intent = Intent(this.context, ActiveLockService::class.java)
-            intent.putExtra("time", hourPick.value*60*60 + minPick.value*60)
+            intent.putExtra("time", timePicker.hour * 60 * 60 + timePicker.minute * 60)
             activity!!.startService(intent) // 잠금 서비스 실행
         }
+
+        timePicker = binding.directLockTimePicker
+        timePicker.setIs24HourView(true)
+
+
         return binding.root
     }
 
-    private fun timeInit(){ // Time Picker 위한 초기 설정
+    /*
+    private fun timeInit() { // Time Picker 위한 초기 설정
         hourPick.wrapSelectorWheel = false // 숫자 값을 키보드로 입력하는 것을 막음
-        hourPick.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS // 최대값에서 최소값으로 순환하는 것을 막음
+        hourPick.descendantFocusability =
+            NumberPicker.FOCUS_BLOCK_DESCENDANTS // 최대값에서 최소값으로 순환하는 것을 막음
 
         minPick.wrapSelectorWheel = false
         minPick.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
@@ -78,6 +86,7 @@ class DirectLockFragment : Fragment() {
         minPick.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
         minPick.maxValue = 59
     }
+     */
 
     companion object {
         /**

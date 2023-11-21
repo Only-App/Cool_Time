@@ -2,10 +2,11 @@ package com.onlyapp.cooltime.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
-@Entity("exceptApp")
+@Entity(tableName = "except_app")
 data class ExceptApp(
     @PrimaryKey
-    val packageName : String,
-    val checked : Boolean
+    @SerializedName("package_name") val packageName : String,
+    @SerializedName("checked") val checked : Boolean
 )
