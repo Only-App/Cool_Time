@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
+import com.onlyapp.cooltime.data.DataStoreModule
 import com.onlyapp.cooltime.databinding.FragmentMainBinding
 import com.onlyapp.cooltime.view.ui.chart.ChartAppFragment
 import com.onlyapp.cooltime.utils.getDiff
@@ -82,6 +83,7 @@ class MainFragment : Fragment() {
                 binding.tvRecentTime.text = sdf.format(it)
             }
         }
+
 
         lifecycleScope.launch{    //인내의 시간 출력
             MyApplication.getInstance().getDataStore().enduredTime.collect{

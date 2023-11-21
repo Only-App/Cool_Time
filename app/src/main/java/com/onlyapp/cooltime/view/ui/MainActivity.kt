@@ -1,5 +1,6 @@
 package com.onlyapp.cooltime.view.ui
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,6 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.onlyapp.cooltime.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.onlyapp.cooltime.R
+import com.onlyapp.cooltime.receiver.MyBroadcastReceiver
 import com.onlyapp.cooltime.service.UseTimeService
 import com.onlyapp.cooltime.utils.Permission
 import com.onlyapp.cooltime.view.adapter.PermissionScreenAdapter
@@ -66,6 +68,11 @@ class MainActivity : AppCompatActivity() {
         )
         */
 
+        registerReceiver(MyBroadcastReceiver(), IntentFilter().apply{
+            addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_DATE_CHANGED)
+        })
 
     }
 

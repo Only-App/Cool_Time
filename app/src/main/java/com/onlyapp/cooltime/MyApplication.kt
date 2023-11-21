@@ -15,15 +15,8 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val br =  MyBroadcastReceiver()
         myApplication = this
         dataStore = DataStoreModule(this)
-
-        registerReceiver(br, IntentFilter().apply{  //브로드 캐스트 리시버 등록
-            addAction(Intent.ACTION_USER_PRESENT)
-            addAction(Intent.ACTION_SCREEN_OFF)
-            addAction(Intent.ACTION_DATE_CHANGED)
-        }, )
 
         //KakaoSdk 초기화
         KakaoSdk.init(this, NATIVE_APP_KEY)

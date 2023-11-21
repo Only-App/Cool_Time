@@ -15,6 +15,7 @@ import com.onlyapp.cooltime.data.AlarmRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentUpdateAlarmSettingBinding
 import com.onlyapp.cooltime.data.entity.Alarm
+import com.onlyapp.cooltime.utils.AlarmScheduler
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 
@@ -39,7 +40,6 @@ class UpdateAlarmSettingFragment : Fragment() {
     private lateinit var hourPick : NumberPicker // 시간 입력하는 Numberpicker 관리하는 변수
     private lateinit var minPick : NumberPicker // 분 입력하는 Numberpicker 관리하는 변수
 
-    @SuppressLint("NewApi")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -72,6 +72,7 @@ class UpdateAlarmSettingFragment : Fragment() {
                     .setPositiveButton("예") { _, _ ->
                         //삭제 후 이전 화면으로
                         alarmViewModel?.deleteAlarm(alarm)
+                        context?.let{ AlarmScheduler.cancelAlarm(alarm.id, it) }
                         findNavController().popBackStack()
                     }
                     .setNegativeButton("아니요") {  //아니요를 눌렀을 때 아무 작업도 하지 않도록
@@ -105,6 +106,7 @@ class UpdateAlarmSettingFragment : Fragment() {
                         if(contentCheck() && alarmViewModel != null) {    //정보가 모두 입력되었다면
                             //업데이트 후 이전 화면으로
                             alarmViewModel!!.updateAlarm(entity)
+                            context?.let{ AlarmScheduler.registerAlarm(entity, it) }
                             findNavController().popBackStack()
                         }
                         //아니라면 다시 입력해달라는 메시지 출력

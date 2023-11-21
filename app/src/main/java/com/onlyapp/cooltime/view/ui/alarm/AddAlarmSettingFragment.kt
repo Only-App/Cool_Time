@@ -3,6 +3,7 @@ package com.onlyapp.cooltime.view.ui.alarm
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +19,16 @@ import com.onlyapp.cooltime.data.AlarmRepository
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentAlarmSettingBinding
 import com.onlyapp.cooltime.data.entity.Alarm
+import com.onlyapp.cooltime.utils.AlarmScheduler
+import com.onlyapp.cooltime.utils.getTodayNow
+import com.onlyapp.cooltime.utils.getTodayStart
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 /**
@@ -95,7 +104,6 @@ class AddAlarmSettingFragment : Fragment() {
     private fun timeInit(){ // Time Picker 위한 초기 설정
         hourPick.wrapSelectorWheel = false // 숫자 값을 키보드로 입력하는 것을 막음
         hourPick.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS // 최대값에서 최소값으로 순환하는 것을 막음
-
         minPick.wrapSelectorWheel = false
         minPick.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
 
@@ -104,6 +112,14 @@ class AddAlarmSettingFragment : Fragment() {
 
         minPick.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
         minPick.maxValue = 59
+
+        //현재 시간, 분으로 설정
+        val currentHour = getTodayNow().get(Calendar.HOUR_OF_DAY)
+        val currentMinute = getTodayNow().get(Calendar.MINUTE)
+
+        hourPick.value = currentHour
+        minPick.value = currentMinute
+
     }
 
     private fun addAlarmSetting() {
@@ -138,7 +154,18 @@ class AddAlarmSettingFragment : Fragment() {
             val entity = Alarm(name = etAlarmDescription, day = dayResult, time = timeResult)
 
             if (contentCheck()) {
-                alarmViewModel?.insertAlarm(entity)
+                CoroutineScope(Dispatchers.IO).launch{
+                    val id = async { alarmViewModel?.insertAlarm(entity) }.await()
+                    context?.let{
+                        id?.let {
+                            id ->
+                            AlarmScheduler.registerAlarm(
+                                Alarm(id.toInt(), entity.name, entity.day, entity.time), it
+                            )
+                        }
+                    }
+                }
+
                 findNavController().popBackStack()
             } else {
                 Toast.makeText(activity, "정보를 전부 입력해주세요", Toast.LENGTH_SHORT).show()

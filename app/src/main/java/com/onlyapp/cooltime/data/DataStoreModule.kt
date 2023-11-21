@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 class DataStoreModule(private val context: Context) {
-    private val Context.dataStore by preferencesDataStore(name = "dataStore")
+    val Context.dataStore by preferencesDataStore(name = "dataStore")
 
     private val todayCntKey = intPreferencesKey("todayCntKey")  //당일 사용 횟수 키
     private val lockStatusKey = booleanPreferencesKey("lockStatusKey") //잠금 상태 키

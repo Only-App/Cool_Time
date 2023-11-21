@@ -11,7 +11,9 @@ class AlarmViewModel(private val repository : AlarmRepository) : ViewModel() {
 
     val alarmList : LiveData<List<Alarm>> = repository.allAlarm
 
-    fun insertAlarm(alarm : Alarm) = viewModelScope.launch { repository.insert(alarm) }
+    suspend fun insertAlarm(alarm : Alarm)  : Long {
+        return repository.insert(alarm)
+    }
 
     fun deleteAlarm(alarm : Alarm) = viewModelScope.launch {repository.delete(alarm) }
 

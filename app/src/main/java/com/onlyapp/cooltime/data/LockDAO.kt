@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.onlyapp.cooltime.data.entity.PhoneLock
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LockDAO {
@@ -25,4 +26,7 @@ interface LockDAO {
 
     @Query("SELECT * FROM phone_lock WHERE id = :id")
     fun getLock(id : Int) : PhoneLock
+
+    @Query("SELECT * FROM phone_lock")
+    fun getAllFlow() : Flow<List<PhoneLock>>
 }

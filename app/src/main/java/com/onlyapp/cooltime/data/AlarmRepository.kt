@@ -8,8 +8,8 @@ import kotlinx.coroutines.withContext
 
 class AlarmRepository(private val alarmDao : AlarmDAO) {
     val allAlarm : LiveData<List<Alarm>> = alarmDao.getAll()
-    suspend fun insert(alarm : Alarm){
-        withContext(Dispatchers.IO){ alarmDao.insertAlarm(alarm) }
+    suspend fun insert(alarm : Alarm) : Long {
+        return withContext(Dispatchers.IO){ alarmDao.insertAlarm(alarm) }
     }
 
     suspend fun delete(alarm : Alarm){
@@ -22,5 +22,9 @@ class AlarmRepository(private val alarmDao : AlarmDAO) {
 
     suspend fun getAllFlow() : Flow<List<Alarm>> {
         return withContext(Dispatchers.IO){ alarmDao.getAllFlow() }
+    }
+
+    suspend fun getAlarm(id : Int) : Alarm {
+        return withContext(Dispatchers.IO) { alarmDao.getAlarm(id) }
     }
 }

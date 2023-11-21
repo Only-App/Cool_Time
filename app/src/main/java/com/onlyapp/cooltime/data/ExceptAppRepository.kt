@@ -1,5 +1,7 @@
 package com.onlyapp.cooltime.data
 
+import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.onlyapp.cooltime.data.entity.ExceptApp
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +17,11 @@ class ExceptAppRepository(private val exceptAppDAO : ExceptAppDAO) {
         return withContext(Dispatchers.IO){ exceptAppDAO.getAllNotLive() }
     }
     suspend fun insertApp(exceptApp: ExceptApp){
-        withContext(Dispatchers.IO){ exceptAppDAO.insertApp(exceptApp) }
+        try {
+            withContext(Dispatchers.IO) { exceptAppDAO.insertApp(exceptApp) }
+        }catch(e : SQLiteConstraintException){
+            Log.e(exceptApp.packageName, "already inserted")
+        }
     }
     suspend fun deleteApp(packageName : String){
         withContext(Dispatchers.IO){ exceptAppDAO.deleteApp(packageName) }
