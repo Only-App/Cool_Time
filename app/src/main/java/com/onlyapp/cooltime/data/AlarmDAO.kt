@@ -12,18 +12,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AlarmDAO {
     @Insert
-    fun insertAlarm(alarm  : Alarm) : Long
+    fun insertAlarm(alarm: Alarm): Long
 
     @Delete
-    fun deleteAlarm(alarm : Alarm)
+    fun deleteAlarm(alarm: Alarm)
+
     @Update
-    fun updateAlarm(alarm : Alarm) : Int
+    fun updateAlarm(alarm: Alarm): Int
 
     @Query("SELECT * FROM alarm")
-    fun getAll() : LiveData<List<Alarm>>
+    fun getAllFlow(): Flow<List<Alarm>>
 
-    @Query("SELECT * FROM alarm")
-    fun getAllFlow() : Flow<List<Alarm>>
     @Query("SELECT * FROM alarm WHERE id= :id")
-    fun getAlarm(id : Int) : Alarm
+    fun getAlarm(id: Int): Alarm
 }

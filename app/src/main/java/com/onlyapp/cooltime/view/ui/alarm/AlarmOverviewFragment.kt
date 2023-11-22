@@ -6,18 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.onlyapp.cooltime.data.AlarmRepository
-
 import com.onlyapp.cooltime.R
+import com.onlyapp.cooltime.data.AlarmRepository
+import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentAlarmBinding
-import com.onlyapp.cooltime.data.entity.Alarm
 import com.onlyapp.cooltime.view.adapter.AlarmAdapter
-import com.onlyapp.cooltime.view.adapter.OnAlarmItemOnClickListener
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
+import kotlinx.coroutines.launch
 
 
 /**
@@ -29,13 +29,13 @@ class AlarmOverviewFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var _binding : FragmentAlarmBinding? = null
-    private val binding : FragmentAlarmBinding
+    private var _binding: FragmentAlarmBinding? = null
+    private val binding: FragmentAlarmBinding
         get() = _binding!!
 
-    private var db : UserDatabase? = null
-    private var repository : AlarmRepository?= null
-    private var alarmViewModel : AlarmViewModel? = null
+    private var db: UserDatabase? = null
+    private var repository: AlarmRepository? = null
+    private var alarmViewModel: AlarmViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,24 +58,31 @@ class AlarmOverviewFragment : Fragment() {
         }
 
         //TODO: 현재 시간을 바탕으로 몇 시간 몇 분 남았는지를 출력해야 함, 그리고 계속 변할 수 있어야 함
-        activity?.let{activity ->
-            db = UserDatabase.getInstance(activity.applicationContext)
-            db?.let{db ->
-                repository = AlarmRepository(db.alarmDao())
-            }
-            repository?.let{repository ->
-                alarmViewModel = ViewModelProvider(activity, AlarmViewModelFactory(repository))[AlarmViewModel::class.java]
-            }
+        val act = checkNotNull(activity) { "Activity is Null" }
+        db = UserDatabase.getInstance(act.applicationContext)
+        db?.let { db ->
+            repository = AlarmRepositoryImpl(db.alarmDao())
         }
-        alarmViewModel?.let{
-            it.alarmList.observe(this) { list ->
-                binding.rvAlarmSet.adapter = AlarmAdapter(list, object : OnAlarmItemOnClickListener {
-                    override fun onItemClick(alarm: Alarm, pos: Int) {
-                        val bundle = Bundle()
-                        bundle.putSerializable("key", alarm)
-                        findNavController().navigate(R.id.action_alarm_main_to_update_alarm_setting, bundle)
-                    }
-                })
+        repository?.let { repository ->
+            alarmViewModel = ViewModelProvider(
+                act,
+                AlarmViewModelFactory(repository)
+            )[AlarmViewModel::class.java]
+        }
+
+        alarmViewModel?.let {
+            lifecycleScope.launch {
+                it.alarmModelList.observe(this@AlarmOverviewFragment) { list ->
+                    binding.rvAlarmSet.adapter =
+                        AlarmAdapter(list) { alarmModel ->
+                            val bundle = Bundle()
+                            bundle.putSerializable("key", alarmModel)
+                            findNavController().navigate(
+                                R.id.action_alarm_main_to_update_alarm_setting,
+                                bundle
+                            )
+                        }
+                }
             }
         }
         binding.rvAlarmSet.layoutManager = LinearLayoutManager(this.context)
@@ -93,7 +100,7 @@ class AlarmOverviewFragment : Fragment() {
          * @return A new instance of fragment AlarmFragment.
          */
         // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
         private const val ARG_PARAM1 = "param1"
         private const val ARG_PARAM2 = "param2"
 

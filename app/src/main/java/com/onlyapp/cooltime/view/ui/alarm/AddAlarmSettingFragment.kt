@@ -3,33 +3,28 @@ package com.onlyapp.cooltime.view.ui.alarm
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.NumberPicker
 import android.widget.TimePicker
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.onlyapp.cooltime.common.showShortToast
 import com.onlyapp.cooltime.data.AlarmRepository
+import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentAlarmSettingBinding
-import com.onlyapp.cooltime.data.entity.Alarm
+import com.onlyapp.cooltime.model.AlarmModel
 import com.onlyapp.cooltime.utils.AlarmScheduler
-import com.onlyapp.cooltime.utils.getTodayNow
-import com.onlyapp.cooltime.utils.getTodayStart
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 
 /**
@@ -70,7 +65,7 @@ class AddAlarmSettingFragment : Fragment() {
         timePicker.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
 
         activity?.let { db = UserDatabase.getInstance(it.applicationContext) }
-        db?.let { repository = AlarmRepository(it.alarmDao()) }
+        db?.let { repository = AlarmRepositoryImpl(it.alarmDao()) }
         if (activity != null && repository != null) {
             alarmViewModel = ViewModelProvider(
                 activity!!,
@@ -109,36 +104,13 @@ class AddAlarmSettingFragment : Fragment() {
         }
     }
 
-    /*
-    private fun timeInit() { // Time Picker 위한 초기 설정
-        hourPick.wrapSelectorWheel = false // 숫자 값을 키보드로 입력하는 것을 막음
-        hourPick.descendantFocusability =
-            NumberPicker.FOCUS_BLOCK_DESCENDANTS // 최대값에서 최소값으로 순환하는 것을 막음
-        minPick.wrapSelectorWheel = false
-        minPick.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
-
-        hourPick.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
-        hourPick.maxValue = 23
-
-        minPick.minValue = 0 //0시 00분 ~ 23시 59분까지 설정가능하게
-        minPick.maxValue = 59
-
-        //현재 시간, 분으로 설정
-        val currentHour = getTodayNow().get(Calendar.HOUR_OF_DAY)
-        val currentMinute = getTodayNow().get(Calendar.MINUTE)
-
-        hourPick.value = currentHour
-        minPick.value = currentMinute
-
-    }
-     */
 
     private fun addAlarmSetting() {
         //db 객체 가져오기
         activity?.let { activity ->
             db = UserDatabase.getInstance(activity.applicationContext)
             db?.let { userDatabase ->
-                repository = AlarmRepository(userDatabase.alarmDao())
+                repository = AlarmRepositoryImpl(userDatabase.alarmDao())
                 repository?.let { repository ->
                     alarmViewModel = ViewModelProvider(
                         activity,
@@ -162,23 +134,24 @@ class AddAlarmSettingFragment : Fragment() {
             val dayResult = dayToBit()
 
             //Alarm 객체 생성
-            val entity = Alarm(name = etAlarmDescription, day = dayResult, time = timeResult)
+            val entity =
+                AlarmModel(name = etAlarmDescription, day = dayResult, time = timeResult)
 
             if (contentCheck()) {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch {
                     val id = async { alarmViewModel?.insertAlarm(entity) }.await()
                     context?.let {
                         id?.let { id ->
                             AlarmScheduler.registerAlarm(
-                                Alarm(id.toInt(), entity.name, entity.day, entity.time), it
+                                AlarmModel(id.toInt(), entity.name, entity.day, entity.time), it
                             )
                         }
                     }
-                }
 
-                findNavController().popBackStack()
+                    findNavController().popBackStack()
+                }
             } else {
-                Toast.makeText(activity, "정보를 전부 입력해주세요", Toast.LENGTH_SHORT).show()
+                activity.showShortToast("정보를 전부 입력해주세요")
             }
         }
     }

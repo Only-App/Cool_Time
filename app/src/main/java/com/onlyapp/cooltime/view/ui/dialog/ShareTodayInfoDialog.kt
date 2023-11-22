@@ -16,6 +16,7 @@ import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.common.dialogResize
 import com.onlyapp.cooltime.data.LockRepository
+import com.onlyapp.cooltime.data.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentShareTodayInfoDialogBinding
 import com.onlyapp.cooltime.utils.getTodayNow
@@ -155,43 +156,50 @@ class ShareTodayInfoDialog : DialogFragment() {
         }
         context?.let { context ->
             val lockDao = checkNotNull(UserDatabase.getInstance(context)?.phoneLockDao())
-            val lockRepository = LockRepository(lockDao)
+            val lockRepository = LockRepositoryImpl(lockDao)
             val lockViewModel = LockViewModel(lockRepository)
             Log.d("tstst", "여기까지 진입")
-            lockViewModel.lockList.observe(this@ShareTodayInfoDialog) { list ->
-                var flag = false
-                for (lockInfo in list) {
-                    val startDate = lockInfo.startDate
-                    val endDate = lockInfo.endDate
-                    val lockDay = lockInfo.lockDay
-                    if ((startDate == -1L && endDate == -1L) || getTodayNow().timeInMillis in startDate..endDate) {
-                        val dayOfWeek =
-                            Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-                        //7비트를 이용하여 월~일 값 비트마스팅으로 설정 => Calendar.getInstance().get(Calendar.DAY_OF_WEEK)가 일~토 => 1 ~ 7 로 반환 => 월요일은 1000000, 일요일은 0000001 꼴
-                        if ((1 shl (6 - (dayOfWeek + 5) % 7)) and lockDay != 0) { //오늘이 설정한 요일에 포함되는지
-                            val totalTime = (lockInfo.totalTime / 60).toString() + "시간 " + (lockInfo.totalTime % 60).toString() + "분"
-                            binding.info.tvTodayTotalTime.text = totalTime
-                            val intervalTime = (lockInfo.minTime / 60).toString() + "시간 " + (lockInfo.minTime % 60).toString() + "분"
-                            binding.info.tvIntervalTime.text = intervalTime
-                            if (lockInfo.lockOn == -1) {
-                                val lockOn = "∞"
-                                val lockOff = "∞"
-                                binding.info.tvStartTime.text = lockOn
-                                binding.info.tvEndTime.text = lockOff
-                            } else {
-                                val lockOn = (lockInfo.lockOn / 60).toString() + "시간 " + (lockInfo.lockOn % 60).toString() + "분"
-                                val lockOff = (lockInfo.lockOff / 60).toString() + "시간 " + (lockInfo.lockOff % 60).toString() + "분"
-                                binding.info.tvStartTime.text = lockOn
-                                binding.info.tvEndTime.text = lockOff
+
+            lifecycleScope.launch {
+                lockViewModel.lockModelList.observe(this@ShareTodayInfoDialog) { list ->
+                    var flag = false
+                    for (lockInfo in list) {
+                        val startDate = lockInfo.startDate
+                        val endDate = lockInfo.endDate
+                        val lockDay = lockInfo.lockDay
+                        if ((startDate == -1L && endDate == -1L) || getTodayNow().timeInMillis in startDate..endDate) {
+                            val dayOfWeek =
+                                Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+                            //7비트를 이용하여 월~일 값 비트마스팅으로 설정 => Calendar.getInstance().get(Calendar.DAY_OF_WEEK)가 일~토 => 1 ~ 7 로 반환 => 월요일은 1000000, 일요일은 0000001 꼴
+                            if ((1 shl (6 - (dayOfWeek + 5) % 7)) and lockDay != 0) { //오늘이 설정한 요일에 포함되는지
+                                val totalTime =
+                                    (lockInfo.totalTime / 60).toString() + "시간 " + (lockInfo.totalTime % 60).toString() + "분"
+                                binding.info.tvTodayTotalTime.text = totalTime
+                                val intervalTime =
+                                    (lockInfo.minTime / 60).toString() + "시간 " + (lockInfo.minTime % 60).toString() + "분"
+                                binding.info.tvIntervalTime.text = intervalTime
+                                if (lockInfo.lockOn == -1) {
+                                    val lockOn = "∞"
+                                    val lockOff = "∞"
+                                    binding.info.tvStartTime.text = lockOn
+                                    binding.info.tvEndTime.text = lockOff
+                                } else {
+                                    val lockOn =
+                                        (lockInfo.lockOn / 60).toString() + "시간 " + (lockInfo.lockOn % 60).toString() + "분"
+                                    val lockOff =
+                                        (lockInfo.lockOff / 60).toString() + "시간 " + (lockInfo.lockOff % 60).toString() + "분"
+                                    binding.info.tvStartTime.text = lockOn
+                                    binding.info.tvEndTime.text = lockOff
+                                }
+                                flag = true
+                                break
                             }
-                            flag = true
-                            break
                         }
                     }
-                }
-                if (!flag) {
-                    binding.info.llTodayLock.visibility = View.GONE
-                    binding.info.llTodayLockText.visibility = View.VISIBLE
+                    if (!flag) {
+                        binding.info.llTodayLock.visibility = View.GONE
+                        binding.info.llTodayLockText.visibility = View.VISIBLE
+                    }
                 }
             }
         }

@@ -6,11 +6,14 @@ import android.content.Intent
 import android.util.Log
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.MyApplication.Companion.waitCheck
+import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.common.intentSerializable
 import com.onlyapp.cooltime.data.AlarmRepository
+import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.DataStoreModule
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.data.entity.Alarm
+import com.onlyapp.cooltime.model.AlarmModel
 import com.onlyapp.cooltime.service.UseTimeService
 import com.onlyapp.cooltime.utils.AlarmScheduler
 import com.onlyapp.cooltime.view.ui.alarm.ActiveAlarmActivity
@@ -53,15 +56,15 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                 //부팅되었을 때 다시 저장된 모든 알람을 설정
                 CoroutineScope(Dispatchers.Main).launch{
                     val alarmDao = UserDatabase.getInstance(context)?.alarmDao()
-                    val alarmRepository = alarmDao?.let { AlarmRepository(alarmDao) }
+                    val alarmRepository = alarmDao?.let { AlarmRepositoryImpl(alarmDao) }
                     alarmRepository?.getAllFlow()?.collect{
                         it.forEach{
-                            alarm -> AlarmScheduler.registerAlarm(alarm, context)
+                            alarm -> AlarmScheduler.registerAlarm(AlarmModel(alarm.id, alarm.name, alarm.day, alarm.time), context)
                         }
                     }
                 }
             }
-            "Reserved Alarm" -> {   //알람 상황에서
+            Constants.reservedAlarm -> {   //알람 상황에서
                 CoroutineScope(Dispatchers.Main).launch {
                     //알람 객체를 전달 받음
                     val alarm = intent.intentSerializable("alarm", Alarm::class.java) ?: return@launch
@@ -87,7 +90,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                             }
                         }
                         //무조건 지정한 시간보다 먼저 알람이 오지 않는다는 것을 가정
-                        AlarmScheduler.registerAlarm(alarm, context)
+                        AlarmScheduler.registerAlarm(AlarmModel(alarm.id, alarm.name, alarm.day, alarm.time), context)
                     }
                 }
             }

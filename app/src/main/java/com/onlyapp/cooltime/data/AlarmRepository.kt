@@ -6,25 +6,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class AlarmRepository(private val alarmDao : AlarmDAO) {
-    val allAlarm : LiveData<List<Alarm>> = alarmDao.getAll()
-    suspend fun insert(alarm : Alarm) : Long {
-        return withContext(Dispatchers.IO){ alarmDao.insertAlarm(alarm) }
-    }
+interface AlarmRepository {
+    suspend fun insert(alarm: Alarm): Long
 
-    suspend fun delete(alarm : Alarm){
-        withContext(Dispatchers.IO){alarmDao.deleteAlarm(alarm) }
-    }
+    suspend fun delete(alarm: Alarm)
 
-    suspend fun update(alarm: Alarm){
-        withContext(Dispatchers.IO){ alarmDao.updateAlarm(alarm) }
-    }
+    suspend fun update(alarm: Alarm)
 
-    suspend fun getAllFlow() : Flow<List<Alarm>> {
-        return withContext(Dispatchers.IO){ alarmDao.getAllFlow() }
-    }
+    suspend fun getAllFlow(): Flow<List<Alarm>>
 
-    suspend fun getAlarm(id : Int) : Alarm {
-        return withContext(Dispatchers.IO) { alarmDao.getAlarm(id) }
-    }
+    suspend fun getAlarm(id: Int): Alarm
 }

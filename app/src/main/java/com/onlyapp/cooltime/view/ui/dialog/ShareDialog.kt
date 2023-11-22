@@ -20,6 +20,7 @@ import com.kakao.sdk.common.util.KakaoCustomTabsClient
 import com.kakao.sdk.share.ShareClient
 import com.kakao.sdk.share.WebSharerClient
 import com.onlyapp.cooltime.common.dialogResize
+import com.onlyapp.cooltime.common.showShortToast
 import com.onlyapp.cooltime.databinding.FragmentShareDialogBinding
 import java.lang.Exception
 
@@ -45,7 +46,7 @@ class ShareDialog : DialogFragment() {
 
         binding.btnImageShare.setOnClickListener{
             ShareTodayInfoDialog().show(childFragmentManager, null)
-            Toast.makeText(activity, "이미지 공유", Toast.LENGTH_SHORT).show()
+            activity.showShortToast("이미지 공유")
         }
         binding.btnKakaoShare.setOnClickListener{
 
@@ -94,8 +95,7 @@ class ShareDialog : DialogFragment() {
                     }
                 }
             }
-
-            Toast.makeText(activity, "카카오톡 공유", Toast.LENGTH_SHORT).show()
+            activity.showShortToast("카카오톡 공유")
         }
         binding.btnCancel.setOnClickListener{
             dismiss()

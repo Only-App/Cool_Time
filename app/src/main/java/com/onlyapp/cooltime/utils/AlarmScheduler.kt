@@ -4,22 +4,20 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.service.autofill.UserData
 import android.util.Log
-import androidx.core.content.getSystemService
-import com.onlyapp.cooltime.R
-import com.onlyapp.cooltime.data.AlarmRepository
+import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.data.entity.Alarm
+import com.onlyapp.cooltime.model.AlarmModel
 import com.onlyapp.cooltime.receiver.MyBroadcastReceiver
 import java.util.Calendar
 
 object AlarmScheduler {
-    fun registerAlarm(alarm : Alarm, context: Context){
+    fun registerAlarm(alarmModel : AlarmModel, context: Context){
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val id = alarm.id
-        val hour = alarm.time / 60
-        val minute = alarm.time % 60
+        val id = alarmModel.id
+        val hour = alarmModel.time / 60
+        val minute = alarmModel.time % 60
 
         val alarmCalendar = getTodayStart().apply{
             set(Calendar.HOUR_OF_DAY, hour)
@@ -34,7 +32,7 @@ object AlarmScheduler {
         val alarmTime = alarmCalendar.timeInMillis
         val intent = Intent(context, MyBroadcastReceiver::class.java).apply{
             action = "Reserved Alarm"
-            putExtra("alarm", alarm)
+            putExtra("alarm", alarmModel)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -56,7 +54,7 @@ object AlarmScheduler {
 
     }
 
-    fun registerAllAlarms(alarms : ArrayList<Alarm>, context : Context){
+    fun registerAllAlarms(alarms : ArrayList<AlarmModel>, context : Context){
         alarms.forEach {
             alarm ->
             registerAlarm(alarm, context)
@@ -80,7 +78,7 @@ object AlarmScheduler {
 
     suspend fun checkDay(id : Int, context : Context) : Boolean {
         val alarmDao = UserDatabase.getInstance(context)?.alarmDao()
-        val alarmRepository = alarmDao?.let { AlarmRepository(alarmDao) }
+        val alarmRepository = alarmDao?.let { AlarmRepositoryImpl(alarmDao) }
 
 
         val alarm = alarmRepository?.let { it.getAlarm(id) }

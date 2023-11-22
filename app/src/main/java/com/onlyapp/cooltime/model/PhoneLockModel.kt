@@ -1,7 +1,9 @@
 package com.onlyapp.cooltime.model
 
+import java.io.Serializable
+
 data class PhoneLockModel(
-    val id: Int,
+    val id: Int = 0,
     val totalTime: Long,
     val minTime: Long,
     val lockOn: Int,
@@ -9,4 +11,4 @@ data class PhoneLockModel(
     val lockDay: Int,
     val startDate: Long,
     val endDate: Long
-)
+) : Serializable

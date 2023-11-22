@@ -1,22 +1,23 @@
 package com.onlyapp.cooltime.view.ui.calendar
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
+import com.onlyapp.cooltime.common.isExistMatchToday
 import com.onlyapp.cooltime.data.AlarmRepository
+import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.LockRepository
+import com.onlyapp.cooltime.data.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentCalendarBinding
-import com.onlyapp.cooltime.view.ui.chart.ChartAppFragment
-import com.onlyapp.cooltime.view.ui.chart.ChartHourFragment
 import com.onlyapp.cooltime.utils.getSomedayEnd
 import com.onlyapp.cooltime.utils.getSomedayStart
 import com.onlyapp.cooltime.utils.loadTimeUsage
@@ -25,6 +26,8 @@ import com.onlyapp.cooltime.view.adapter.AlarmAdapter
 import com.onlyapp.cooltime.view.adapter.LockAdapter
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.factory.LockViewModelFactory
+import com.onlyapp.cooltime.view.ui.chart.ChartAppFragment
+import com.onlyapp.cooltime.view.ui.chart.ChartHourFragment
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 import com.onlyapp.cooltime.view.viewmodel.DateViewModel
 import com.onlyapp.cooltime.view.viewmodel.LockViewModel
@@ -46,17 +49,17 @@ private const val ARG_PARAM2 = "param2"
  * Use the [CalendarFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CalendarFragment : Fragment(){
+class CalendarFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var db : UserDatabase? = null
-    private var lockRepository : LockRepository?= null
+    private var db: UserDatabase? = null
+    private var lockRepository: LockRepository? = null
     private var alarmRepository: AlarmRepository? = null
-    private var lockViewModel : LockViewModel? = null
-    private var alarmViewModel : AlarmViewModel? = null
-    private val dateViewModel : DateViewModel by viewModels()
-    private var _binding : FragmentCalendarBinding? = null
+    private var lockViewModel: LockViewModel? = null
+    private var alarmViewModel: AlarmViewModel? = null
+    private val dateViewModel: DateViewModel by viewModels()
+    private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,16 +78,22 @@ class CalendarFragment : Fragment(){
         _binding = FragmentCalendarBinding.inflate(inflater, container, false)
         binding.llLockAndAlarmSet.visibility = View.VISIBLE
         binding.llChart.visibility = View.GONE
-        activity?.let{activity ->
-            db= UserDatabase.getInstance(activity.applicationContext)
-            db?.let{db ->
-                lockRepository = LockRepository(db.phoneLockDao())
-                alarmRepository = AlarmRepository(db.alarmDao())
-                lockRepository?.let{ lockRepository ->
-                    lockViewModel = ViewModelProvider(activity, LockViewModelFactory(lockRepository))[LockViewModel::class.java]
+        activity?.let { activity ->
+            db = UserDatabase.getInstance(activity.applicationContext)
+            db?.let { db ->
+                lockRepository = LockRepositoryImpl(db.phoneLockDao())
+                alarmRepository = AlarmRepositoryImpl(db.alarmDao())
+                lockRepository?.let { lockRepository ->
+                    lockViewModel = ViewModelProvider(
+                        activity,
+                        LockViewModelFactory(lockRepository)
+                    )[LockViewModel::class.java]
                 }
-                alarmRepository?.let {alarmRepository ->
-                    alarmViewModel = ViewModelProvider(activity, AlarmViewModelFactory(alarmRepository))[AlarmViewModel::class.java]
+                alarmRepository?.let { alarmRepository ->
+                    alarmViewModel = ViewModelProvider(
+                        activity,
+                        AlarmViewModelFactory(alarmRepository)
+                    )[AlarmViewModel::class.java]
                 }
             }
 
@@ -123,7 +132,10 @@ class CalendarFragment : Fragment(){
                         .replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
                 }
                 dateViewModel.date.value =
-                    SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse("$year.${month + 1}.$day")!!.time
+                    SimpleDateFormat(
+                        "yyyy.MM.dd",
+                        Locale.getDefault()
+                    ).parse("$year.${month + 1}.$day")!!.time
                 //dateViewModel의 date 속성 값 변경
             }
         }
@@ -134,49 +146,60 @@ class CalendarFragment : Fragment(){
 
         //date 값이 변경되는지 관찰
         dateViewModel.date.observe(this) { dateTime ->
-            lockViewModel?.let {viewModel ->
-                viewModel.lockList.observe(this) { list -> //조건에 맞는 list만 filtering 작업
-                    val filteredList = list.filter { elem ->
-                        (elem.startDate == -1L && elem.endDate == -1L) ||
-                                dateTime in elem.startDate..elem.endDate
-                    }
-                    if (filteredList.isEmpty()) {  //조건에 맞는 잠금 정보가 없는 경우
-                        binding.tvLock.text = "잠금 정보가 존재하지 않습니다"
-                    } else {  //조건에 맞는 잠금 정보가 존재하는 경우
-                        binding.tvLock.text = "잠금"
-                    }
-                    lifecycleScope.launch {    //총 사용 시간 출력
-                        MyApplication.getInstance().getDataStore().todayUseTime.collect {currentUseTime ->
-                            binding.rvCalendarLockSet.adapter = LockAdapter(filteredList, currentUseTime, null) //filteredList를 가지고 어댑터 연결
+            val dayOfWeek = Calendar.getInstance().apply{
+                timeInMillis = dateTime
+            }.get(Calendar.DAY_OF_WEEK)
+
+            lockViewModel?.let { viewModel ->
+                lifecycleScope.launch {
+                    viewModel.lockModelList
+                        .observe(this@CalendarFragment) { lockModelList -> //조건에 맞는 list만 filtering 작업
+                            val filteredList = lockModelList.filter { elem ->
+                                ((elem.startDate == -1L && elem.endDate == -1L) ||
+                                        dateTime in elem.startDate..elem.endDate)
+                                        && isExistMatchToday(dayOfWeek, elem.lockDay)
+                            }
+                            if (filteredList.isEmpty()) {  //조건에 맞는 잠금 정보가 없는 경우
+                                binding.tvLock.text = "잠금 정보가 존재하지 않습니다"
+                            } else {  //조건에 맞는 잠금 정보가 존재하는 경우
+                                binding.tvLock.text = "잠금"
+                            }
+                            lifecycleScope.launch {    //총 사용 시간 출력
+                                MyApplication.getInstance()
+                                    .getDataStore().todayUseTime.collect { currentUseTime ->
+                                        binding.rvCalendarLockSet.adapter = LockAdapter(
+                                            filteredList,
+                                            currentUseTime
+                                        ) { _ -> } //filteredList를 가지고 어댑터 연결
+                                    }
+                            }
+                            //LockAdapter(, null)
                         }
-                    }
-                    //LockAdapter(, null)
                 }
             }
             alarmViewModel?.let {
-                it.alarmList.observe(this) { list ->
-                    val filteredList = list.filter { elem ->
-                        val cal = Calendar.getInstance()
-                        cal.time = Date(dateTime)
-                        //비트 연산을 통해서 선택한 날짜의 요일이 알람 정보의 요일 정보에 포함되는지를 판단
-                        (1 shl (6 - (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7)) and elem.day != 0
+                lifecycleScope.launch {
+                    it.alarmModelList.observe(this@CalendarFragment) { list ->
+                        val filteredList = list.filter { elem ->
+                            //비트 연산을 통해서 선택한 날짜의 요일이 알람 정보의 요일 정보에 포함되는지를 판단
+                            isExistMatchToday(dayOfWeek, elem.day)
+                        }
+                        //조건에 맞는 알람 정보가 존재하지 않은 경우
+                        if (filteredList.isEmpty()) {
+                            binding.tvAlarm.text = "알람 정보가 존재하지 않습니다"
+                        } else binding.tvAlarm.text = "알람"
+                        binding.rvCalendarAlarmSet.adapter =
+                            AlarmAdapter(filteredList) { _ -> }   //filteredList를 가지고 어댑터 연결
                     }
-                    //조건에 맞는 알람 정보가 존재하지 않은 경우
-                    if (filteredList.isEmpty()) {
-                        binding.tvAlarm.text = "알람 정보가 존재하지 않습니다"
-                    } else binding.tvAlarm.text = "알람"
-                    binding.rvCalendarAlarmSet.adapter = AlarmAdapter(filteredList, null)   //filteredList를 가지고 어댑터 연결
                 }
             }
         }
 
-        binding.radioGroup.setOnCheckedChangeListener{
-                _, _ ->
-            if(binding.btnLockAndAlarm.isChecked) {
+        binding.radioGroup.setOnCheckedChangeListener { _, _ ->
+            if (binding.btnLockAndAlarm.isChecked) {
                 binding.llLockAndAlarmSet.visibility = View.VISIBLE
                 binding.llChart.visibility = View.GONE
-            }
-            else{
+            } else {
                 binding.llLockAndAlarmSet.visibility = View.GONE
                 binding.llChart.visibility = View.VISIBLE
             }
@@ -186,7 +209,7 @@ class CalendarFragment : Fragment(){
 
     override fun onStart() {
         super.onStart()
-        lifecycleScope.launch{
+        lifecycleScope.launch {
             val date = Date(binding.calendarView.date)
             val startDay = getSomedayStart(date.year + 1900, date.month, date.date)
             val endDay = getSomedayEnd(date.year + 1900, date.month, date.date)

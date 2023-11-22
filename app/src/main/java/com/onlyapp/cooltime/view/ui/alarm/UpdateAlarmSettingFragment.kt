@@ -7,14 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.onlyapp.cooltime.common.showShortToast
 import com.onlyapp.cooltime.data.AlarmRepository
+import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentUpdateAlarmSettingBinding
-import com.onlyapp.cooltime.data.entity.Alarm
+import com.onlyapp.cooltime.model.AlarmModel
 import com.onlyapp.cooltime.utils.AlarmScheduler
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
@@ -50,13 +51,13 @@ class UpdateAlarmSettingFragment : Fragment() {
         minPick = binding.alaUpdatePicker.minPicker
         timeInit()
         // 이전 프래그먼트로부터 Alarm 객체를 받아옴
-        val alarm  =requireArguments().getSerializable("key") as Alarm
+        val alarm  =requireArguments().getSerializable("key") as AlarmModel
         receiveAlarmData(alarm) //받아온 객체의 값을 다시 뷰 컴포넌트에 보이게 할 수 있도록 함
 
         activity?.let{activity ->
             db = UserDatabase.getInstance(activity.applicationContext)
             db?.let{db ->
-                repository = AlarmRepository(db.alarmDao())
+                repository = AlarmRepositoryImpl(db.alarmDao())
             }
             repository?.let{repository ->
                 alarmViewModel = ViewModelProvider(activity, AlarmViewModelFactory(repository))[AlarmViewModel::class.java]
@@ -93,7 +94,7 @@ class UpdateAlarmSettingFragment : Fragment() {
             val dayResult = dayToBit()
 
             //입력한 정보를 바탕으로 다시 entity 생성
-            val entity=  Alarm(id = alarm.id, name = etAlarmDescription, time = totalTime, day = dayResult)
+            val alarmModel=  AlarmModel(id = alarm.id, name = etAlarmDescription, time = totalTime, day = dayResult)
 
 
             //다이얼로그 출력
@@ -105,12 +106,12 @@ class UpdateAlarmSettingFragment : Fragment() {
                             _, _ ->
                         if(contentCheck() && alarmViewModel != null) {    //정보가 모두 입력되었다면
                             //업데이트 후 이전 화면으로
-                            alarmViewModel!!.updateAlarm(entity)
-                            context?.let{ AlarmScheduler.registerAlarm(entity, it) }
+                            alarmViewModel!!.updateAlarm(alarmModel)
+                            context?.let{ AlarmScheduler.registerAlarm(alarmModel, it) }
                             findNavController().popBackStack()
                         }
                         //아니라면 다시 입력해달라는 메시지 출력
-                        else Toast.makeText(activity,"정보를 모두 입력해주세요", Toast.LENGTH_SHORT).show()
+                        else activity.showShortToast("정보를 모두 입력해주세요")
                     }
                     .setNegativeButton("아니요"){  //아니요를 눌렀을 때 아무 작업도 하지 않도록
                             _, _ ->
@@ -138,12 +139,12 @@ class UpdateAlarmSettingFragment : Fragment() {
     }
 
     @SuppressLint("NewApi")     //가져온 Alarm 객체를 바탕으로 layout View에 값을 WRITE
-    fun receiveAlarmData(alarm : Alarm){
-        binding.etAlarmDescription.setText(alarm.name)
-        hourPick.value = alarm.time / 60
-        minPick.value = alarm.time % 60
+    fun receiveAlarmData(alarmModel : AlarmModel){
+        binding.etAlarmDescription.setText(alarmModel.name)
+        hourPick.value = alarmModel.time / 60
+        minPick.value = alarmModel.time % 60
 
-        var temp = alarm.day
+        var temp = alarmModel.day
 
         binding.checkMon.isChecked = temp >= 64
         temp -= if(temp >= 64) 64 else 0

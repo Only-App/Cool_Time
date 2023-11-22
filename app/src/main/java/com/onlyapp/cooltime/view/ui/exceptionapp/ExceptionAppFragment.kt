@@ -11,13 +11,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.data.ExceptAppRepository
+import com.onlyapp.cooltime.data.ExceptAppRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
-import com.onlyapp.cooltime.databinding.FragmentExceptionAppBinding
 import com.onlyapp.cooltime.data.entity.ExceptApp
+import com.onlyapp.cooltime.databinding.FragmentExceptionAppBinding
 import com.onlyapp.cooltime.model.ExceptAppItem
 import com.onlyapp.cooltime.view.adapter.AppAdapter
-import com.onlyapp.cooltime.view.adapter.OnCheckBoxChangedListener
 import com.onlyapp.cooltime.view.viewmodel.ExceptAppViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,9 +36,19 @@ class ExceptionAppFragment : Fragment(){
         activity?.let {activity->
             val db = UserDatabase.getInstance(activity.applicationContext)
             db?.let{
-                val repository = ExceptAppRepository(it.exceptAppsDao())
-                val exceptViewModel = ExceptAppViewModel(repository)
+                val repository = ExceptAppRepositoryImpl(it.exceptAppsDao())
                 val packageManager = this@ExceptionAppFragment.activity!!.packageManager
+
+                val exceptViewModel = ExceptAppViewModel(repository){
+                    exceptApp ->
+                    val appInfo =
+                        packageManager.getApplicationInfo(
+                            exceptApp.packageName,
+                            PackageManager.GET_META_DATA
+                        )
+                    Pair(appInfo.loadLabel(packageManager).toString(), appInfo.loadIcon(packageManager))
+
+                }
 
                 lifecycleScope.launch {
                     val launcherIntent = Intent(Intent.ACTION_MAIN)
@@ -48,16 +59,21 @@ class ExceptionAppFragment : Fragment(){
                         for(resolveInfo in resolveInfoList){
                             val appInfo = resolveInfo.activityInfo.applicationInfo
                             val packageName = appInfo.packageName
-                            if(packageName == "com.onlyapp.cooltime") continue
+                            if(packageName == Constants.coolTimePackageName) continue
                             val result = async { exceptViewModel.getApp(packageName) }.await()
                             //설치되어 있는 앱인데 아직 DB에 들어있지 않은 앱이라면 insert
                             if (result != null) continue
                             else {  //설치되어 있는 앱인데 아직 DB에 들어있지 않은 앱이라면 insert
-                                exceptViewModel.insertApp(
-                                    ExceptApp(
-                                        packageName = packageName,
-                                        checked = false
+                                val appInfo =
+                                    packageManager.getApplicationInfo(
+                                        packageName,
+                                        PackageManager.GET_META_DATA
                                     )
+                                exceptViewModel.insertApp(
+                                    ExceptAppItem(appInfo.loadLabel(packageManager).toString(),
+                                        packageName,
+                                        appInfo.loadIcon(packageManager),
+                                        false)
                                 )
                             }
                         }
@@ -67,7 +83,7 @@ class ExceptionAppFragment : Fragment(){
                         binding.checkedException.layoutManager =
                             LinearLayoutManager(this@ExceptionAppFragment.context)
 
-                        exceptViewModel.exceptApp.observe(
+                        exceptViewModel.exceptAppItemList.observe(
                             this@ExceptionAppFragment
                         ) {
                             CoroutineScope(Dispatchers.Main).launch {
@@ -96,22 +112,16 @@ class ExceptionAppFragment : Fragment(){
                                 }
 
                                 binding.checkedException.adapter =
-                                    AppAdapter(exceptAppList, object : OnCheckBoxChangedListener {
-                                        override fun onChanged(item: ExceptAppItem, position: Int) {
+                                    AppAdapter(exceptAppList) {
+                                        item ->
                                             CoroutineScope(Dispatchers.IO).launch {
                                                 withContext(Dispatchers.Main) {
                                                     recyclerViewState =
                                                         binding.checkedException.layoutManager!!.onSaveInstanceState()!! //현재 스크롤 위치를 저장
                                                 }
-                                                exceptViewModel.updateApp(
-                                                    ExceptApp(
-                                                        item.packageName,
-                                                        item.checked
-                                                    )
-                                                )
+                                                exceptViewModel.updateApp(item)
                                             }
-                                        }
-                                    })
+                                    }
                                 if (recyclerViewState != null) {
                                     binding.checkedException.layoutManager!!.onRestoreInstanceState(
                                         recyclerViewState
