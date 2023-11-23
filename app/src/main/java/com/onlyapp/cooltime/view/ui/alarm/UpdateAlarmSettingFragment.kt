@@ -1,6 +1,5 @@
 package com.onlyapp.cooltime.view.ui.alarm
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -135,7 +134,7 @@ class UpdateAlarmSettingFragment : Fragment() {
         minPick.maxValue = 59
     }
 
-       //가져온 Alarm 객체를 바탕으로 layout View에 값을 WRITE
+    //가져온 Alarm 객체를 바탕으로 layout View에 값을 WRITE
     private fun receiveAlarmData(alarmModel: AlarmModel) {
         binding.etAlarmDescription.setText(alarmModel.name)
         hourPick.value = alarmModel.time / 60

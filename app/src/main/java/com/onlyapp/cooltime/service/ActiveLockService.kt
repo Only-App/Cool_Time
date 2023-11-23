@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.PixelFormat
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -26,8 +27,6 @@ import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.data.ExceptAppRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentActiveLockBinding
-import com.onlyapp.cooltime.service.UseTimeService.Companion.EXCEED
-import com.onlyapp.cooltime.service.UseTimeService.Companion.LOCK_DURATION
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.view.adapter.AppItem
 import com.onlyapp.cooltime.view.adapter.LockScreenAdapter
@@ -35,9 +34,7 @@ import com.onlyapp.cooltime.view.itemdecoration.GridSpacingItemDecoration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.TreeMap
 import java.util.concurrent.Executors
@@ -77,7 +74,8 @@ class ActiveLockService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        var togle = false
+        var toggle = false
+        val callPackageName = checkNotNull(returnCallPackageName())
         binding = FragmentActiveLockBinding.inflate(LayoutInflater.from(this))
         view = binding.root
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -100,7 +98,6 @@ class ActiveLockService : Service() {
 
             Log.d("Before collect", "enter")
 
-
             CoroutineScope(Dispatchers.IO).launch {
                 exceptAppRepository.allApps().collect { exceptAppList ->
                     for (exceptApp in exceptAppList) {
@@ -109,10 +106,17 @@ class ActiveLockService : Service() {
                         val packageName = exceptApp.packageName
 
                         val appInfo =
-                            packageManager.getApplicationInfo(
-                                packageName,
-                                PackageManager.GET_META_DATA
-                            )
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                packageManager.getApplicationInfo(
+                                    packageName,
+                                    PackageManager.ApplicationInfoFlags.of(0)
+                                )
+                            } else {
+                                packageManager.getApplicationInfo(
+                                    packageName,
+                                    PackageManager.GET_META_DATA
+                                )
+                            }
                         val appIcon =
                             appInfo.loadIcon(packageManager)
                                 ?: R.drawable.baseline_android_24.toDrawable()
@@ -134,11 +138,10 @@ class ActiveLockService : Service() {
                     spanCount = 3, spacing = 10
                 )
             )
-
         }
 
         binding.menu.setOnClickListener {
-            if (togle) {
+            if (toggle) {
                 binding.scroll.visibility = View.GONE
                 binding.lockTypeComment.visibility = View.VISIBLE
                 binding.lockUseTime.visibility = View.VISIBLE
@@ -146,9 +149,8 @@ class ActiveLockService : Service() {
                 binding.scroll.visibility = View.VISIBLE
                 binding.lockTypeComment.visibility = View.GONE
                 binding.lockUseTime.visibility = View.GONE
-
             }
-            togle = !togle
+            toggle = !toggle
         }
 
         binding.call.setOnClickListener {
@@ -174,13 +176,14 @@ class ActiveLockService : Service() {
         registerReceiver(receiver, filter)
 
         params.gravity = Gravity.START or Gravity.TOP
-
         flag = true
         windowManager.addView(view, params) // 오버레이를 작동시키면서 flag를 true로 설정해서 overlay가 켜졌음을 알 수 있도록 함
 
         val lockType = intent.getIntExtra(Constants.lockType, -1)
         val handler = Handler(Looper.getMainLooper()) // runnable 내에서 ui 관련 처리할 때 이거 통해서 해야 함!
+
         Log.d("lockType", lockType.toString())
+
 
         val runnable = Runnable {
             // UI 업데이트 코드를 여기에 작성
@@ -214,7 +217,6 @@ class ActiveLockService : Service() {
                     DIRECT_LOCK -> "바로 잠금"
                     else -> ""
                 }
-
             }
 
             val mUsageStatsManager =
@@ -231,35 +233,27 @@ class ActiveLockService : Service() {
                     mySortedMap[usageStats.lastTimeUsed] = usageStats
                 }
                 if (mySortedMap.isNotEmpty()) {
-                    val topPackageName = mySortedMap[mySortedMap.lastKey()]?.packageName
-                    val callIntent = Intent(Intent.ACTION_DIAL)
-                    packageManager.resolveActivity(callIntent, PackageManager.MATCH_DEFAULT_ONLY)
-                        ?.let {
-                            val callPackageName = it.activityInfo.packageName
-                            if (callPackageName != topPackageName &&
-                                topPackageName != "com.samsung.android.messaging" && !exceptionAppList.contains(
-                                    topPackageName
-                                )
-                            ) { // 예외 리스트 앱에 포함되어 있지 않은 앱이 현재 죄상위(오버레이 제외) 레이아웃에서 실행되고 있다면
-                                if (!flag) { // 오버레이가 작동하고 있지 않다면
-                                    handler.post { // Ui 작업 관련이니까 handler 실행
-                                        flag = true
-                                        windowManager.addView(view, params) // 오버레이 실행
-                                        // 근데 밀리 초 단위로 실행시키다 보니까 오버레이 실행 코드와 변수 변경하는 코드를 전부 실행하기 전에 Context Switch가 일어나는건지(확실 X)
-                                        // 이미 오버레이 있는데 flag 값이 변경 되기 전이었는지 여기 조건문으로 들어와 다시 띄우려고 하다가 충돌이 일어나는 현상 있는 것 같음, 확실하진 않고 만약 맞다면 신기
-                                        // 그래서 flag를 먼저 우선 변경해주고, 만들기로 해서 중복 만들기 방지
-                                    }
-                                }
-                            } else {
-                                if (flag) { // 오버레이 있을 때만 오버레이 해제, 없는데 없애려고 하거나, 있는데 또 만드려고 하면 충돌 생김
-                                    handler.post {
-                                        windowManager.removeView(view)
-                                        flag = false
-                                    }
-                                }
+                    val topPackageName = checkNotNull(mySortedMap[mySortedMap.lastKey()]?.packageName)
+                    if (callPackageName != topPackageName &&
+                        topPackageName != "com.samsung.android.messaging" && !exceptionAppList.contains(
+                            topPackageName
+                        )
+                    ) { // 예외 리스트 앱에 포함되어 있지 않은 앱이 현재 죄상위(오버레이 제외) 레이아웃에서 실행되고 있다면
+                        if (!flag) { // 오버레이가 작동하고 있지 않다면
+                            handler.post { // Ui 작업 관련이니까 handler 실행
+                                flag = true
+                                windowManager.addView(view, params) // 오버레이 실행
+                                // 타이머가 기존 작업이 끝났는지 신경쓰지 않고 태스크 실행을 반복해서 너무 짧은 간격으로 설정하다 보니까 겹쳐서 충돌났던 것. 시간을 넉넉하게 줌
                             }
                         }
-
+                    } else {
+                        if (flag) { // 오버레이 있을 때만 오버레이 해제, 없는데 없애려고 하거나, 있는데 또 만드려고 하면 충돌 생김
+                            handler.post {
+                                windowManager.removeView(view)
+                                flag = false
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -278,6 +272,21 @@ class ActiveLockService : Service() {
         return START_STICKY
     }
 
+    private fun returnCallPackageName(): String? {
+        val callIntent = Intent(Intent.ACTION_DIAL)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.resolveActivity(
+                callIntent,
+                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
+            )?.activityInfo?.packageName
+        } else {
+            packageManager.resolveActivity(
+                callIntent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            )?.activityInfo?.packageName
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         executor.shutdown() // 타이머 종료
@@ -286,7 +295,6 @@ class ActiveLockService : Service() {
         }
         unregisterReceiver(receiver)
     }
-
 
     companion object {
         const val POSSIBLE = 0 //현재 사용 가능 상태

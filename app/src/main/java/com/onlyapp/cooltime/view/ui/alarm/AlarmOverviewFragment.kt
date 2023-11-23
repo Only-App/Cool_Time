@@ -18,8 +18,6 @@ import com.onlyapp.cooltime.view.adapter.AlarmAdapter
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 import kotlinx.coroutines.launch
-import java.util.Timer
-import java.util.TimerTask
 
 
 class AlarmOverviewFragment : Fragment() {

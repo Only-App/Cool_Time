@@ -1,17 +1,14 @@
 package com.onlyapp.cooltime.utils
 
-import android.Manifest
 import android.app.Activity
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Context.POWER_SERVICE
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 
 //Permissino 클래스는 권한을 요청하거나 권한 설정이 되어 있는지 체크하는 클래스
 object Permission{
@@ -19,9 +16,7 @@ object Permission{
     // => 요청 코드 값이 리스트에서 해당 권한의 index와 동일하도록 설정해줌=> 코드 == index가 성립하도록
     private const val usageStatsPermissionRequest = 0
     private const val overlayPermissionRequestCode = 1
-    private const val callPermissionRequestCode = 2
-    private const val notificationPermissionRequest = 3
-    private const val batteryPermissionRequest = 4
+    private const val batteryPermissionRequest = 2
     //private val resultLauncher
     fun checkOverlayPermission(activity: Activity):Boolean{
         val appOpsManager = activity.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
@@ -42,20 +37,6 @@ object Permission{
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
-    fun checkCallPermission(activity: Activity):Boolean{
-        return ContextCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.CALL_PHONE
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-
-    fun checkNotificationPermission(activity: Activity):Boolean{
-        return ContextCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.POST_NOTIFICATIONS
-        ) == PackageManager.PERMISSION_GRANTED
-    }
     fun checkBatteryPermission(activity: Activity):Boolean{
         val powerManager = activity.getSystemService(POWER_SERVICE) as PowerManager
         return powerManager.isIgnoringBatteryOptimizations(activity.packageName)
@@ -63,8 +44,6 @@ object Permission{
     fun checkAllPermission(activity: Activity):Boolean{
         return checkUsageStatsPermission(activity)&&
                 checkOverlayPermission(activity)&&
-                checkNotificationPermission(activity)&&
-                checkCallPermission(activity)&&
                 checkBatteryPermission(activity)
     }
     fun requestOverlayPermission(activity: Activity) {
@@ -81,14 +60,6 @@ object Permission{
             Uri.parse("package:" + activity.packageName)
         )
         ActivityCompat.startActivityForResult(activity, intent, usageStatsPermissionRequest, null)
-    }
-
-    fun requestCallPermission(activity: Activity) {
-        ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CALL_PHONE), callPermissionRequestCode)
-    }
-
-    fun requestNotificationPermission(activity: Activity) {
-        ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.POST_NOTIFICATIONS), notificationPermissionRequest)
     }
 
     fun requestIgnoringBatteryOptimization(activity: Activity){

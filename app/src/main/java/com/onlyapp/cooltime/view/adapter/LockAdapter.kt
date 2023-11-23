@@ -60,7 +60,7 @@ class LockAdapter(
     override fun onBindViewHolder(holder: LockViewHolder, position: Int) {
         holder.bind(list[position])
         holder.binding.llLockItem.setOnClickListener {
-            mListener?.invoke(list[position])
+            mListener.invoke(list[position])
         }
     }
 

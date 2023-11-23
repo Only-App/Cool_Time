@@ -3,12 +3,11 @@ package com.onlyapp.cooltime.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
 import java.util.Timer
 import java.util.TimerTask
 
 
-class RemainingTimeService(): Service(){
+class RemainingTimeService : Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         var variable = intent.getIntExtra("time", 0) // 초기 변수 값 설정
         val timer = Timer()
@@ -30,6 +29,7 @@ class RemainingTimeService(): Service(){
         // 백그라운드 서비스가 종료되지 않도록 설정
         return START_STICKY
     }
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }

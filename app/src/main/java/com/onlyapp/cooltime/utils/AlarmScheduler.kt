@@ -7,30 +7,29 @@ import android.content.Intent
 import android.util.Log
 import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
-import com.onlyapp.cooltime.data.entity.Alarm
 import com.onlyapp.cooltime.model.AlarmModel
 import com.onlyapp.cooltime.receiver.MyBroadcastReceiver
 import java.util.Calendar
 
 object AlarmScheduler {
-    fun registerAlarm(alarmModel : AlarmModel, context: Context){
+    fun registerAlarm(alarmModel: AlarmModel, context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val id = alarmModel.id
         val hour = alarmModel.time / 60
         val minute = alarmModel.time % 60
 
-        val alarmCalendar = getTodayStart().apply{
+        val alarmCalendar = getTodayStart().apply {
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
         }
 
-        if(alarmCalendar.timeInMillis < getTodayNow().timeInMillis){
+        if (alarmCalendar.timeInMillis < getTodayNow().timeInMillis) {
             alarmCalendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
         val alarmTime = alarmCalendar.timeInMillis
-        val intent = Intent(context, MyBroadcastReceiver::class.java).apply{
+        val intent = Intent(context, MyBroadcastReceiver::class.java).apply {
             action = "Reserved Alarm"
             putExtra("alarm", alarmModel)
         }
@@ -54,16 +53,16 @@ object AlarmScheduler {
 
     }
 
-    fun registerAllAlarms(alarms : ArrayList<AlarmModel>, context : Context){
-        alarms.forEach {
-            alarm ->
+    fun registerAllAlarms(alarms: ArrayList<AlarmModel>, context: Context) {
+        alarms.forEach { alarm ->
             registerAlarm(alarm, context)
         }
     }
-    fun cancelAlarm(id : Int, context: Context){
+
+    fun cancelAlarm(id: Int, context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val intent = Intent(context, MyBroadcastReceiver::class.java).apply{
+        val intent = Intent(context, MyBroadcastReceiver::class.java).apply {
             action = "Reserved Alarm"
         }
         val pendingIntent = PendingIntent.getBroadcast(
@@ -76,22 +75,22 @@ object AlarmScheduler {
 
     }
 
-    suspend fun checkDay(id : Int, context : Context) : Boolean {
+    suspend fun checkDay(id: Int, context: Context): Boolean {
         val alarmDao = UserDatabase.getInstance(context)?.alarmDao()
         val alarmRepository = alarmDao?.let { AlarmRepositoryImpl(alarmDao) }
 
 
-        val alarm = alarmRepository?.let { it.getAlarm(id) }
-        val alarmDay = alarm?.let { it.day }
+        val alarm = checkNotNull(alarmRepository?.getAlarm(id))
+        val alarmDay = alarm.day
 
 
         val dayOfWeek = getTodayNow().get(Calendar.DAY_OF_WEEK)
 
-        val result = alarmDay?.let { (1 shl (6 - (dayOfWeek + 5) % 7)) and alarmDay != 0 } ?: false
+        val result = (1 shl (6 - (dayOfWeek + 5) % 7)) and alarmDay != 0
 
         Log.d("dayOfWeek", dayOfWeek.toString())
         Log.d("alarmDay", alarmDay.toString())
 
-        return alarmDay?.let { (1 shl (6 - (dayOfWeek + 5) % 7)) and alarmDay != 0 } ?: false
+        return result
     }
 }

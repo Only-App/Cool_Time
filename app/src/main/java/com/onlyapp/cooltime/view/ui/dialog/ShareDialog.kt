@@ -1,20 +1,12 @@
 package com.onlyapp.cooltime.view.ui.dialog
+
 import android.content.ActivityNotFoundException
 import android.content.ContentValues.TAG
-import android.content.Context
-import android.graphics.Color
-import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
-import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
 import com.kakao.sdk.common.util.KakaoCustomTabsClient
 import com.kakao.sdk.share.ShareClient
@@ -22,10 +14,9 @@ import com.kakao.sdk.share.WebSharerClient
 import com.onlyapp.cooltime.common.dialogResize
 import com.onlyapp.cooltime.common.showShortToast
 import com.onlyapp.cooltime.databinding.FragmentShareDialogBinding
-import java.lang.Exception
 
 class ShareDialog : DialogFragment() {
-    private var _binding : FragmentShareDialogBinding? = null
+    private var _binding: FragmentShareDialogBinding? = null
     private val binding
         get() = _binding!!
 
@@ -40,15 +31,15 @@ class ShareDialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mContext = checkNotNull(context) {return}
-        val dialog =  checkNotNull(this.dialog){return}
+        val mContext = checkNotNull(context) { return }
+        val dialog = checkNotNull(this.dialog) { return }
         mContext.dialogResize(dialog, 0.8f, 0.5f)
 
-        binding.btnImageShare.setOnClickListener{
+        binding.btnImageShare.setOnClickListener {
             ShareTodayInfoDialog().show(childFragmentManager, null)
             activity.showShortToast("이미지 공유")
         }
-        binding.btnKakaoShare.setOnClickListener{
+        binding.btnKakaoShare.setOnClickListener {
 
             this.context?.let {
                 // 카카오톡 설치여부 확인
@@ -61,8 +52,7 @@ class ShareDialog : DialogFragment() {
                     ShareClient.instance.shareCustom(it, templateId) { sharingResult, error ->
                         if (error != null) {
                             Log.e(TAG, "카카오톡 공유 실패", error)
-                        }
-                        else if (sharingResult != null) {
+                        } else if (sharingResult != null) {
                             Log.d(TAG, "카카오톡 공유 성공 ${sharingResult.intent}")
                             startActivity(sharingResult.intent)
 
@@ -82,7 +72,7 @@ class ShareDialog : DialogFragment() {
                     // ex) Chrome, 삼성 인터넷, FireFox, 웨일 등
                     try {
                         KakaoCustomTabsClient.openWithDefault(it, sharerUrl)
-                    } catch(e: UnsupportedOperationException) {
+                    } catch (e: UnsupportedOperationException) {
                         // CustomTabsServiceConnection 지원 브라우저가 없을 때 예외처리
                     }
 
@@ -97,7 +87,7 @@ class ShareDialog : DialogFragment() {
             }
             activity.showShortToast("카카오톡 공유")
         }
-        binding.btnCancel.setOnClickListener{
+        binding.btnCancel.setOnClickListener {
             dismiss()
         }
     }

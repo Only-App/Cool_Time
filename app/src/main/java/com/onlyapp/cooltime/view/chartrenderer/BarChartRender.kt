@@ -9,11 +9,11 @@ import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.ViewPortHandler
 
 // 직접 차트 커스텀 하기 위해 BarChartRenderer 상속 받아서 설정
-class BarChartRender(aChart: BarChart, aAnimator: ChartAnimator,
-                     aViewPortHandler: ViewPortHandler,
+class BarChartRender(
+    aChart: BarChart, aAnimator: ChartAnimator,
+    aViewPortHandler: ViewPortHandler,
 
-                     )
-    : BarChartRenderer(aChart, aAnimator, aViewPortHandler) {
+    ) : BarChartRenderer(aChart, aAnimator, aViewPortHandler) {
     //둥글게 설정할 크기 설정
     private val mRadius = 30F
 

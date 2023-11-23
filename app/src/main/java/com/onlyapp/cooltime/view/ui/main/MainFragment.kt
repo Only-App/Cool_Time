@@ -2,17 +2,15 @@ package com.onlyapp.cooltime.view.ui.main
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
-import com.onlyapp.cooltime.data.DataStoreModule
 import com.onlyapp.cooltime.databinding.FragmentMainBinding
-import com.onlyapp.cooltime.view.ui.chart.ChartAppFragment
 import com.onlyapp.cooltime.utils.getDiff
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.utils.getTodayStart
@@ -20,6 +18,7 @@ import com.onlyapp.cooltime.utils.getTotalTime
 import com.onlyapp.cooltime.utils.getYesterdayEnd
 import com.onlyapp.cooltime.utils.getYesterdayStart
 import com.onlyapp.cooltime.utils.loadUsage
+import com.onlyapp.cooltime.view.ui.chart.ChartAppFragment
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -41,7 +40,7 @@ class MainFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    private var _binding : FragmentMainBinding? = null
+    private var _binding: FragmentMainBinding? = null
     val binding get() = _binding!!
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,28 +55,27 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        _binding= FragmentMainBinding.inflate(inflater, container, false)
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
         childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment()).commit()
 
-        binding.btnNavigateToUseStat.setOnClickListener{
+        binding.btnNavigateToUseStat.setOnClickListener {
             findNavController().navigate(R.id.action_main_to_use_stat)
         }
 
-        lifecycleScope.launch{//사용 횟수 출력
-            MyApplication.getInstance().getDataStore().todayCnt.collect{
-                val yesterdayCnt =MyApplication.getInstance().getDataStore().yesterdayCnt.first()
+        lifecycleScope.launch {//사용 횟수 출력
+            MyApplication.getInstance().getDataStore().todayCnt.collect {
+                val yesterdayCnt = MyApplication.getInstance().getDataStore().yesterdayCnt.first()
                 binding.tvUseCount.text = it.toString()
-                binding.tvCompareUseCnt.text=
-                    if(it < yesterdayCnt){
+                binding.tvCompareUseCnt.text =
+                    if (it < yesterdayCnt) {
                         "어제보다 ${yesterdayCnt - it}회 덜 사용"
-                    }
-                    else{
+                    } else {
                         "어제보다 ${it - yesterdayCnt}회 더 사용"
                     }
             }
         }
 
-        lifecycleScope.launch{
+        lifecycleScope.launch {
             MyApplication.getInstance().getDataStore().latestUseTime.collect {   //최근 사용 시간 출력
                 val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
                 binding.tvRecentTime.text = sdf.format(it)
@@ -85,27 +83,26 @@ class MainFragment : Fragment() {
         }
 
 
-        lifecycleScope.launch{    //인내의 시간 출력
-            MyApplication.getInstance().getDataStore().enduredTime.collect{
+        lifecycleScope.launch {    //인내의 시간 출력
+            MyApplication.getInstance().getDataStore().enduredTime.collect {
                 val yesterdayEnduredTime = MyApplication.getInstance().getDataStore().yesterdayEnduredTime.first()
                 binding.tvEnduredTime.text = getString(R.string.time_expression1, String.format("%02d", it / 60), String.format("%02d", it % 60))
                 binding.tvCompareEndure.text =
-                    if(it < yesterdayEnduredTime){
-                        "어제보다 %02d시간 %02d분 덜 잠금".format((yesterdayEnduredTime -it) / 60, (yesterdayEnduredTime - it) % 60)
-                    }
-                    else "어제보다 %02d시간 %02d분 더 잠금".format((it - yesterdayEnduredTime) / 60, (it - yesterdayEnduredTime) % 60)
+                    if (it < yesterdayEnduredTime) {
+                        "어제보다 %02d시간 %02d분 덜 잠금".format((yesterdayEnduredTime - it) / 60, (yesterdayEnduredTime - it) % 60)
+                    } else "어제보다 %02d시간 %02d분 더 잠금".format((it - yesterdayEnduredTime) / 60, (it - yesterdayEnduredTime) % 60)
             }
         }
 
-        lifecycleScope.launch{    //총 사용 시간 출력
-            MyApplication.getInstance().getDataStore().todayUseTime.collect{
+        lifecycleScope.launch {    //총 사용 시간 출력
+            MyApplication.getInstance().getDataStore().todayUseTime.collect {
                 Log.d("TotalTimeChanged", it.toString())
                 val yesterdayUseTime = MyApplication.getInstance().getDataStore().yesterdayUseTime.first()
                 var diff = yesterdayUseTime - it
-                if(diff < 0) diff = -diff
-                binding.tvUseTime.text =  getString(R.string.time_expression2, String.format("%02d", it / 3600), String.format("%02d", (it % 3600)/60),String.format("%02d", (it % 60)))
+                if (diff < 0) diff = -diff
+                binding.tvUseTime.text = getString(R.string.time_expression2, String.format("%02d", it / 3600), String.format("%02d", (it % 3600) / 60), String.format("%02d", (it % 60)))
                 binding.tvCmpUseTime.text =
-                    if(it < yesterdayUseTime){
+                    if (it < yesterdayUseTime) {
                         "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 덜 사용"
                     } else "어제보다 ${diff / 3600}시간 ${diff % 3600 / 60}분 ${diff % 60}초 더 사용"
             }

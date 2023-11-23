@@ -3,11 +3,7 @@ package com.onlyapp.cooltime.view.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.onlyapp.cooltime.common.Constants
-import com.onlyapp.cooltime.common.Constants.time
 import com.onlyapp.cooltime.common.isExistMatchToday
 import com.onlyapp.cooltime.data.AlarmRepository
 import com.onlyapp.cooltime.data.entity.Alarm

@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.onlyapp.cooltime.data.ExceptAppRepository
 import com.onlyapp.cooltime.data.entity.ExceptApp
@@ -52,7 +51,7 @@ class ExceptAppViewModel(
         viewModelScope.launch { repository.deleteApp(packageName) }
     }
 
-    suspend fun getApp(packageName: String): ExceptApp? {
+    suspend fun getApp(packageName: String): ExceptApp {
         return repository.getApp(packageName)
     }
 
@@ -68,7 +67,7 @@ class ExceptAppViewModel(
     }
 
     private suspend fun convertToExceptAppItem(exceptApp: ExceptApp): ExceptAppItem {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             val appInfo = getAppInfo.invoke(exceptApp)
             ExceptAppItem(
                 appInfo.first,

@@ -8,11 +8,9 @@ import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.MyApplication.Companion.waitCheck
 import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.common.intentSerializable
-import com.onlyapp.cooltime.data.AlarmRepository
 import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.DataStoreModule
 import com.onlyapp.cooltime.data.UserDatabase
-import com.onlyapp.cooltime.data.entity.Alarm
 import com.onlyapp.cooltime.model.AlarmModel
 import com.onlyapp.cooltime.service.UseTimeService
 import com.onlyapp.cooltime.utils.AlarmScheduler
@@ -26,7 +24,7 @@ import kotlinx.coroutines.launch
 class MyBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val dataStore = DataStoreModule(context)
-        when(intent.action) {
+        when (intent.action) {
             Intent.ACTION_USER_PRESENT -> //잠금 해제 상황에서
                 CoroutineScope(Dispatchers.Main).launch {
                     MyApplication.getInstance().getDataStore().increaseCnt()
@@ -54,16 +52,17 @@ class MyBroadcastReceiver : BroadcastReceiver() {
             Intent.ACTION_BOOT_COMPLETED -> {//부팅됐다는 알람 왔을 때 처리할 로직
                 context.startService(Intent(context, UseTimeService::class.java))
                 //부팅되었을 때 다시 저장된 모든 알람을 설정
-                CoroutineScope(Dispatchers.Main).launch{
+                CoroutineScope(Dispatchers.Main).launch {
                     val alarmDao = UserDatabase.getInstance(context)?.alarmDao()
                     val alarmRepository = alarmDao?.let { AlarmRepositoryImpl(alarmDao) }
-                    alarmRepository?.getAllFlow()?.collect{
-                        it.forEach{
-                            alarm -> AlarmScheduler.registerAlarm(AlarmModel(alarm.id, alarm.name, alarm.day, alarm.time, ""), context)
+                    alarmRepository?.getAllFlow()?.collect {
+                        it.forEach { alarm ->
+                            AlarmScheduler.registerAlarm(AlarmModel(alarm.id, alarm.name, alarm.day, alarm.time, ""), context)
                         }
                     }
                 }
             }
+
             Constants.reservedAlarm -> {   //알람 상황에서
                 CoroutineScope(Dispatchers.Main).launch {
                     //알람 객체를 전달 받음
@@ -85,8 +84,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                                         putExtra("message", alarm.name)
                                     })
-                            }
-                            catch(e : Exception){
+                            } catch (e: Exception) {
                                 Log.e("errorContent", e.toString())
                             }
                         }

@@ -15,7 +15,6 @@ import com.onlyapp.cooltime.common.showShortToast
 import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.data.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
-import com.onlyapp.cooltime.data.entity.PhoneLock
 import com.onlyapp.cooltime.databinding.FragmentLockSettingBinding
 import com.onlyapp.cooltime.model.PhoneLockModel
 import com.onlyapp.cooltime.utils.getTodayNow
@@ -25,7 +24,6 @@ import com.onlyapp.cooltime.view.ui.dialog.CustomTimePickerDialog
 import com.onlyapp.cooltime.view.viewmodel.LockViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
@@ -38,8 +36,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [AddLockSettingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInterface,
-    CustomCalendarPickerDialog.OnDateChangeListener {
+class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInterface, CustomCalendarPickerDialog.OnDateChangeListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -68,8 +65,7 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
 
     @SuppressLint("SuspiciousIndentation")
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
 
@@ -80,8 +76,7 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
                 repository = LockRepositoryImpl(db.phoneLockDao())
                 repository?.let { repository ->
                     lockViewModel = ViewModelProvider(
-                        activity,
-                        LockViewModelFactory(repository)
+                        activity, LockViewModelFactory(repository)
                     )[LockViewModel::class.java]
                 }
             }
@@ -122,9 +117,7 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
                         if (!duplicateCheck) {
                             lockViewModel.insertLock(
                                 PhoneLockModel(
-                                    totalTime = totalTime, minTime = minTime,
-                                    lockOn = lockOn, lockOff = lockOff, lockDay = dayToBit(),
-                                    startDate = startDate, endDate = endDate
+                                    totalTime = totalTime, minTime = minTime, lockOn = lockOn, lockOff = lockOff, lockDay = dayToBit(), startDate = startDate, endDate = endDate
                                 )
                             )
 
@@ -220,9 +213,7 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
                 "StartTimeDialog" -> {
                     lockOn = hour * 60 + min
                     binding.tvStartTime.text = getString(
-                        R.string.time_expression1,
-                        String.format("%02d", hour),
-                        String.format("%02d", min)
+                        R.string.time_expression1, String.format("%02d", hour), String.format("%02d", min)
                     )//String.format("%02d", hour) + " : " + String.format("%02d", min)
                     binding.cbNotIntervalSetting.isChecked = false
 
@@ -231,9 +222,7 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
                 "EndTimeDialog" -> {
                     lockOff = hour * 60 + min
                     binding.tvEndTime.text = getString(
-                        R.string.time_expression1,
-                        String.format("%02d", hour),
-                        String.format("%02d", min)
+                        R.string.time_expression1, String.format("%02d", hour), String.format("%02d", min)
                     )//String.format("%02d", hour) + " : " + String.format("%02d", min)
                     binding.cbNotIntervalSetting.isChecked = false
                 }
@@ -287,12 +276,9 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
 
     private fun contentCheck(): Boolean {
         if (SimpleDateFormat(
-                "yyyy.MM.dd",
-                Locale.getDefault()
-            ).parse(binding.tvStartDay.text.toString()) != null
-            && SimpleDateFormat(
-                "yyyy.MM.dd",
-                Locale.getDefault()
+                "yyyy.MM.dd", Locale.getDefault()
+            ).parse(binding.tvStartDay.text.toString()) != null && SimpleDateFormat(
+                "yyyy.MM.dd", Locale.getDefault()
             ).parse(binding.tvEndDay.text.toString()) != null
         ) {
             when {
@@ -304,14 +290,10 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
 
                 startDate != -1L && endDate != -1L &&     //시작 날짜가 종료 날짜보다 늦을 때
                         SimpleDateFormat(
-                            "yyyy.MM.dd",
-                            Locale.getDefault()
-                        ).parse(binding.tvStartDay.text.toString())!!.time >
-                        SimpleDateFormat(
-                            "yyyy.MM.dd",
-                            Locale.getDefault()
-                        ).parse(binding.tvEndDay.text.toString())!!.time
-                -> return false
+                            "yyyy.MM.dd", Locale.getDefault()
+                        ).parse(binding.tvStartDay.text.toString())!!.time > SimpleDateFormat(
+                    "yyyy.MM.dd", Locale.getDefault()
+                ).parse(binding.tvEndDay.text.toString())!!.time -> return false
             }
         }
 
@@ -330,12 +312,11 @@ class AddLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogI
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddLockSettingFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        fun newInstance(param1: String, param2: String) = AddLockSettingFragment().apply {
+            arguments = Bundle().apply {
+                putString(ARG_PARAM1, param1)
+                putString(ARG_PARAM2, param2)
             }
+        }
     }
 }

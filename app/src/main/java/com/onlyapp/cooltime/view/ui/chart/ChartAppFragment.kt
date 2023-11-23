@@ -1,4 +1,5 @@
 package com.onlyapp.cooltime.view.ui.chart
+
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
@@ -7,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
-import com.onlyapp.cooltime.databinding.FragmentAppChartBinding
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
@@ -17,9 +17,10 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.utils.Utils
+import com.onlyapp.cooltime.databinding.FragmentAppChartBinding
 import com.onlyapp.cooltime.view.chartrenderer.HorizontalBarChartIconRenderer
 
-class ChartAppFragment(private var appList : List<Pair<String, Long>>  = ArrayList()) : Fragment(){
+class ChartAppFragment(private var appList: List<Pair<String, Long>> = ArrayList()) : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = FragmentAppChartBinding.inflate(inflater, container, false)
@@ -113,7 +114,7 @@ class ChartAppFragment(private var appList : List<Pair<String, Long>>  = ArrayLi
         }
         // barChart.~height가 9999까진 괜찮다가 10000부터 이상해짐
         // => 리스트 1개만 있어도 안짤리는 크기가 55dp => 실험 결과 최대 69개까지만 보여주는 쪽으로 해야 함
-        barChart.layoutParams.height = (Utils.convertDpToPixel(55F)*cnt).toInt()
+        barChart.layoutParams.height = (Utils.convertDpToPixel(55F) * cnt).toInt()
         val barDataSet = BarDataSet(valueList, title)
         // 바 색상 설정 (ColorTemplate.LIBERTY_COLORS)
         barDataSet.setColors(

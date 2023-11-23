@@ -1,11 +1,11 @@
 package com.onlyapp.cooltime.view.ui.chart
+
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.onlyapp.cooltime.databinding.FragmentHourChartBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
@@ -14,9 +14,10 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.onlyapp.cooltime.databinding.FragmentHourChartBinding
 import com.onlyapp.cooltime.view.chartrenderer.BarChartRender
 
-class ChartHourFragment(val list: List<Long> = ArrayList()) : Fragment(){
+class ChartHourFragment(val list: List<Long> = ArrayList()) : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = FragmentHourChartBinding.inflate(inflater, container, false)
@@ -96,10 +97,12 @@ class ChartHourFragment(val list: List<Long> = ArrayList()) : Fragment(){
         //범례 안보이게 막음
         legend.isEnabled = false
 
-        barChart.run{
+        barChart.run {
 
-            setTouchEnabled(false)}
+            setTouchEnabled(false)
+        }
     }
+
     // 차트 데이터 설정
     private fun setData(barChart: BarChart) {
 
@@ -112,7 +115,7 @@ class ChartHourFragment(val list: List<Long> = ArrayList()) : Fragment(){
         // 임의 수동 반복문 데이터
         for (i in list.indices) {
             //테스트 위해서 그냥 임의로 큰값 한번 넣어줌
-                valueList.add(BarEntry(i.toFloat(), list[i]/60.toFloat()))
+            valueList.add(BarEntry(i.toFloat(), list[i] / 60.toFloat()))
         }
         // 막대바들의 정보를 담은 BarEntry List와 차트 이름을 넣어서 하나의 차트를 만드는데 필요한 DataSet 생성
         val barDataSet = BarDataSet(valueList, title)

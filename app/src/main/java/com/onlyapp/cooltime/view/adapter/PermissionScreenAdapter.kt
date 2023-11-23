@@ -3,8 +3,10 @@ package com.onlyapp.cooltime.view.adapter
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -64,12 +66,6 @@ class PermissionScreenAdapter(private val permissionItems:MutableList<Permission
                 "다른 앱 위에 그리기" -> {
                     result = Permission.checkOverlayPermission(activity)
                 }
-                "전화 걸기 및 관리" -> {
-                    result = Permission.checkCallPermission(activity)
-                }
-                "알림" -> {
-                    result = Permission.checkNotificationPermission(activity)
-                }
                 "배터리" -> {
                     result = Permission.checkBatteryPermission(activity)
                 }
@@ -78,6 +74,7 @@ class PermissionScreenAdapter(private val permissionItems:MutableList<Permission
         }
 
         // 넘겨받은 title을 바탕으로 특정 권한을 설정하도록 실행
+
         fun activePermission(title: String) {
                 when (title) {
                     "사용 정보 접근" -> {
@@ -85,12 +82,6 @@ class PermissionScreenAdapter(private val permissionItems:MutableList<Permission
                     }
                     "다른 앱 위에 그리기" -> {
                         Permission.requestOverlayPermission(activity)
-                    }
-                    "전화 걸기 및 관리" -> {
-                        Permission.requestCallPermission(activity)
-                    }
-                    "알림" -> {
-                        Permission.requestNotificationPermission(activity)
                     }
                     "배터리" -> {
                         Permission.requestIgnoringBatteryOptimization(activity)
@@ -160,7 +151,7 @@ class PermissionScreenAdapter(private val permissionItems:MutableList<Permission
                     setCompleteExp(btn)
                 }
             }
-            4 -> {
+            2 -> {
                 if(Permission.checkBatteryPermission(activity)){
                     setCompleteExp(btn)
                 }

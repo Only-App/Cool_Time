@@ -2,27 +2,21 @@ package com.onlyapp.cooltime.service
 
 import android.content.Intent
 import android.os.Handler
-import android.os.IBinder
 import android.os.Looper
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.Observer
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.MyApplication.Companion.waitCheck
 import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.common.isExistMatchToday
-import com.onlyapp.cooltime.data.LockRepository
 import com.onlyapp.cooltime.data.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
-import com.onlyapp.cooltime.data.entity.PhoneLock
 import com.onlyapp.cooltime.utils.getAppUsageStats
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.utils.getTodayStart
 import com.onlyapp.cooltime.utils.getTomorrowStart
 import com.onlyapp.cooltime.utils.getTotalTime
-import com.onlyapp.cooltime.view.viewmodel.LockViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -59,7 +53,7 @@ class UseTimeService : LifecycleService() {
                         MyApplication.getInstance().getDataStore().lockStatus.first() //현재 잠금 상태
 
                     lockRepository.getAllFlow().collect { lockList ->
-                        for(lockInfo in lockList){
+                        for (lockInfo in lockList) {
                             val startDate = lockInfo.startDate
                             var endDate = lockInfo.endDate
                             val lockDay = lockInfo.lockDay
@@ -77,8 +71,9 @@ class UseTimeService : LifecycleService() {
                             }
 
                             //잠금 기간을 설정했는데 잠금 기간에 해당되지 않은 경우
-                            if(getTodayNow().timeInMillis !in startDate..endDate
-                                && (startDate == -1L && endDate == -1L)) continue
+                            if (getTodayNow().timeInMillis !in startDate..endDate
+                                && (startDate == -1L && endDate == -1L)
+                            ) continue
 
                             val dayOfWeek =
                                 Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
@@ -100,20 +95,22 @@ class UseTimeService : LifecycleService() {
                                 1
                             )   //종료 시간이 시작 시간 보다 빠르면 종료 날짜 + 1
 
-                            when{
+                            when {
                                 //잠금 시작 시간과 잠금 종료 시간에 포함되는지
-                                getTodayNow().timeInMillis in lockOnDate.timeInMillis..lockOffDate.timeInMillis ->{
+                                getTodayNow().timeInMillis in lockOnDate.timeInMillis..lockOffDate.timeInMillis -> {
                                     lockType = LOCK_DURATION
                                     reuseTime =
                                         ((lockOffDate.timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
                                     return@collect
                                 }
+
                                 totalTime >= lockInfo.totalTime * 60 -> {    //총 사용 시간을 모두 사용한 경우
                                     lockType = EXCEED
                                     reuseTime =
                                         ((getTomorrowStart().timeInMillis - getTodayNow().timeInMillis) / 1000).toInt()
                                     return@collect
                                 }
+
                                 minTime != -1L && !lockStatus && !waitCheck -> {    //최소 사용 시간 간격이 설정되어 있는 경우,
                                     lockType = WAIT
                                     waitCheck = true

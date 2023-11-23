@@ -4,13 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.onlyapp.cooltime.databinding.AlarmItemBinding
-import com.onlyapp.cooltime.data.entity.Alarm
 import com.onlyapp.cooltime.model.AlarmModel
-import com.onlyapp.cooltime.view.adapter.LockAdapter.Companion.getDayStr
 
 class AlarmAdapter(
     private val list: List<AlarmModel>,
-    private var mListener:  (alarm : AlarmModel) -> Unit
+    private var mListener: (alarm: AlarmModel) -> Unit
 ) : RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
 
     class AlarmViewHolder(val binding: AlarmItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -22,7 +20,7 @@ class AlarmAdapter(
             binding.alarmName.text = alarm.name
             binding.alarmTime.text = timeStr
             binding.alarmDay.text = dayStr
-            binding.alarmCompare.text = "${alarm.remainTime}"
+            binding.alarmCompare.text = alarm.remainTime
 
         }
     }
@@ -40,7 +38,7 @@ class AlarmAdapter(
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         holder.bind(list[position])
         holder.binding.clAlarmItem.setOnClickListener {
-            mListener?.invoke(list[position])
+            mListener.invoke(list[position])
         }
     }
 

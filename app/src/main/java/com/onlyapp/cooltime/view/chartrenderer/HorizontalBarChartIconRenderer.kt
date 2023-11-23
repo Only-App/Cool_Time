@@ -14,20 +14,17 @@ import com.github.mikephil.charting.utils.Utils
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.onlyapp.cooltime.R
 
-class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: ChartAnimator,
-                                     aViewPortHandler: ViewPortHandler, appList : List<Pair<String, Long>>, aImageList: ArrayList<Bitmap>,
-                                     aContext: Context
-)
-: HorizontalBarChartRenderer(aChart, aAnimator, aViewPortHandler) {
+class HorizontalBarChartIconRenderer(
+    aChart: HorizontalBarChart, aAnimator: ChartAnimator, aViewPortHandler: ViewPortHandler, appList: List<Pair<String, Long>>, aImageList: ArrayList<Bitmap>, aContext: Context
+) : HorizontalBarChartRenderer(aChart, aAnimator, aViewPortHandler) {
     private val mAppList = appList
     private val mContext = aContext
     private val mImageList = aImageList
-    private var mRadius=100F // round 크기 변수
+    private var mRadius = 100F // round 크기 변수
 
     //상하좌우 위치 받고, 각 축별로 round 할 크기와 네 모서리의 round 유무를 bool 값으로 받아서 round 처리해줌
     private fun roundedRect(
-        left: Float, top: Float, right: Float, bottom: Float, rx: Float, ry: Float,
-        tl: Boolean, tr: Boolean, br: Boolean, bl: Boolean
+        left: Float, top: Float, right: Float, bottom: Float, rx: Float, ry: Float, tl: Boolean, tr: Boolean, br: Boolean, bl: Boolean
     ): Path {
         // 각 축별 round할 크기 설정
         // rxvalue는 원의 x축 반지름, ryvalue는 원의 y축 반지름이라고 생각하면 됨 (각 값이 다르면 타원 같은 느낌)
@@ -46,8 +43,12 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
 
         // x와 y축에 대한 rounding의 최대 크기를 막대바의 width 혹은 height 둘 중 작은 값의 절반을 넘지 않도록 설정함
         // (절반보다 크면 제대로 원형으로 rounding이 예쁘게 안될테니까, x,y의 rounding 크기가 달라도 예쁘지 않고)
-        if (rxValue > width / 2) {rxValue = width / 2; ryValue = rxValue}
-        if (ryValue > height / 2) {ryValue = height / 2; rxValue = ryValue}
+        if (rxValue > width / 2) {
+            rxValue = width / 2; ryValue = rxValue
+        }
+        if (ryValue > height / 2) {
+            ryValue = height / 2; rxValue = ryValue
+        }
 
         // 곡선을 제외한 y축으로부터 수직인 바의 길이
         val widthMinusCorners = (width - (2 * rxValue))
@@ -111,6 +112,7 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
 
         return path // 막대 반환
     }
+
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
         val trans = mChart.getTransformer(dataSet.axisDependency)
         mShadowPaint.color = dataSet.barShadowColor
@@ -146,21 +148,12 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                     if (mChart.isDrawBarShadowEnabled) {
                         if (mRadius > 0) {
                             val path = roundedRect(
-                                buffer.buffer[j],
-                                buffer.buffer[j + 1],
-                                buffer.buffer[j + 2],
-                                buffer.buffer[j + 3],
-                                mRadius, mRadius,
-                                tl = true, tr = true, br = true, bl = true
+                                buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRadius, mRadius, tl = true, tr = true, br = true, bl = true
                             )
                             c.drawPath(path, mShadowPaint)
                         } else {
                             c.drawRect(
-                                buffer.buffer[j],
-                                mViewPortHandler.contentTop(),
-                                buffer.buffer[j + 2],
-                                mViewPortHandler.contentBottom(),
-                                mShadowPaint
+                                buffer.buffer[j], mViewPortHandler.contentTop(), buffer.buffer[j + 2], mViewPortHandler.contentBottom(), mShadowPaint
                             )
                         }
                     }
@@ -169,21 +162,12 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                     mRenderPaint.color = dataSet.getColor(j / 4)
                     if (mRadius > 0) {
                         val path = roundedRect(
-                            buffer.buffer[j],
-                            buffer.buffer[j + 1],
-                            buffer.buffer[j + 2],
-                            buffer.buffer[j + 3],
-                            mRadius, mRadius,
-                            tl = true, tr = true, br = true, bl = true
+                            buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRadius, mRadius, tl = true, tr = true, br = true, bl = true
                         )
                         c.drawPath(path, mRenderPaint)
                     } else {
                         c.drawRect(
-                            buffer.buffer[j],
-                            buffer.buffer[j + 1],
-                            buffer.buffer[j + 2],
-                            buffer.buffer[j + 3],
-                            mRenderPaint
+                            buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRenderPaint
                         )
                     }
                     j += 4
@@ -195,42 +179,24 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                     if (mChart.isDrawBarShadowEnabled) {
                         if (mRadius > 0) {
                             val path = roundedRect(
-                                buffer.buffer[j],
-                                buffer.buffer[j + 1],
-                                buffer.buffer[j + 2],
-                                buffer.buffer[j + 3],
-                                mRadius, mRadius,
-                                tl = true, tr = true, br = true, bl = true
+                                buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRadius, mRadius, tl = true, tr = true, br = true, bl = true
                             )
                             c.drawPath(path, mRenderPaint)
                         } else {
                             c.drawRect(
-                                buffer.buffer[j],
-                                mViewPortHandler.contentTop(),
-                                buffer.buffer[j + 2],
-                                mViewPortHandler.contentBottom(),
-                                mShadowPaint
+                                buffer.buffer[j], mViewPortHandler.contentTop(), buffer.buffer[j + 2], mViewPortHandler.contentBottom(), mShadowPaint
                             )
                         }
                     }
                     if (mRadius > 0) { //결론적으로 본 앱에서 차트 그릴 때 사용할 코드
                         buffer.buffer[j] = 100F
                         val path = roundedRect(
-                            buffer.buffer[j],
-                            buffer.buffer[j + 1],
-                            buffer.buffer[j + 2],
-                            buffer.buffer[j + 3],
-                            mRadius, mRadius,
-                            tl = true, tr = true, br = true, bl = true
+                            buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRadius, mRadius, tl = true, tr = true, br = true, bl = true
                         )
                         c.drawPath(path, mRenderPaint) // path에 해당하는 부분을 그림
                     } else {
                         c.drawRect(
-                            buffer.buffer[j],
-                            buffer.buffer[j + 1],
-                            buffer.buffer[j + 2],
-                            buffer.buffer[j + 3],
-                            mRenderPaint
+                            buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2], buffer.buffer[j + 3], mRenderPaint
                         )
                     }
                     j += 4
@@ -274,19 +240,20 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                 val right = buffer.buffer[j + 2]
                 val bottom = buffer.buffer[j + 3]
 
-                val packageName = mAppList[j/4].first
-                val packageManager : PackageManager = this.mContext.packageManager
-                val appinfo: ApplicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+                val packageName = mAppList[j / 4].first
+                val packageManager: PackageManager = this.mContext.packageManager
+                val appinfo: ApplicationInfo = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    packageManager.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0))
+                } else {
+                    packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+                }
 
                 val appName = packageManager.getApplicationLabel(appinfo).toString()//packageManager.getApplicationLabel(packageManager.getApplicationInfo(packageName, 0))
                 if (set.isDrawValuesEnabled) {
                     // 앱 이름 나올 위치 설정 => 막대 차트의 왼쪽과 아이콘 상단 라인에 맞춰서
-                    drawValue(aCanvas, appName + " " +
-                            (mAppList[j/4].second/3600).toInt()+"시간 " +
-                            (mAppList[j/4].second.toFloat()/60%60).toInt()+"분 " +
-                            mAppList[j/4].second%60+"초",
-                        left, top-15 ,
-                        set.getValueTextColor(j / 4))
+                    drawValue(
+                        aCanvas, appName + " " + (mAppList[j / 4].second / 3600).toInt() + "시간 " + (mAppList[j / 4].second.toFloat() / 60 % 60).toInt() + "분 " + mAppList[j / 4].second % 60 + "초", left, top - 15, set.getValueTextColor(j / 4)
+                    )
 
                 }
 
@@ -295,8 +262,9 @@ class HorizontalBarChartIconRenderer(aChart: HorizontalBarChart, aAnimator: Char
                     val scaledBitmap = getScaledBitmap(bitmap)
                     // 앱 좌상단이 기준이어서 차트의 바닥 라인과 맞출수 있도록 아이콘 크기만큼 아래로 내려가게, => 같은 크기로 했더니 착시 효과로 라인이 더 높게 보여서 살짝 덜 올라가게 함
                     // 맨 왼쪽과 차트 사이 공간의 중간에 위치하도록
-                    aCanvas.drawBitmap(scaledBitmap, (left- Utils.convertDpToPixel(iconSize))/2F,
-                        bottom- Utils.convertDpToPixel(23F), null)
+                    aCanvas.drawBitmap(
+                        scaledBitmap, (left - Utils.convertDpToPixel(iconSize)) / 2F, bottom - Utils.convertDpToPixel(23F), null
+                    )
                 }
             }
         }

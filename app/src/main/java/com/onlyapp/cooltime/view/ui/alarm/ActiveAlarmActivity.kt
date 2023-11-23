@@ -4,24 +4,23 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Handler
 import android.util.Log
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.databinding.ActivityActiveAlarmBinding
 import com.onlyapp.cooltime.utils.getTodayNow
 import java.util.Calendar
 
 class ActiveAlarmActivity : AppCompatActivity() {
-    private var _binding : ActivityActiveAlarmBinding? = null
-    private val binding : ActivityActiveAlarmBinding
+    private var _binding: ActivityActiveAlarmBinding? = null
+    private val binding: ActivityActiveAlarmBinding
         get() = _binding!!
 
-    private var mediaPlayer : MediaPlayer? = null
-    private var countDownTimer : CountDownTimer? = null
+    private var mediaPlayer: MediaPlayer? = null
+    private var countDownTimer: CountDownTimer? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityActiveAlarmBinding.inflate(layoutInflater)
@@ -57,17 +56,16 @@ class ActiveAlarmActivity : AppCompatActivity() {
         val lockToday = "${month}월 ${date}일 ${day}요일"
         binding.alarmToday.text = lockToday
 
-        if (hour >= 12){
+        if (hour >= 12) {
             val lockTime = "오후 ${hour - 12}시간 ${minute}분"
             binding.alarmTime.text = lockTime
-        }
-        else{
+        } else {
             val lockTime = "오전 ${hour}시간 ${minute}분"
             binding.alarmTime.text = lockTime
         }
 
         //취소 버튼 클릭시 알람 재생 멈추고 액티비티 종료
-        binding.closeButton.setOnClickListener{
+        binding.closeButton.setOnClickListener {
             stopAlarmSound()
             finish()
         }
@@ -78,11 +76,12 @@ class ActiveAlarmActivity : AppCompatActivity() {
 
 
         //1분 동안 알람 재생 후 종료하도록 타이머설정
-        countDownTimer = object: CountDownTimer(60 * 1000, 1000){
+        countDownTimer = object : CountDownTimer(60 * 1000, 1000) {
             override fun onTick(p0: Long) {
             }
+
             override fun onFinish() {
-                if(mediaPlayer?.isPlaying == true){
+                if (mediaPlayer?.isPlaying == true) {
                     stopAlarmSound()
                     finish()
                 }
@@ -94,23 +93,23 @@ class ActiveAlarmActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
-    private fun startAlarmSound(){  //알람음 재생
+    private fun startAlarmSound() {  //알람음 재생
         mediaPlayer = MediaPlayer.create(this, R.raw.alarm_sound)
-        if(mediaPlayer != null){
+        if (mediaPlayer != null) {
             mediaPlayer?.isLooping = true
             mediaPlayer?.setVolume(100f, 100f)
             mediaPlayer?.start()
         }
     }
 
-    private fun stopAlarmSound(){   //알람음 재생 종료
-        if(mediaPlayer != null && mediaPlayer?.isPlaying == true) {
+    private fun stopAlarmSound() {   //알람음 재생 종료
+        if (mediaPlayer != null && mediaPlayer?.isPlaying == true) {
             mediaPlayer?.stop()
             mediaPlayer?.release()
             mediaPlayer = null
         }
 
-        if(countDownTimer != null){
+        if (countDownTimer != null) {
             countDownTimer?.cancel()
         }
     }
