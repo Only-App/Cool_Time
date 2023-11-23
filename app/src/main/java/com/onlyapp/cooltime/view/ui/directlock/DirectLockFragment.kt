@@ -37,12 +37,16 @@ class DirectLockFragment : Fragment() {
                     .increaseEnduredTime(timePicker.hour * 60 + timePicker.minute)
             }
             val intent = Intent(this.context, ActiveLockService::class.java)
+            intent.putExtra(Constants.lockType, 4)
             intent.putExtra(Constants.time, timePicker.hour * 60 * 60 + timePicker.minute * 60)
             activity!!.startService(intent) // 잠금 서비스 실행
         }
 
         timePicker = binding.directLockTimePicker
         timePicker.setIs24HourView(true)
+
+        timePicker.hour = 0
+        timePicker.minute= 0
 
         timePicker.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
 

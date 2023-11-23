@@ -12,6 +12,7 @@ import android.graphics.PixelFormat
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,8 @@ import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.data.ExceptAppRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentActiveLockBinding
+import com.onlyapp.cooltime.service.UseTimeService.Companion.EXCEED
+import com.onlyapp.cooltime.service.UseTimeService.Companion.LOCK_DURATION
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.view.adapter.AppItem
 import com.onlyapp.cooltime.view.adapter.LockScreenAdapter
@@ -32,7 +35,9 @@ import com.onlyapp.cooltime.view.itemdecoration.GridSpacingItemDecoration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.TreeMap
 import java.util.concurrent.Executors
@@ -44,7 +49,7 @@ class ActiveLockService : Service() {
     private val exceptionAppList = arrayListOf<String>() // 예외 앱 이름 리스트
     private var flag = false // 오버레이(잠금화면)이 떠있는지 체크하는 값
 
-    //val handler = Handler(Looper.getMainLooper()) // runnable 내에서 ui 관련 처리할 때 이거 통해서 해야 함!
+    //private val handler = Handler(Looper.getMainLooper()) // runnable 내에서 ui 관련 처리할 때 이거 통해서 해야 함!
     private lateinit var binding: FragmentActiveLockBinding// 바인딩
     private lateinit var view: View // 오버레이 위에 띄울 뷰
     private lateinit var windowManager: WindowManager //오버레이 띄우기 위한 윈도우 매니저
@@ -87,26 +92,38 @@ class ActiveLockService : Service() {
         binding.lockTypeComment.visibility = View.VISIBLE
         binding.lockUseTime.visibility = View.VISIBLE
 
-
         val loadIconJob = CoroutineScope(Dispatchers.IO).async {
             val packageManager = this@ActiveLockService.applicationContext.packageManager
             val exceptAppDao =
                 checkNotNull(UserDatabase.getInstance(this@ActiveLockService)).exceptAppsDao()
             val exceptAppRepository = ExceptAppRepositoryImpl(exceptAppDao)
-            exceptAppRepository.allApps().collect { exceptAppList ->
-                for (exceptApp in exceptAppList) {
-                    if (!exceptApp.checked) continue //예외앱만 리스트에 추가
-                    val packageName = exceptApp.packageName
-                    val appInfo =
-                        packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-                    val appIcon =
-                        appInfo.loadIcon(packageManager)
-                            ?: R.drawable.baseline_android_24.toDrawable()
-                    val appItem = AppItem(packageName, appIcon)
-                    appItems.add(appItem)
-                    exceptionAppList.add(packageName)
+
+            Log.d("Before collect", "enter")
+
+
+            CoroutineScope(Dispatchers.IO).launch {
+                exceptAppRepository.allApps().collect { exceptAppList ->
+                    for (exceptApp in exceptAppList) {
+                        if (!exceptApp.checked) continue //예외앱만 리스트에 추가
+
+                        val packageName = exceptApp.packageName
+
+                        val appInfo =
+                            packageManager.getApplicationInfo(
+                                packageName,
+                                PackageManager.GET_META_DATA
+                            )
+                        val appIcon =
+                            appInfo.loadIcon(packageManager)
+                                ?: R.drawable.baseline_android_24.toDrawable()
+                        val appItem = AppItem(packageName, appIcon)
+                        appItems.add(appItem)
+                        exceptionAppList.add(packageName)
+                    }
                 }
             }
+
+            Log.d("After collect", "enter")
 
             val adapter = LockScreenAdapter(this@ActiveLockService, appItems, packageManager)
             binding.appList.adapter = adapter
@@ -156,8 +173,6 @@ class ActiveLockService : Service() {
         val filter = IntentFilter(Constants.remainingTime)
         registerReceiver(receiver, filter)
 
-
-
         params.gravity = Gravity.START or Gravity.TOP
 
         flag = true
@@ -165,18 +180,18 @@ class ActiveLockService : Service() {
 
         val lockType = intent.getIntExtra(Constants.lockType, -1)
         val handler = Handler(Looper.getMainLooper()) // runnable 내에서 ui 관련 처리할 때 이거 통해서 해야 함!
-
+        Log.d("lockType", lockType.toString())
 
         val runnable = Runnable {
             // UI 업데이트 코드를 여기에 작성
-
+            Log.d("runnable", "isRunning")
             handler.post {  //날짜, 시간 출력
+                Log.d("handlerPost", "isGoing")
                 val month = getTodayNow().get(Calendar.MONTH)
                 val date = getTodayNow().get(Calendar.DATE)
                 val day = when (getTodayNow().get(Calendar.DAY_OF_WEEK)) {
                     1 -> "일"; 2 -> "월"; 3 -> "화"; 4 -> "수"; 5 -> "목"; 6 -> "금"; else -> "토"
                 }
-
 
                 val hour = getTodayNow().get(Calendar.HOUR_OF_DAY)
                 val minute = getTodayNow().get(Calendar.MINUTE)
@@ -192,11 +207,12 @@ class ActiveLockService : Service() {
                 }
 
                 //각 잠금 타입에 맞게 텍스트 출력
-
-                when (lockType) {
-                    WAIT -> binding.lockTypeComment.text = "재사용 가능까지"
-                    EXCEED -> binding.lockTypeComment.text = "오늘은 더 이상 사용할 수 없습니다"
-                    LOCK_DURATION -> binding.lockTypeComment.text = "잠금이 적용되었습니다"
+                binding.lockTypeComment.text = when (lockType) {
+                    WAIT -> "재사용 가능까지"
+                    EXCEED -> "오늘은 더 이상 사용할 수 없습니다"
+                    LOCK_DURATION -> "잠금이 적용되었습니다"
+                    DIRECT_LOCK -> "바로 잠금"
+                    else -> ""
                 }
 
             }
@@ -220,7 +236,8 @@ class ActiveLockService : Service() {
                     packageManager.resolveActivity(callIntent, PackageManager.MATCH_DEFAULT_ONLY)
                         ?.let {
                             val callPackageName = it.activityInfo.packageName
-                            if (callPackageName != topPackageName && topPackageName != "com.samsung.android.messaging" && !exceptionAppList.contains(
+                            if (callPackageName != topPackageName &&
+                                topPackageName != "com.samsung.android.messaging" && !exceptionAppList.contains(
                                     topPackageName
                                 )
                             ) { // 예외 리스트 앱에 포함되어 있지 않은 앱이 현재 죄상위(오버레이 제외) 레이아웃에서 실행되고 있다면
@@ -247,11 +264,16 @@ class ActiveLockService : Service() {
             }
         }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            loadIconJob.await()
-            executor.scheduleWithFixedDelay(
-                runnable, 0, 300, TimeUnit.MILLISECONDS
-            ) // 30밀리초마다 스케쥴 돌아가도록 함
+        Log.d("before Coroutine", "enter")
+        try {
+            CoroutineScope(Dispatchers.Main).launch {
+                loadIconJob.await()
+                executor.scheduleWithFixedDelay(
+                    runnable, 0, 300, TimeUnit.MILLISECONDS
+                ) // 30밀리초마다 스케쥴 돌아가도록 함
+            }
+        } catch (e: Exception) {
+            Log.e("flow Exception", e.toString())
         }
         return START_STICKY
     }
@@ -271,6 +293,6 @@ class ActiveLockService : Service() {
         const val EXCEED = 1    //총 사용 시간을 초과한 상태
         const val LOCK_DURATION = 2 //잠금 시간이 적용된 상태
         const val WAIT = 3  //최소 사용 시간 간격으로 사용할 수 없는 상태
-
+        const val DIRECT_LOCK = 4 //바로 잠금
     }
 }
