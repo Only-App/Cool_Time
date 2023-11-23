@@ -18,17 +18,11 @@ import com.onlyapp.cooltime.view.adapter.AlarmAdapter
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 import kotlinx.coroutines.launch
+import java.util.Timer
+import java.util.TimerTask
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [AlarmOverviewFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AlarmOverviewFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private var _binding: FragmentAlarmBinding? = null
     private val binding: FragmentAlarmBinding
         get() = _binding!!
@@ -37,13 +31,6 @@ class AlarmOverviewFragment : Fragment() {
     private var repository: AlarmRepository? = null
     private var alarmViewModel: AlarmViewModel? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,7 +44,6 @@ class AlarmOverviewFragment : Fragment() {
             findNavController().navigate(R.id.action_alarm_main_to_alarm_setting)
         }
 
-        //TODO: 현재 시간을 바탕으로 몇 시간 몇 분 남았는지를 출력해야 함, 그리고 계속 변할 수 있어야 함
         val act = checkNotNull(activity) { "Activity is Null" }
         db = UserDatabase.getInstance(act.applicationContext)
         db?.let { db ->
@@ -69,6 +55,7 @@ class AlarmOverviewFragment : Fragment() {
                 AlarmViewModelFactory(repository)
             )[AlarmViewModel::class.java]
         }
+
 
         alarmViewModel?.let {
             lifecycleScope.launch {
@@ -85,33 +72,10 @@ class AlarmOverviewFragment : Fragment() {
                 }
             }
         }
+
+
         binding.rvAlarmSet.layoutManager = LinearLayoutManager(this.context)
 
         return binding.root
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AlarmFragment.
-         */
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private const val ARG_PARAM1 = "param1"
-        private const val ARG_PARAM2 = "param2"
-
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AlarmOverviewFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

@@ -12,7 +12,7 @@ import java.util.Locale
 class LockAdapter(
     private val list: List<PhoneLockModel>,
     private val currentUseTime: Long,
-    private var mListener: (lock : PhoneLockModel) -> Unit
+    private var mListener: (lock: PhoneLockModel) -> Unit
 ) :
     RecyclerView.Adapter<LockAdapter.LockViewHolder>() {
     class LockViewHolder(val binding: LockSettingItemBinding, private val currentUseTime: Long) :
@@ -46,8 +46,7 @@ class LockAdapter(
             val remainTime =
                 (remain / 3600).toString() + "시간 " + (remain % 3600 / 60).toString() + "분 " + remain % 60 + "초 더 사용시 잠금"
 
-            binding.tvLockRemainTime.text =
-                remainTime // currentUseTime     //TODO : 남아있는 시간 계산해서 출력해야 함
+            binding.tvLockRemainTime.text = remainTime
 
         }
     }
@@ -75,9 +74,7 @@ class LockAdapter(
 
         //선택한 요일 정보(Int type)를 바탕으로 요일을 String으로 변환하도록 함
         fun getDayStr(data: Int): String {
-            if (data == 127) {    //일주일 모두 체크한 경우라면
-                return "매일"
-            }
+            if (data == 127) return "매일"    //일주일 모두 체크한 경우라면
             var dayStr = ""
             var temp = data
             for (i in 0..6) {

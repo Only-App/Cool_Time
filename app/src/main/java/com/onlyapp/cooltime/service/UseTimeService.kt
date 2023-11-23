@@ -167,10 +167,6 @@ class UseTimeService : LifecycleService() {
         super.onDestroy()
     }
 
-    override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
-    }
-
     companion object {
         const val POSSIBLE = 0 //현재 사용 가능 상태
         const val EXCEED = 1    //총 사용 시간을 초과한 상태

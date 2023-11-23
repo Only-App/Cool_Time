@@ -22,7 +22,7 @@ class AlarmAdapter(
             binding.alarmName.text = alarm.name
             binding.alarmTime.text = timeStr
             binding.alarmDay.text = dayStr
-            binding.alarmCompare.text = "몇 분 후 알람이 울립니다"
+            binding.alarmCompare.text = "${alarm.remainTime}"
 
         }
     }
@@ -97,13 +97,5 @@ class AlarmAdapter(
             return timeStr
         }
 
-    }
-
-
-    //TODO 현재 시간 대비 얼마 남았는 지를 계산해서 String Type으로 return할 수 있도록 해야 함
-    fun compareTimeStr(): String {
-        var result = ""
-
-        return result
     }
 }

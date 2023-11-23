@@ -27,21 +27,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [UpdateLockSettingFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDialogInterface,
     CustomCalendarPickerDialog.OnDateChangeListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private var _binding: FragmentUpdateLockSettingBinding? = null
     private val binding
         get() = _binding!!
@@ -50,20 +38,13 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
     private var db: UserDatabase? = null
     private var repository: LockRepository? = null
     private var lockViewModel: LockViewModel? = null
+
     private var totalTime: Long = 0
     private var minTime: Long = 0
     private var lockOn: Int = 0
     private var lockOff: Int = 0
     private var startDate: Long = 0
     private var endDate: Long = 0
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -293,21 +274,22 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
             binding.tvStartDay.isEnabled = false
             binding.tvEndDay.isEnabled = false
 
-            binding.tvStartDay.text = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(
+            binding.tvStartDay.text = SimpleDateFormat(getString(R.string.date_pattern),
+                 Locale.getDefault()).format(
                 getTodayNow().time
             )
-            binding.tvEndDay.text = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(
+            binding.tvEndDay.text = SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).format(
                 getTodayNow().time
             )
 
         } else {  //특정 날짜 잠금 설정한 경우
             binding.tvStartDay.text =
                 SimpleDateFormat(
-                    "yyyy.MM.dd",
+                    getString(R.string.date_pattern),
                     Locale.getDefault()
                 ).format(Date(lockModel.startDate))
             binding.tvEndDay.text =
-                SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(Date(lockModel.endDate))
+                SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).format(Date(lockModel.endDate))
         }
 
         this.totalTime = lockModel.totalTime
@@ -360,14 +342,14 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
             when (it) {
                 "StartDayDialog" -> {
                     binding.tvStartDay.text = date
-                    SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(date)?.let { date ->
+                    SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).parse(date)?.let { date ->
                         startDate = date.time
                     }
                 }
 
                 "EndDayDialog" -> {
                     binding.tvEndDay.text = date
-                    SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).parse(date)?.let { date ->
+                    SimpleDateFormat(getString(R.string.date_pattern),Locale.getDefault()).parse(date)?.let { date ->
                         endDate = date.time
                     }
                 }
@@ -398,15 +380,14 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         return result
     }
 
-    //TODO : 내용을 다 입력했는지
     private fun contentCheck(): Boolean {
 
         if (SimpleDateFormat(
-                "yyyy.MM.dd",
+                getString(R.string.date_pattern),
                 Locale.getDefault()
             ).parse(binding.tvStartDay.text.toString()) != null &&
             SimpleDateFormat(
-                "yyyy.MM.dd",
+                getString(R.string.date_pattern),
                 Locale.getDefault()
             ).parse(binding.tvEndDay.text.toString()) != null
         ) {
@@ -420,11 +401,11 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                  */
                 startDate != -1L && endDate != -1L &&     //시작 날짜가 종료 날짜보다 늦을 때
                         SimpleDateFormat(
-                            "yyyy.MM.dd",
+                            getString(R.string.date_pattern),
                             Locale.getDefault()
                         ).parse(binding.tvStartDay.text.toString())!!.time >
                         SimpleDateFormat(
-                            "yyyy.MM.dd",
+                            getString(R.string.date_pattern),
                             Locale.getDefault()
                         ).parse(binding.tvEndDay.text.toString())!!.time
                 -> return false
@@ -434,23 +415,5 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         return true
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment UpdateLockSettingFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            UpdateLockSettingFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
+
 }

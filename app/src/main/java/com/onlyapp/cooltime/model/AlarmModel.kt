@@ -6,5 +6,6 @@ data class AlarmModel(
     val id : Int = 0,
     val name : String,
     val day : Int,
-    val time : Int
+    val time : Int,
+    val remainTime : String
 ) : Serializable

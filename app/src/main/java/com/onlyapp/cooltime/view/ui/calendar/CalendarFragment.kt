@@ -39,20 +39,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CalendarFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CalendarFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private var db: UserDatabase? = null
     private var lockRepository: LockRepository? = null
     private var alarmRepository: AlarmRepository? = null
@@ -61,14 +48,6 @@ class CalendarFragment : Fragment() {
     private val dateViewModel: DateViewModel by viewModels()
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -133,7 +112,7 @@ class CalendarFragment : Fragment() {
                 }
                 dateViewModel.date.value =
                     SimpleDateFormat(
-                        "yyyy.MM.dd",
+                        getString(R.string.date_pattern),
                         Locale.getDefault()
                     ).parse("$year.${month + 1}.$day")!!.time
                 //dateViewModel의 date 속성 값 변경
@@ -146,7 +125,7 @@ class CalendarFragment : Fragment() {
 
         //date 값이 변경되는지 관찰
         dateViewModel.date.observe(this) { dateTime ->
-            val dayOfWeek = Calendar.getInstance().apply{
+            val dayOfWeek = Calendar.getInstance().apply {
                 timeInMillis = dateTime
             }.get(Calendar.DAY_OF_WEEK)
 
@@ -237,26 +216,5 @@ class CalendarFragment : Fragment() {
                 .replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
         }
     }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CalendartFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CalendarFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
 
 }

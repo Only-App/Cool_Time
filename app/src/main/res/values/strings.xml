@@ -86,4 +86,5 @@
     <string name="select_day">$s</string>
     <string name="title">$s</string>
     <string name="description">$s</string>
+    <string name="date_pattern">yyyy.MM.dd</string>
 </resources>

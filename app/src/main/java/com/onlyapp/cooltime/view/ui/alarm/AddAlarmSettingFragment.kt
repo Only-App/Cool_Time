@@ -27,15 +27,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [AddAlarmSettingFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AddAlarmSettingFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
     private var _binding: FragmentAlarmSettingBinding? = null
     private val binding
         get() = _binding!!
@@ -43,14 +36,6 @@ class AddAlarmSettingFragment : Fragment() {
     private var repository: AlarmRepository? = null
     private var alarmViewModel: AlarmViewModel? = null
     private lateinit var timePicker: TimePicker
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView( //Fragment가 실행될 때 생명주기에 따라 onCreate 다음으로 자동 실행되는 함수, View 관련 내용을 세팅하기에 적합
         inflater: LayoutInflater, container: ViewGroup?,
@@ -135,7 +120,7 @@ class AddAlarmSettingFragment : Fragment() {
 
             //Alarm 객체 생성
             val entity =
-                AlarmModel(name = etAlarmDescription, day = dayResult, time = timeResult)
+                AlarmModel(name = etAlarmDescription, day = dayResult, time = timeResult, remainTime = "")
 
             if (contentCheck()) {
                 lifecycleScope.launch {
@@ -143,7 +128,7 @@ class AddAlarmSettingFragment : Fragment() {
                     context?.let {
                         id?.let { id ->
                             AlarmScheduler.registerAlarm(
-                                AlarmModel(id.toInt(), entity.name, entity.day, entity.time), it
+                                AlarmModel(id.toInt(), entity.name, entity.day, entity.time, remainTime = ""), it
                             )
                         }
                     }
@@ -180,30 +165,4 @@ class AddAlarmSettingFragment : Fragment() {
         return !binding.etAlarmDescription.text.isNullOrBlank()
                 && dayToBit() != 0
     }
-
-    companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private const val ARG_PARAM1 = "param1"
-        private const val ARG_PARAM2 = "param2"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AlarmSettingFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddAlarmSettingFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
 }

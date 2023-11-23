@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".view.ui.directlock.DirectLockFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
