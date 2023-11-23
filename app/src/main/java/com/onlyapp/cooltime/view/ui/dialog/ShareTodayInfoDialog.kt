@@ -30,54 +30,6 @@ import java.util.Calendar
 import java.util.Locale
 
 class ShareTodayInfoDialog : DialogFragment() {
-    private fun getViewToBitmap(): Bitmap {
-        val view = binding.info
-        val bitmap = Bitmap.createBitmap(
-            view.root.width, view.root.height, Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        view.root.draw(canvas)
-        return bitmap
-    }
-
-    private fun saveImage() {
-        try {
-            context?.let {
-                it.externalCacheDir?.mkdir()
-                val file = File(it.externalCacheDir, "today_info.jpg")
-                val bitmap = getViewToBitmap()
-                Log.d("cache", it.externalCacheDir.toString())
-                val outputStream = FileOutputStream(file)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-                outputStream.flush()
-                outputStream.close()
-                loadImage()
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun loadImage() {
-        try {
-            context?.let {
-                val file = File(it.externalCacheDir, "today_info.jpg")
-                shareImage(FileProvider.getUriForFile(it, "image_share", file))
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun shareImage(uri: Uri) {
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.type = "image/*"
-        intent.putExtra(Intent.EXTRA_STREAM, uri)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(Intent.createChooser(intent, "Share Image"))
-    }
-
-
     private var _binding: FragmentShareTodayInfoDialogBinding? = null
     private val binding
         get() = _binding!!
@@ -88,7 +40,7 @@ class ShareTodayInfoDialog : DialogFragment() {
 
         val mContext = checkNotNull(context) { return }
         val dialog = checkNotNull(this.dialog) { return }
-        mContext.dialogResize(dialog, 0.9f, 0.7f)
+        mContext.dialogResize(dialog, 0.9f, 0.7f) // 다이얼로그 사이즈 임의 지정
 
     }
 
@@ -98,7 +50,6 @@ class ShareTodayInfoDialog : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentShareTodayInfoDialogBinding.inflate(inflater, container, false)
-
         binding.cancel.setOnClickListener {
             dismiss()
         }
@@ -201,5 +152,53 @@ class ShareTodayInfoDialog : DialogFragment() {
         }
         return binding.root
     }
+
+    private fun getViewToBitmap(): Bitmap {
+        val view = binding.info
+        val bitmap = Bitmap.createBitmap(
+            view.root.width, view.root.height, Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        view.root.draw(canvas)
+        return bitmap
+    }
+
+    private fun saveImage() {
+        try {
+            context?.let {
+                it.externalCacheDir?.mkdir()
+                val file = File(it.externalCacheDir, "today_info.jpg")
+                val bitmap = getViewToBitmap()
+                Log.d("cache", it.externalCacheDir.toString())
+                val outputStream = FileOutputStream(file)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                outputStream.flush()
+                outputStream.close()
+                loadImage()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun loadImage() {
+        try {
+            context?.let {
+                val file = File(it.externalCacheDir, "today_info.jpg")
+                shareImage(FileProvider.getUriForFile(it, "image_share", file))
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun shareImage(uri: Uri) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(Intent.createChooser(intent, "Share Image"))
+    }
+
 }
 

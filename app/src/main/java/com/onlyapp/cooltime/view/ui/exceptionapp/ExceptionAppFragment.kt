@@ -52,7 +52,7 @@ class ExceptionAppFragment : Fragment() {
             val launcherIntent = Intent(Intent.ACTION_MAIN)
             launcherIntent.addCategory(Intent.CATEGORY_LAUNCHER)
             val resolveInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                packageManager.queryIntentActivities(launcherIntent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()))
+                packageManager.queryIntentActivities(launcherIntent, PackageManager.ResolveInfoFlags.of(PackageManager.GET_META_DATA.toLong()))
             } else {
                 packageManager.queryIntentActivities(launcherIntent, 0)
             }
