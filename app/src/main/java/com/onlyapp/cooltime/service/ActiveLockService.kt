@@ -76,6 +76,7 @@ class ActiveLockService : Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         var toggle = false
         val callPackageName = checkNotNull(returnCallPackageName())
+        val messagePackageName = checkNotNull(returnMessagePackageName())
         binding = FragmentActiveLockBinding.inflate(LayoutInflater.from(this))
         view = binding.root
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -235,7 +236,7 @@ class ActiveLockService : Service() {
                 if (mySortedMap.isNotEmpty()) {
                     val topPackageName = checkNotNull(mySortedMap[mySortedMap.lastKey()]?.packageName)
                     if (callPackageName != topPackageName &&
-                        topPackageName != "com.samsung.android.messaging" && !exceptionAppList.contains(
+                        topPackageName != messagePackageName && !exceptionAppList.contains(
                             topPackageName
                         )
                     ) { // 예외 리스트 앱에 포함되어 있지 않은 앱이 현재 죄상위(오버레이 제외) 레이아웃에서 실행되고 있다면
@@ -282,6 +283,23 @@ class ActiveLockService : Service() {
         } else {
             packageManager.resolveActivity(
                 callIntent,
+                PackageManager.MATCH_DEFAULT_ONLY
+            )?.activityInfo?.packageName
+        }
+    }
+
+    private fun returnMessagePackageName(): String? {
+        val messageIntent = Intent(Intent.ACTION_MAIN)
+        messageIntent.addCategory(Intent.CATEGORY_DEFAULT)
+        messageIntent.type = "vnd.android-dir/mms-sms"
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.resolveActivity(
+                messageIntent,
+                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
+            )?.activityInfo?.packageName
+        } else {
+            packageManager.resolveActivity(
+                messageIntent,
                 PackageManager.MATCH_DEFAULT_ONLY
             )?.activityInfo?.packageName
         }

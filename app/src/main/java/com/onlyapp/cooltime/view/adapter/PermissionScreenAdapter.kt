@@ -3,10 +3,8 @@ package com.onlyapp.cooltime.view.adapter
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +23,6 @@ class PermissionViewHolder(val binding: PermissionItemBinding) :
 
 class PermissionScreenAdapter(private val permissionItems:MutableList<PermissionItem>, private val activity: Activity, private val permissionBinding: ActivityPermissionCheckBinding) :
     RecyclerView.Adapter<ViewHolder>(){
-
     private var recyclerView: RecyclerView = permissionBinding.permissionList // RecyclerView 변수
 
     override fun getItemCount(): Int {
@@ -36,58 +33,9 @@ class PermissionScreenAdapter(private val permissionItems:MutableList<Permission
             ViewHolder =
         PermissionViewHolder(PermissionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
-    private fun setCompleteExp(btn:AppCompatButton){
-        btn.text="완료"
-        btn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.purple))
-    }
-
-    fun setBtnEnable(){
-        val btn = permissionBinding.nextButton
-        btn.backgroundTintList=ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.colorPrimary))
-        btn.isEnabled = true // 버튼 누르면 설정한 로직 동작하도록 설정
-    }
-    fun setBtnDisEnable(){
-        val btn = permissionBinding.nextButton
-        btn.backgroundTintList=ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.light_gray))
-        btn.isEnabled = false // 버튼 눌러도 동작 안하도록 설정
-    }
-
     // 각각의 리스트들의 데이터와  뷰홀더를 결합
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val binding=(holder as PermissionViewHolder).binding
-
-        // 넘겨받은 title을 바탕으로 특정 권한이 체크되었는지 확인해서 결과 반환
-        fun chkPermission( title: String):Boolean{
-            var result = false
-            when(title){
-                "사용 정보 접근" -> {
-                    result = Permission.checkUsageStatsPermission(activity)
-                }
-                "다른 앱 위에 그리기" -> {
-                    result = Permission.checkOverlayPermission(activity)
-                }
-                "배터리" -> {
-                    result = Permission.checkBatteryPermission(activity)
-                }
-            }
-            return result
-        }
-
-        // 넘겨받은 title을 바탕으로 특정 권한을 설정하도록 실행
-
-        fun activePermission(title: String) {
-                when (title) {
-                    "사용 정보 접근" -> {
-                        Permission.requestUsageStatsPermission(activity)
-                    }
-                    "다른 앱 위에 그리기" -> {
-                        Permission.requestOverlayPermission(activity)
-                    }
-                    "배터리" -> {
-                        Permission.requestIgnoringBatteryOptimization(activity)
-                    }
-                }
-        }
 
         // 권한들과, 권한에 대한 설명을 각 뷰홀더에 binding
         binding.permissionTitle.text = permissionItems[position].title
@@ -110,19 +58,67 @@ class PermissionScreenAdapter(private val permissionItems:MutableList<Permission
         }
     }
 
+    private fun setCompleteExp(btn:AppCompatButton){
+        btn.text=activity.getString(R.string.complete)
+        btn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.purple))
+    }
+
+    fun setBtnEnable(){
+        val btn = permissionBinding.nextButton
+        btn.backgroundTintList=ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.colorPrimary))
+        btn.isEnabled = true // 버튼 누르면 설정한 로직 동작하도록 설정
+    }
+
+    fun setBtnDisEnable(){
+        val btn = permissionBinding.nextButton
+        btn.backgroundTintList=ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.light_gray))
+        btn.isEnabled = false // 버튼 눌러도 동작 안하도록 설정
+    }
+
+    // 넘겨받은 title을 바탕으로 특정 권한이 체크되었는지 확인해서 결과 반환
+    private fun chkPermission( title: String):Boolean{
+        var result = false
+        when(title){
+            activity.getString(R.string.permission_use_stat_title) -> {
+                result = Permission.checkUsageStatsPermission(activity)
+            }
+            activity.getString(R.string.permission_draw_on_app_title) -> {
+                result = Permission.checkOverlayPermission(activity)
+            }
+            activity.getString(R.string.permission_battery_title) -> {
+                result = Permission.checkBatteryPermission(activity)
+            }
+        }
+        return result
+    }
+
+    // 넘겨받은 title을 바탕으로 특정 권한을 설정하도록 실행
+    private fun activePermission(title: String) {
+        when (title) {
+            activity.getString(R.string.permission_use_stat_title) -> {
+                Permission.requestUsageStatsPermission(activity)
+            }
+            activity.getString(R.string.permission_draw_on_app_title) -> {
+                Permission.requestOverlayPermission(activity)
+            }
+            activity.getString(R.string.permission_battery_title) -> {
+                Permission.requestIgnoringBatteryOptimization(activity)
+            }
+        }
+    }
+
     fun handlePermissionResult(requestCode: Int, grantResults: IntArray) {
         // requestCode를 바탕으로
         val viewHolder = getViewHolderByRequestCode(requestCode)
         val binding = (viewHolder as PermissionViewHolder).binding
-
         // 코드 값에 따라 무슨 권한이었는지 알 수 있으므로 해당 권한 리스트의 버튼과 연결
         val btn = binding.checkButton
+
         // 권한이 설정됐으면 해당 버튼을 완료처리
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setCompleteExp(btn)
             // 권한이 허용된 경우의 처리 로직
         }
-
         // 이후에 권한이 다 체크됐는지 확인해서 체크됐으면 버튼 활성화, 아니면 비활성화
         if(Permission.checkAllPermission(activity)){
             setBtnEnable()
@@ -156,7 +152,6 @@ class PermissionScreenAdapter(private val permissionItems:MutableList<Permission
                     setCompleteExp(btn)
                 }
             }
-
         }
 
         // 이후에 권한이 다 체크됐는지 확인해서 체크됐으면 버튼 활성화, 아니면 비활성화

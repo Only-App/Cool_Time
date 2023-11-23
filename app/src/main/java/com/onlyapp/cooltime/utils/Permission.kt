@@ -17,7 +17,7 @@ object Permission{
     private const val usageStatsPermissionRequest = 0
     private const val overlayPermissionRequestCode = 1
     private const val batteryPermissionRequest = 2
-    //private val resultLauncher
+
     fun checkOverlayPermission(activity: Activity):Boolean{
         val appOpsManager = activity.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
         val mode = appOpsManager.unsafeCheckOpNoThrow(

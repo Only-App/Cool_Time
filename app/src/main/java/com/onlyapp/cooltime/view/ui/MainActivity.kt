@@ -1,9 +1,12 @@
 package com.onlyapp.cooltime.view.ui
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -50,6 +53,51 @@ class MainActivity : AppCompatActivity() {
             addAction(Intent.ACTION_DATE_CHANGED)
         })
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT
+            ) {
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.frag_container) as NavHostFragment
+                val navController = navHostFragment.navController
+                val navDestination = navController.currentDestination
+
+                navDestination?.let{
+                    if(it.id == R.id.main) {
+                        if (System.currentTimeMillis() - backTime >= 2000 || backTime == 0.toLong()) { //2초내에 다시 누른게 아니면
+                            backTime =
+                                System.currentTimeMillis() // 마지막으로 back버튼을 누른 시간 갱신
+                            Snackbar.make(binding.root, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Snackbar.LENGTH_LONG)
+                                .show()
+                            //뒤로가기 버튼 한번 더 누르면 종료된다고 메세지 띄우기
+                        } else {
+                            super.onBackPressed()
+                        }
+                    }
+                    else super.onBackPressed()
+                }
+            }
+        } else {
+            onBackPressedDispatcher.addCallback(this /* lifecycle owner */) {
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.frag_container) as NavHostFragment
+                val navController = navHostFragment.navController
+                val navDestination = navController.currentDestination
+
+                navDestination?.let{
+                    if(it.id == R.id.main) {
+                        if (System.currentTimeMillis() - backTime >= 2000 || backTime == 0.toLong()) { //2초내에 다시 누른게 아니면
+                            backTime =
+                                System.currentTimeMillis() // 마지막으로 back버튼을 누른 시간 갱신
+                            Snackbar.make(binding.root, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Snackbar.LENGTH_LONG)
+                                .show()
+                            //뒤로가기 버튼 한번 더 누르면 종료된다고 메세지 띄우기
+                        } else {
+                            super.onBackPressed()
+                        }
+                    }
+                    else super.onBackPressed()
+                }
+            }
+        }
     }
 
 
@@ -64,27 +112,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {//뒤로 두번 눌렀을 때 종료되도록
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.frag_container) as NavHostFragment
-        val navController = navHostFragment.navController
-        val navDestination = navController.currentDestination
-
-        navDestination?.let{
-            if(it.id == R.id.main) {
-                if (System.currentTimeMillis() - backTime >= 2000 || backTime == 0.toLong()) { //2초내에 다시 누른게 아니면
-                    backTime =
-                        System.currentTimeMillis() // 마지막으로 back버튼을 누른 시간 갱신
-                    Snackbar.make(binding.root, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Snackbar.LENGTH_LONG)
-                        .show()
-                    //뒤로가기 버튼 한번 더 누르면 종료된다고 메세지 띄우기
-                } else {
-                    super.onBackPressed()
-                }
-            }
-            else super.onBackPressed()
-        }
-        
-    }
 
     //메뉴 옵션을 클릭하였을 때 처리하는 함수
     //Navigation을 통한 프래그먼트 이동 (메뉴 항목 당 프래그먼트 연결)
