@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.data.ExceptAppRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
@@ -26,33 +27,41 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ExceptionAppFragment : Fragment() {
-    private var recyclerViewState: Parcelable? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val binding = FragmentExceptionAppBinding.inflate(layoutInflater, container, false)
         val act = checkNotNull(activity) { "MainActivty is Null" }
-        val db = checkNotNull(UserDatabase.getInstance(act.applicationContext)) { "UserDatabase is Null" }
+        val db =
+            checkNotNull(UserDatabase.getInstance(act.applicationContext)) { "UserDatabase is Null" }
         val repository = ExceptAppRepositoryImpl(db.exceptAppsDao())
         val packageManager = act.packageManager
 
         val exceptViewModel = ExceptAppViewModel(repository) { exceptApp ->
             val appInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                packageManager.getApplicationInfo(exceptApp.packageName, PackageManager.ApplicationInfoFlags.of(0))
+                packageManager.getApplicationInfo(
+                    exceptApp.packageName,
+                    PackageManager.ApplicationInfoFlags.of(0)
+                )
             } else {
-                packageManager.getApplicationInfo(exceptApp.packageName, PackageManager.GET_META_DATA)
+                packageManager.getApplicationInfo(
+                    exceptApp.packageName,
+                    PackageManager.GET_META_DATA
+                )
             }
             Pair(
                 appInfo.loadLabel(packageManager).toString(), appInfo.loadIcon(packageManager)
             )
-
         }
 
         lifecycleScope.launch {
             val launcherIntent = Intent(Intent.ACTION_MAIN)
             launcherIntent.addCategory(Intent.CATEGORY_LAUNCHER)
             val resolveInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                packageManager.queryIntentActivities(launcherIntent, PackageManager.ResolveInfoFlags.of(PackageManager.GET_META_DATA.toLong()))
+                packageManager.queryIntentActivities(
+                    launcherIntent,
+                    PackageManager.ResolveInfoFlags.of(PackageManager.GET_META_DATA.toLong())
+                )
             } else {
                 packageManager.queryIntentActivities(launcherIntent, 0)
             }
@@ -66,60 +75,58 @@ class ExceptionAppFragment : Fragment() {
                     //설치되어 있는 앱인데 아직 DB에 들어있지 않은 앱이라면 insert
                     if (result != null) continue
                     else {  //설치되어 있는 앱인데 아직 DB에 들어있지 않은 앱이라면 insert
-                        val applicationInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            packageManager.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0))
-                        } else {
-                            packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-                        }
+                        val applicationInfo =
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                packageManager.getApplicationInfo(
+                                    packageName,
+                                    PackageManager.ApplicationInfoFlags.of(0)
+                                )
+                            } else {
+                                packageManager.getApplicationInfo(
+                                    packageName,
+                                    PackageManager.GET_META_DATA
+                                )
+                            }
                         exceptViewModel.insertApp(
                             ExceptAppItem(
-                                applicationInfo.loadLabel(packageManager).toString(), packageName, applicationInfo.loadIcon(packageManager), false
+                                applicationInfo.loadLabel(packageManager).toString(),
+                                packageName,
+                                applicationInfo.loadIcon(packageManager),
+                                false
                             )
                         )
                     }
                 }
             }
 
-            lifecycleScope.launch {
-                binding.checkedException.layoutManager = LinearLayoutManager(this@ExceptionAppFragment.context)
+            val adapter = AppAdapter { item ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    exceptViewModel.updateApp(item)
+                }
+            }
 
+            binding.checkedException.itemAnimator = null
+            binding.checkedException.adapter = adapter
+            binding.checkedException.layoutManager =
+                LinearLayoutManager(this@ExceptionAppFragment.context)
+
+            lifecycleScope.launch {
                 exceptViewModel.exceptAppItemList.observe(
                     this@ExceptionAppFragment
                 ) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        val exceptAppList = mutableListOf<ExceptAppItem>()
-                        withContext(Dispatchers.IO) {
-                            it.forEach { app ->
-                                try {
-                                    Log.d("exceptApp", app.toString())
-                                    val appInfo = packageManager.getApplicationInfo(
-                                        app.packageName, PackageManager.GET_META_DATA
-                                    )
-                                    exceptAppList.add(
-                                        ExceptAppItem(
-                                            appInfo.loadLabel(packageManager).toString(), app.packageName, appInfo.loadIcon(packageManager), app.checked
-                                        )
-                                    )
-                                } catch (e: Exception) {   //삭제되었는데 table에 저장되어 있는 앱인 경우
-                                    exceptViewModel.deleteApp(app.packageName)
-                                }
-                            }
-                        }
+                    adapter.replaceItems(it)
+                    it.forEach { app ->
+                        try {
+                            Log.d("exceptApp", app.toString())
+                            val appInfo = packageManager.getApplicationInfo(
+                                app.packageName, PackageManager.GET_META_DATA
+                            )
 
-                        binding.checkedException.adapter = AppAdapter(exceptAppList) { item ->
-                            CoroutineScope(Dispatchers.IO).launch {
-                                withContext(Dispatchers.Main) {
-                                    recyclerViewState = binding.checkedException.layoutManager!!.onSaveInstanceState()!! //현재 스크롤 위치를 저장
-                                }
-                                exceptViewModel.updateApp(item)
-                            }
-                        }
-                        if (recyclerViewState != null) {
-                            binding.checkedException.layoutManager!!.onRestoreInstanceState(
-                                recyclerViewState
-                            )    //업데이트 후에 복원
+                        } catch (e: Exception) {   //삭제되었는데 table에 저장되어 있는 앱인 경우
+                            exceptViewModel.deleteApp(app.packageName)
                         }
                     }
+
                 }
             }
 

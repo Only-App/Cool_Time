@@ -60,7 +60,7 @@ class ExceptAppViewModel(
             repository.updateApp(
                 ExceptApp(
                     exceptAppItem.packageName,
-                    exceptAppItem.checked
+                    !exceptAppItem.checked
                 )
             )
         }
