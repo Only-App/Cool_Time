@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.provider.Telephony
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -76,7 +77,7 @@ class ActiveLockService : Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         var toggle = false
         val callPackageName = checkNotNull(returnCallPackageName())
-        val messagePackageName = checkNotNull(returnMessagePackageName())
+        val messagePackageName = checkNotNull(returnMessagePackageName()){"기본 메세지 앱이 존재하지 않음"}
         binding = FragmentActiveLockBinding.inflate(LayoutInflater.from(this))
         view = binding.root
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -161,9 +162,8 @@ class ActiveLockService : Service() {
         }
 
         binding.message.setOnClickListener {
-            val sendIntent = Intent(Intent.ACTION_MAIN)
-            sendIntent.addCategory(Intent.CATEGORY_DEFAULT)
-            sendIntent.setPackage("com.samsung.android.messaging")  //TODO : 삼성 스마트폰이 아닌 경우에 대비한 코드 구현 필요
+            val sendIntent = packageManager.getLaunchIntentForPackage(messagePackageName)
+            checkNotNull(sendIntent){"메세지 앱은 있지만 실행은 불가능!"}
             sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             ContextCompat.startActivity(this, sendIntent, null)
         }
@@ -289,20 +289,7 @@ class ActiveLockService : Service() {
     }
 
     private fun returnMessagePackageName(): String? {
-        val messageIntent = Intent(Intent.ACTION_MAIN)
-        messageIntent.addCategory(Intent.CATEGORY_DEFAULT)
-        messageIntent.type = "vnd.android-dir/mms-sms"
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            packageManager.resolveActivity(
-                messageIntent,
-                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
-            )?.activityInfo?.packageName
-        } else {
-            packageManager.resolveActivity(
-                messageIntent,
-                PackageManager.MATCH_DEFAULT_ONLY
-            )?.activityInfo?.packageName
-        }
+        return Telephony.Sms.getDefaultSmsPackage(this)
     }
 
     override fun onDestroy() {
