@@ -67,8 +67,8 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                 CoroutineScope(Dispatchers.Main).launch {
                     //알람 객체를 전달 받음
                     val alarm = intent.intentSerializable("alarm", AlarmModel::class.java) ?: return@launch
+                    Log.d("reservedAlarm", alarm.toString())
                     val id = alarm.id
-                    Log.d("Alarm Received", id.toString())
                     if (id != -1) {
                         Log.d("checkResult", AlarmScheduler.checkDay(id, context).toString())
                         //설정된 알람의 요일이 오늘 요일에 해당되는지 확인
@@ -89,7 +89,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                             }
                         }
                         //무조건 지정한 시간보다 먼저 알람이 오지 않는다는 것을 가정
-                        AlarmScheduler.registerAlarm(AlarmModel(alarm.id, alarm.name, alarm.day, alarm.time, ""), context)
+                        AlarmScheduler.registerAlarm(alarm, context)
                     }
                 }
             }

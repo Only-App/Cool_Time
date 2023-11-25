@@ -22,9 +22,9 @@ import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 class UpdateAlarmSettingFragment : Fragment() {
     private var _binding: FragmentUpdateAlarmSettingBinding? = null
     val binding get() = _binding!!
-    private var db: UserDatabase? = null
-    private var repository: AlarmRepository? = null
-    private var alarmViewModel: AlarmViewModel? = null
+    private lateinit var db: UserDatabase
+    private lateinit var repository: AlarmRepository
+    private lateinit var alarmViewModel: AlarmViewModel
     private lateinit var hourPick: NumberPicker // 시간 입력하는 Numberpicker 관리하는 변수
     private lateinit var minPick: NumberPicker // 분 입력하는 Numberpicker 관리하는 변수
 
@@ -41,41 +41,39 @@ class UpdateAlarmSettingFragment : Fragment() {
         val alarm = requireArguments().getSerializable("key") as AlarmModel
         receiveAlarmData(alarm) //받아온 객체의 값을 다시 뷰 컴포넌트에 보이게 할 수 있도록 함
 
-        activity?.let { activity ->
-            db = UserDatabase.getInstance(activity.applicationContext)
-            db?.let { db ->
-                repository = AlarmRepositoryImpl(db.alarmDao())
-            }
-            repository?.let { repository ->
-                alarmViewModel = ViewModelProvider(
-                    activity,
-                    AlarmViewModelFactory(repository)
-                )[AlarmViewModel::class.java]
-            }
-        }
+        val act = checkNotNull(activity) { "Activity is Null" }
+
+        db = checkNotNull(UserDatabase.getInstance(act.applicationContext)) { "Database is null" }
+        repository = AlarmRepositoryImpl(db.alarmDao())
+
+        alarmViewModel = ViewModelProvider(
+            act,
+            AlarmViewModelFactory(repository)
+        )[AlarmViewModel::class.java]
+
+
 
         binding.btnDeleteSetting.setOnClickListener {
             //다이얼로그 출력
-            activity?.let { activity ->
-                val dialog = AlertDialog.Builder(activity)
-                    .setTitle("삭제")
-                    .setMessage("삭제하시겠습니까?")
-                    .setPositiveButton("예") { _, _ ->
-                        //삭제 후 이전 화면으로
-                        alarmViewModel?.deleteAlarm(alarm)
-                        context?.let { AlarmScheduler.cancelAlarm(alarm.id, it) }
-                        findNavController().popBackStack()
-                    }
-                    .setNegativeButton("아니요") {  //아니요를 눌렀을 때 아무 작업도 하지 않도록
-                            _, _ ->
-                    }
-                    .create()
-                dialog.show()
-            }
+            val dialog = AlertDialog.Builder(act)
+                .setTitle("삭제")
+                .setMessage("삭제하시겠습니까?")
+                .setPositiveButton("예") { _, _ ->
+                    //삭제 후 이전 화면으로
+                    alarmViewModel?.deleteAlarm(alarm)
+                    context?.let { AlarmScheduler.cancelAlarm(alarm.id, it) }
+                    findNavController().popBackStack()
+                }
+                .setNegativeButton("아니요") {  //아니요를 눌렀을 때 아무 작업도 하지 않도록
+                        _, _ ->
+                }
+                .create()
+            dialog.show()
+
         }
 
         binding.btnUpdateSetting.setOnClickListener {
-            val etAlarmDescription: String = binding.etAlarmDescription.text.toString()    //알람 내용
+            val etAlarmDescription = binding.etAlarmDescription.text.toString()    //알람 내용
 
             val hour: Int = hourPick.value  //시간
             val minutes: Int = minPick.value   //분
@@ -94,27 +92,25 @@ class UpdateAlarmSettingFragment : Fragment() {
 
 
             //다이얼로그 출력
-            activity?.let { activity ->
-                val dialog = AlertDialog.Builder(activity)
-                    .setTitle("수정")
-                    .setMessage("수정하시겠습니까?")
-                    .setPositiveButton("예") { _, _ ->
-                        if (contentCheck() && alarmViewModel != null) {    //정보가 모두 입력되었다면
-                            //업데이트 후 이전 화면으로
-                            alarmViewModel!!.updateAlarm(alarmModel)
-                            context?.let { AlarmScheduler.registerAlarm(alarmModel, it) }
-                            findNavController().popBackStack()
-                        }
-                        //아니라면 다시 입력해달라는 메시지 출력
-                        else activity.showShortToast("정보를 모두 입력해주세요")
+            val dialog = AlertDialog.Builder(act)
+                .setTitle("수정")
+                .setMessage("수정하시겠습니까?")
+                .setPositiveButton("예") { _, _ ->
+                    if (contentCheck()) {    //정보가 모두 입력되었다면
+                        //업데이트 후 이전 화면으로
+                        alarmViewModel.updateAlarm(alarmModel)
+                        context?.let {
+                            AlarmScheduler.registerAlarm(alarmModel, it) }
+                        findNavController().popBackStack()
                     }
-                    .setNegativeButton("아니요") {  //아니요를 눌렀을 때 아무 작업도 하지 않도록
-                            _, _ ->
-                    }
-                    .create()
-                dialog.show()
-            }
-
+                    //아니라면 다시 입력해달라는 메시지 출력
+                    else activity.showShortToast("정보를 모두 입력해주세요")
+                }
+                .setNegativeButton("아니요") {  //아니요를 눌렀을 때 아무 작업도 하지 않도록
+                        _, _ ->
+                }
+                .create()
+            dialog.show()
         }
         return binding.root
     }

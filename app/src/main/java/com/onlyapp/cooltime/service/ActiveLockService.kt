@@ -88,9 +88,12 @@ class ActiveLockService : Service() {
             LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         )
-        binding.scroll.visibility = View.GONE
-        binding.lockTypeComment.visibility = View.VISIBLE
-        binding.lockUseTime.visibility = View.VISIBLE
+
+        binding.apply{
+            scroll.visibility = View.GONE
+            lockTypeComment.visibility = View.VISIBLE
+            lockUseTime.visibility = View.VISIBLE
+        }
 
         val loadIconJob = CoroutineScope(Dispatchers.IO).async {
             val packageManager = this@ActiveLockService.applicationContext.packageManager

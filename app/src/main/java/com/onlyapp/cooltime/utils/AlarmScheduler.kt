@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.model.AlarmModel
@@ -30,15 +31,16 @@ object AlarmScheduler {
 
         val alarmTime = alarmCalendar.timeInMillis
         val intent = Intent(context, MyBroadcastReceiver::class.java).apply {
-            action = "Reserved Alarm"
+            action = Constants.reservedAlarm
             putExtra("alarm", alarmModel)
+            Log.d("registerAlarm", alarmModel.toString())
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             id,
             intent,
-            PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )
 
         /*setRepeating 함수는 정확한 시간에 알람이 안되는 것 같음
@@ -53,26 +55,21 @@ object AlarmScheduler {
 
     }
 
-    fun registerAllAlarms(alarms: ArrayList<AlarmModel>, context: Context) {
-        alarms.forEach { alarm ->
-            registerAlarm(alarm, context)
-        }
-    }
-
     fun cancelAlarm(id: Int, context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(context, MyBroadcastReceiver::class.java).apply {
-            action = "Reserved Alarm"
+            action = Constants.reservedAlarm
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             id,
             intent,
-            PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )
-        alarmManager.cancel(pendingIntent)
 
+        alarmManager.cancel(pendingIntent)
+        pendingIntent.cancel()
     }
 
     suspend fun checkDay(id: Int, context: Context): Boolean {

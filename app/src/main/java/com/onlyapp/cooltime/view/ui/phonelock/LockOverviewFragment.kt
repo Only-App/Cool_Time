@@ -22,15 +22,13 @@ import kotlinx.coroutines.launch
 
 
 class LockOverviewFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
     private var _binding: FragmentPhoneLockBinding? = null
     val binding get() = _binding!!
 
-    private var db: UserDatabase? = null
-    private var repository: LockRepository? = null
+    private lateinit var db: UserDatabase
+    private lateinit var repository: LockRepository
 
-    private var lockViewModel: LockViewModel? = null
+    private lateinit var lockViewModel: LockViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,36 +36,30 @@ class LockOverviewFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentPhoneLockBinding.inflate(inflater, container, false)
-        activity?.let { activity ->
-            db = UserDatabase.getInstance(activity.applicationContext)
-            db?.let { db ->
-                repository = LockRepositoryImpl(db.phoneLockDao())
-                repository?.let { repository ->
-                    lockViewModel = ViewModelProvider(
-                        activity,
-                        LockViewModelFactory(repository)
-                    )[LockViewModel::class.java]
-                }
-            }
-        }
+        val act = checkNotNull(activity) { "Activity is Null" }
+        db = checkNotNull(UserDatabase.getInstance(act.applicationContext)) { "Database is Null" }
+        repository = LockRepositoryImpl(db.phoneLockDao())
+        lockViewModel = ViewModelProvider(
+            act,
+            LockViewModelFactory(repository)
+        )[LockViewModel::class.java]
 
         lifecycleScope.launch {    //총 사용 시간 출력
             MyApplication.getInstance().getDataStore().todayUseTime.collect { currentUseTime ->
                 binding.rvLockList.layoutManager = LinearLayoutManager(context)
-                lockViewModel?.let { viewModel ->
-                    lifecycleScope.launch {
-                        viewModel.lockModelList.observe(viewLifecycleOwner) { list ->
-                            binding.rvLockList.adapter = LockAdapter(list, currentUseTime) { lock ->
-                                val bundle = Bundle()
-                                bundle.putSerializable("key", lock)
-                                findNavController().navigate(
-                                    R.id.action_phone_lock_main_to_update_lock_setting,
-                                    bundle
-                                )
-                            }
+                lifecycleScope.launch {
+                    lockViewModel.lockModelList.observe(viewLifecycleOwner) { list ->
+                        binding.rvLockList.adapter = LockAdapter(list, currentUseTime) { lock ->
+                            val bundle = Bundle()
+                            bundle.putSerializable("key", lock)
+                            findNavController().navigate(
+                                R.id.action_phone_lock_main_to_update_lock_setting,
+                                bundle
+                            )
                         }
                     }
                 }
+
 
             }
         }
