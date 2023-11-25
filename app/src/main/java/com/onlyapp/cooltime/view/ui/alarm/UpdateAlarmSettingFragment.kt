@@ -101,29 +101,6 @@ class UpdateAlarmSettingFragment : Fragment() {
 
 
             customAlertDialog.show(parentFragmentManager, null)
-            /*
-            //다이얼로그 출력
-            val dialog = AlertDialog.Builder(act)
-                .setTitle("수정")
-                .setMessage("수정하시겠습니까?")
-                .setPositiveButton("예") { _, _ ->
-                    if (contentCheck()) {    //정보가 모두 입력되었다면
-                        //업데이트 후 이전 화면으로
-                        alarmViewModel.updateAlarm(alarmModel)
-                        context?.let {
-                            AlarmScheduler.registerAlarm(alarmModel, it) }
-                        findNavController().popBackStack()
-                    }
-                    //아니라면 다시 입력해달라는 메시지 출력
-                    else activity.showShortToast("정보를 모두 입력해주세요")
-                }
-                .setNegativeButton("아니요") {  //아니요를 눌렀을 때 아무 작업도 하지 않도록
-                        _, _ ->
-                }
-                .create()
-            dialog.show()
-    */
-
         }
         return binding.root
     }
@@ -167,7 +144,7 @@ class UpdateAlarmSettingFragment : Fragment() {
         temp -= if (temp >= 4) 4 else 0
 
         binding.checkSat.isChecked = temp >= 2
-        temp -= if (temp >= 64) 2 else 0
+        temp -= if (temp >= 2) 2 else 0
 
         binding.checkSun.isChecked = temp >= 1
         temp -= if (temp >= 1) 1 else 0
