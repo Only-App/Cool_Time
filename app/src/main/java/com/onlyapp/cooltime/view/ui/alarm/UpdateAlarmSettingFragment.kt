@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -17,6 +16,7 @@ import com.onlyapp.cooltime.databinding.FragmentUpdateAlarmSettingBinding
 import com.onlyapp.cooltime.model.AlarmModel
 import com.onlyapp.cooltime.utils.AlarmScheduler
 import com.onlyapp.cooltime.view.factory.AlarmViewModelFactory
+import com.onlyapp.cooltime.view.ui.dialog.CustomAlertDialog
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 
 class UpdateAlarmSettingFragment : Fragment() {
@@ -55,20 +55,14 @@ class UpdateAlarmSettingFragment : Fragment() {
 
         binding.btnDeleteSetting.setOnClickListener {
             //다이얼로그 출력
-            val dialog = AlertDialog.Builder(act)
-                .setTitle("삭제")
-                .setMessage("삭제하시겠습니까?")
-                .setPositiveButton("예") { _, _ ->
-                    //삭제 후 이전 화면으로
-                    alarmViewModel?.deleteAlarm(alarm)
-                    context?.let { AlarmScheduler.cancelAlarm(alarm.id, it) }
-                    findNavController().popBackStack()
-                }
-                .setNegativeButton("아니요") {  //아니요를 눌렀을 때 아무 작업도 하지 않도록
-                        _, _ ->
-                }
-                .create()
-            dialog.show()
+
+            val customAlertDialog = CustomAlertDialog("삭제", "삭제하시겠습니까?") {
+                alarmViewModel?.deleteAlarm(alarm)
+                context?.let { AlarmScheduler.cancelAlarm(alarm.id, it) }
+                findNavController().popBackStack()
+            }
+
+            customAlertDialog.show(parentFragmentManager, null)
 
         }
 
@@ -90,7 +84,24 @@ class UpdateAlarmSettingFragment : Fragment() {
                 remainTime = ""
             )
 
+            val customAlertDialog = CustomAlertDialog(
+                "수정", "수정하시겠습니까?"
+            ) {
+                if (contentCheck()) {    //정보가 모두 입력되었다면
+                    //업데이트 후 이전 화면으로
+                    alarmViewModel.updateAlarm(alarmModel)
+                    context?.let {
+                        AlarmScheduler.registerAlarm(alarmModel, it)
+                    }
+                    findNavController().popBackStack()
+                }
+                //아니라면 다시 입력해달라는 메시지 출력
+                else activity.showShortToast("정보를 모두 입력해주세요")
+            }
 
+
+            customAlertDialog.show(parentFragmentManager, null)
+            /*
             //다이얼로그 출력
             val dialog = AlertDialog.Builder(act)
                 .setTitle("수정")
@@ -111,6 +122,8 @@ class UpdateAlarmSettingFragment : Fragment() {
                 }
                 .create()
             dialog.show()
+    */
+
         }
         return binding.root
     }

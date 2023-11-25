@@ -19,6 +19,7 @@ import com.onlyapp.cooltime.model.PhoneLockModel
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.utils.getTodayStart
 import com.onlyapp.cooltime.view.factory.LockViewModelFactory
+import com.onlyapp.cooltime.view.ui.dialog.CustomAlertDialog
 import com.onlyapp.cooltime.view.ui.dialog.CustomCalendarPickerDialog
 import com.onlyapp.cooltime.view.ui.dialog.CustomTimePickerDialog
 import com.onlyapp.cooltime.view.viewmodel.LockViewModel
@@ -137,85 +138,70 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
         //수정 버튼을 눌렀을 때
         binding.btnUpdateSetting.setOnClickListener {
             //다이얼로그 출력
-            val dialog = AlertDialog.Builder(activity)
-                .setTitle("수정")
-                .setMessage("수정하시겠습니까?")
-                .setPositiveButton("예") { _, _ ->
-                    if (contentCheck()) {
-                        //update 작업, 다시 돌아가기
-                        var duplicateCheck = false
-                        lockViewModel?.let {
-                            lifecycleScope.launch {
-                                it.lockModelList
-                                    .observe(this@UpdateLockSettingFragment) { lockModelList ->
-                                        lockModelList.forEach { lockModel ->
-                                            if (lock.id != lockModel.id) {
-                                                if (startDate != -1L && endDate != -1L) {  //현재 추가하려는 잠금 정보가 잠금 기간을 설정한 경우
-                                                    if ((lockModel.startDate == -1L && lockModel.endDate == -1L)    //탐색한 잠금 정보가 잠금 기간을 설정하지 않았거나
-                                                        || (startDate <= lockModel.startDate && endDate <= lockModel.endDate)
-                                                    ) { //탐색한 잠금 정보의 잠금 기간이 현재 추가하려는 잠금 정보의 잠금 기간을 포함할 때
-                                                        if (dayToBit() and lockModel.lockDay != 0) {    //겹치는 요일이 존재할 때
-                                                            activity.showShortToast("현재 겹치는 잠금 정보가 존재합니다.")
-                                                            duplicateCheck = true
-                                                        }
-                                                    }
-                                                } else {   //현재 추가하려는 잠금 정보가 잠금 기간을 설정하지 않은 경우
-                                                    if (dayToBit() and lockModel.lockDay != 0) {
+
+            val customAlertDialog = CustomAlertDialog("수정", "수정하시겠습니까?") {
+                if (contentCheck()) {
+                    //update 작업, 다시 돌아가기
+                    var duplicateCheck = false
+                    lockViewModel?.let {
+                        lifecycleScope.launch {
+                            it.lockModelList
+                                .observe(this@UpdateLockSettingFragment) { lockModelList ->
+                                    lockModelList.forEach { lockModel ->
+                                        if (lock.id != lockModel.id) {
+                                            if (startDate != -1L && endDate != -1L) {  //현재 추가하려는 잠금 정보가 잠금 기간을 설정한 경우
+                                                if ((lockModel.startDate == -1L && lockModel.endDate == -1L)    //탐색한 잠금 정보가 잠금 기간을 설정하지 않았거나
+                                                    || (startDate <= lockModel.startDate && endDate <= lockModel.endDate)
+                                                ) { //탐색한 잠금 정보의 잠금 기간이 현재 추가하려는 잠금 정보의 잠금 기간을 포함할 때
+                                                    if (dayToBit() and lockModel.lockDay != 0) {    //겹치는 요일이 존재할 때
                                                         activity.showShortToast("현재 겹치는 잠금 정보가 존재합니다.")
                                                         duplicateCheck = true
                                                     }
                                                 }
+                                            } else {   //현재 추가하려는 잠금 정보가 잠금 기간을 설정하지 않은 경우
+                                                if (dayToBit() and lockModel.lockDay != 0) {
+                                                    activity.showShortToast("현재 겹치는 잠금 정보가 존재합니다.")
+                                                    duplicateCheck = true
+                                                }
                                             }
                                         }
                                     }
-                                if (!duplicateCheck) {
-                                    lockViewModel?.updateLock(
-                                        PhoneLockModel(
-                                            id = lock.id,
-                                            totalTime = totalTime,
-                                            minTime = minTime,
-                                            lockOn = lockOn,
-                                            lockOff = lockOff,
-                                            lockDay = dayToBit(),
-                                            startDate = startDate,
-                                            endDate = endDate
-                                        )
-                                    )
-
-                                    findNavController().popBackStack()
                                 }
+                            if (!duplicateCheck) {
+                                lockViewModel?.updateLock(
+                                    PhoneLockModel(
+                                        id = lock.id,
+                                        totalTime = totalTime,
+                                        minTime = minTime,
+                                        lockOn = lockOn,
+                                        lockOff = lockOff,
+                                        lockDay = dayToBit(),
+                                        startDate = startDate,
+                                        endDate = endDate
+                                    )
+                                )
+
+                                findNavController().popBackStack()
                             }
                         }
-                    } else activity.showShortToast("잘못된 형식의 입력입니다.")
-                }
-                .setNegativeButton("아니요") {
-                    //아니요를 눌렀을 때는 아무 작업도 하지 않도록 함
-                        _, _ ->
-                }
-                .create()
-            dialog.show()
+                    }
+                } else activity.showShortToast("잘못된 형식의 입력입니다.")
+            }
 
+            customAlertDialog.show(parentFragmentManager, null)
         }
 
         //삭제 버튼을 눌렀을 때
         binding.btnDeleteSetting.setOnClickListener {
 
-            //다이얼로그 출력
-            val dialog = AlertDialog.Builder(activity)
-                .setTitle("삭제")
-                .setMessage("삭제하시겠습니까?")
-                .setPositiveButton("예") { _, _ ->
-                    //delete 작업, 다시 돌아가기
-                    lockViewModel?.deleteLock(lock)
-                    findNavController().popBackStack()
-                }
-                .setNegativeButton("아니요") {
-                    //아니요를 눌렀을 때 아무 작업도 하지 않도록 함
-                        _, _ ->
-                }
-                .create()
+            val customAlertDialog = CustomAlertDialog("삭제", "삭제하시겠습니까?") {
+                lockViewModel?.deleteLock(lock)
+                findNavController().popBackStack()
+            }
 
-            dialog.show()
+            customAlertDialog.show(parentFragmentManager, null)
+            //다이얼로그 출력
+
         }
         return binding.root
     }
@@ -274,13 +260,16 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
             binding.tvStartDay.isEnabled = false
             binding.tvEndDay.isEnabled = false
 
-            binding.tvStartDay.text = SimpleDateFormat(getString(R.string.date_pattern),
-                 Locale.getDefault()).format(
+            binding.tvStartDay.text = SimpleDateFormat(
+                getString(R.string.date_pattern),
+                Locale.getDefault()
+            ).format(
                 getTodayNow().time
             )
-            binding.tvEndDay.text = SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).format(
-                getTodayNow().time
-            )
+            binding.tvEndDay.text =
+                SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).format(
+                    getTodayNow().time
+                )
 
         } else {  //특정 날짜 잠금 설정한 경우
             binding.tvStartDay.text =
@@ -289,7 +278,11 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                     Locale.getDefault()
                 ).format(Date(lockModel.startDate))
             binding.tvEndDay.text =
-                SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).format(Date(lockModel.endDate))
+                SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).format(
+                    Date(
+                        lockModel.endDate
+                    )
+                )
         }
 
         this.totalTime = lockModel.totalTime
@@ -342,14 +335,18 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
             when (it) {
                 "StartDayDialog" -> {
                     binding.tvStartDay.text = date
-                    SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).parse(date)?.let { date ->
+                    SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).parse(
+                        date
+                    )?.let { date ->
                         startDate = date.time
                     }
                 }
 
                 "EndDayDialog" -> {
                     binding.tvEndDay.text = date
-                    SimpleDateFormat(getString(R.string.date_pattern),Locale.getDefault()).parse(date)?.let { date ->
+                    SimpleDateFormat(getString(R.string.date_pattern), Locale.getDefault()).parse(
+                        date
+                    )?.let { date ->
                         endDate = date.time
                     }
                 }
