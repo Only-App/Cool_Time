@@ -77,7 +77,7 @@ class ActiveLockService : Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         var toggle = false
         val callPackageName = checkNotNull(returnCallPackageName())
-        val messagePackageName = checkNotNull(returnMessagePackageName()){"기본 메세지 앱이 존재하지 않음"}
+        val messagePackageName = checkNotNull(returnMessagePackageName()) { "기본 메세지 앱이 존재하지 않음" }
         binding = FragmentActiveLockBinding.inflate(LayoutInflater.from(this))
         view = binding.root
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -89,7 +89,7 @@ class ActiveLockService : Service() {
             PixelFormat.TRANSLUCENT
         )
 
-        binding.apply{
+        binding.apply {
             scroll.visibility = View.GONE
             lockTypeComment.visibility = View.VISIBLE
             lockUseTime.visibility = View.VISIBLE
@@ -134,7 +134,15 @@ class ActiveLockService : Service() {
 
             Log.d("After collect", "enter")
 
-            val adapter = LockScreenAdapter(this@ActiveLockService, appItems, packageManager)
+            fun startApp(packageName: String) {
+                val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+                launchIntent?.let {
+                    it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    ContextCompat.startActivity(this@ActiveLockService, it, null)
+                }
+            }
+
+            val adapter = LockScreenAdapter(appItems) { packageName -> startApp(packageName) }
             binding.appList.adapter = adapter
             binding.appList.layoutManager =
                 GridLayoutManager(this@ActiveLockService, 3, GridLayoutManager.VERTICAL, false)
@@ -166,7 +174,7 @@ class ActiveLockService : Service() {
 
         binding.message.setOnClickListener {
             val sendIntent = packageManager.getLaunchIntentForPackage(messagePackageName)
-            checkNotNull(sendIntent){"메세지 앱은 있지만 실행은 불가능!"}
+            checkNotNull(sendIntent) { "메세지 앱은 있지만 실행은 불가능!" }
             sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             ContextCompat.startActivity(this, sendIntent, null)
         }
