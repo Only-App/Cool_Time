@@ -64,8 +64,8 @@ class ActiveLockService : Service() {
                 // 데이터를 처리
                 // receivedData를 사용
                 // 예: TextView에 표시
-                val useTime =
-                    "${receivedData / 3600}시간 ${receivedData % 3600 / 60}분 ${receivedData % 60}초 남았습니다"
+                val useTime = getString(R.string.remain_time, String.format("02d", receivedData / 3600), String.format("02d", receivedData % 3600 / 60), String.format("02d", receivedData % 60))
+                //"${receivedData / 3600}시간 ${receivedData % 3600 / 60}분 ${receivedData % 60}초 남았습니다"
                 binding.lockUseTime.text = useTime
                 if (receivedData == 0) {
                     stopSelf()
@@ -77,7 +77,7 @@ class ActiveLockService : Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         var toggle = false
         val callPackageName = checkNotNull(returnCallPackageName())
-        val messagePackageName = checkNotNull(returnMessagePackageName()) { "기본 메세지 앱이 존재하지 않음" }
+        val messagePackageName = checkNotNull(returnMessagePackageName()) { getString(R.string.no_default_message) }
         binding = FragmentActiveLockBinding.inflate(LayoutInflater.from(this))
         view = binding.root
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -174,7 +174,7 @@ class ActiveLockService : Service() {
 
         binding.message.setOnClickListener {
             val sendIntent = packageManager.getLaunchIntentForPackage(messagePackageName)
-            checkNotNull(sendIntent) { "메세지 앱은 있지만 실행은 불가능!" }
+            checkNotNull(sendIntent) { R.string.message_intent_error }
             sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             ContextCompat.startActivity(this, sendIntent, null)
         }
@@ -205,28 +205,34 @@ class ActiveLockService : Service() {
                 val month = getTodayNow().get(Calendar.MONTH)
                 val date = getTodayNow().get(Calendar.DATE)
                 val day = when (getTodayNow().get(Calendar.DAY_OF_WEEK)) {
-                    1 -> "일"; 2 -> "월"; 3 -> "화"; 4 -> "수"; 5 -> "목"; 6 -> "금"; else -> "토"
+                    1 -> getString(R.string.sun)
+                    2 -> getString(R.string.mon)
+                    3 -> getString(R.string.tue)
+                    4 -> getString(R.string.wed)
+                    5 -> getString(R.string.thu)
+                    6 -> getString(R.string.fri)
+                    else -> getString(R.string.sat)
                 }
 
                 val hour = getTodayNow().get(Calendar.HOUR_OF_DAY)
                 val minute = getTodayNow().get(Calendar.MINUTE)
-                val lockToday = "${month}월 ${date}일 ${day}요일"
+                val lockToday = getString(R.string.date_info, month.toString(), date.toString(), day)
                 binding.lockToday.text = lockToday
 
                 if (hour >= 12) {
-                    val lockTime = "오후 ${hour - 12}시간 ${minute}분"
+                    val lockTime = getString(R.string.time_info, "오후", (hour - 12).toString(), minute.toString())
                     binding.lockTime.text = lockTime
                 } else {
-                    val lockTime = "오전 ${hour}시간 ${minute}분"
+                    val lockTime = getString(R.string.time_info, "오후", (hour - 12).toString(), minute.toString())
                     binding.lockTime.text = lockTime
                 }
 
                 //각 잠금 타입에 맞게 텍스트 출력
                 binding.lockTypeComment.text = when (lockType) {
-                    WAIT -> "재사용 가능까지"
-                    EXCEED -> "오늘은 더 이상 사용할 수 없습니다"
-                    LOCK_DURATION -> "잠금이 적용되었습니다"
-                    DIRECT_LOCK -> "바로 잠금"
+                    WAIT -> getString(R.string.wait)
+                    EXCEED -> getString(R.string.exceed)
+                    LOCK_DURATION -> getString(R.string.lock_duration)
+                    DIRECT_LOCK -> getString(R.string.direct_lock)
                     else -> ""
                 }
             }

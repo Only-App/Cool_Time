@@ -3,19 +3,20 @@ package com.onlyapp.cooltime.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import com.onlyapp.cooltime.R
 import java.util.Timer
 import java.util.TimerTask
 
 
 class RemainingTimeService : Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        var variable = intent.getIntExtra("time", 0) // 초기 변수 값 설정
+        var variable = intent.getIntExtra(getString(R.string.time), 0) // 초기 변수 값 설정
         val timer = Timer()
         val task = object : TimerTask() {
             override fun run() {
                 if (variable >= 0) {
-                    val timeIntent = Intent("remainingTime")
-                    timeIntent.putExtra("time", variable)
+                    val timeIntent = Intent(getString(R.string.remainingTime))
+                    timeIntent.putExtra(getString(R.string.time), variable)
                     sendBroadcast(timeIntent)
                     variable--
                 } else {

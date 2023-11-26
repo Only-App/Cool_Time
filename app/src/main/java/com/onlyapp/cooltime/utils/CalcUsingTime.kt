@@ -4,6 +4,7 @@ import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.util.Log
+import com.onlyapp.cooltime.R
 import java.util.Calendar
 import kotlin.math.abs
 
@@ -169,7 +170,7 @@ fun getTotalTime(list: List<Pair<String, Long>>): Long {
     return totalTime
 }
 
-fun getDiff(totalTime: Long, yesterdayTotalTime: Long): String {
+fun getDiff(totalTime: Long, yesterdayTotalTime: Long, context: Context): String {
     var diff = yesterdayTotalTime - totalTime
     val moreOrLess = if (diff < 0) {
         "더 사용"
@@ -179,5 +180,5 @@ fun getDiff(totalTime: Long, yesterdayTotalTime: Long): String {
     diff = abs(diff)
     val diffTotalHour = (diff / 3600).toString()
     val diffTotalMin = (diff / 60 % 60).toString()
-    return "어제보다 " + diffTotalHour + "시간 " + diffTotalMin + "분 " + moreOrLess
+    return context.getString(R.string.cmp_total_time_before, diffTotalHour, diffTotalMin, moreOrLess)
 }

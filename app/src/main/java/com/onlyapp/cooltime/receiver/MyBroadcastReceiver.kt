@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.MyApplication.Companion.waitCheck
+import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.common.intentSerializable
 import com.onlyapp.cooltime.data.AlarmRepositoryImpl
@@ -66,11 +67,11 @@ class MyBroadcastReceiver : BroadcastReceiver() {
             Constants.reservedAlarm -> {   //알람 상황에서
                 CoroutineScope(Dispatchers.Main).launch {
                     //알람 객체를 전달 받음
-                    val alarm = intent.intentSerializable("alarm", AlarmModel::class.java) ?: return@launch
+                    val alarm = intent.intentSerializable(context.getString(R.string.alarm_en), AlarmModel::class.java) ?: return@launch
                     Log.d("reservedAlarm", alarm.toString())
                     val id = alarm.id
                     if (id != -1) {
-                        Log.d("checkResult", AlarmScheduler.checkDay(id, context).toString())
+                        Log.d(context.getString(R.string.checkResult), AlarmScheduler.checkDay(id, context).toString())
                         //설정된 알람의 요일이 오늘 요일에 해당되는지 확인
                         val checkResult = async { AlarmScheduler.checkDay(id, context) }.await()
                         if (checkResult) {
@@ -82,10 +83,10 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                                         ActiveAlarmActivity::class.java
                                     ).apply {
                                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                        putExtra("message", alarm.name)
+                                        putExtra(context.getString(R.string.message), alarm.name)
                                     })
                             } catch (e: Exception) {
-                                Log.e("errorContent", e.toString())
+                                Log.e(context.getString(R.string.errorContent), e.toString())
                             }
                         }
                         //무조건 지정한 시간보다 먼저 알람이 오지 않는다는 것을 가정

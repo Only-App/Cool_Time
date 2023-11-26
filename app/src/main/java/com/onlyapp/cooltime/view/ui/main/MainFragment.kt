@@ -123,8 +123,7 @@ class MainFragment : Fragment() {
         val endYesterday = getYesterdayEnd().timeInMillis
         val yesterdayList = loadUsage(this@MainFragment.context!!, startYesterday, endYesterday)
         val yesterdayTotalTime = getTotalTime(yesterdayList)
-
-        val displayDiffTime = getDiff(totalTime, yesterdayTotalTime)
+        val displayDiffTime = getDiff(totalTime, yesterdayTotalTime, checkNotNull(context))
         binding.tvCmpUseTime.text = displayDiffTime
         childFragmentManager.beginTransaction().replace(R.id.chart_fragment, ChartAppFragment(todayList)).commit()
 

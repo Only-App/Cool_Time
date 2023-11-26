@@ -141,7 +141,6 @@ class UseTimeService : LifecycleService() {
                             intent.putExtra(Constants.time, reuseTime) //총 사용 시간
                         }
                     }
-
                     startService(intent)
                     stopSelf()  //서비스 종료
                 }

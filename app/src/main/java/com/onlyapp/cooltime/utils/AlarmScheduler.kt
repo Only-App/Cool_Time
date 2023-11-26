@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.data.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
@@ -32,7 +33,7 @@ object AlarmScheduler {
         val alarmTime = alarmCalendar.timeInMillis
         val intent = Intent(context, MyBroadcastReceiver::class.java).apply {
             action = Constants.reservedAlarm
-            putExtra("alarm", alarmModel)
+            putExtra(context.getString(R.string.alarm_en), alarmModel)
             Log.d("registerAlarm", alarmModel.toString())
         }
 

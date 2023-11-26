@@ -4,6 +4,7 @@
     <string name="use_stat">사용 시간 통계</string>
     <string name="today_use_stat">오늘의 통계</string>
     <string name="alarm">알람</string>
+    <string name="alarm_en">alarm</string>
     <string name="lock_and_alarm">잠금 및 알람</string>
     <string name="date_status">그 날 사용량</string>
     <string name="alarm_title_tab">알람 내용</string>
@@ -64,6 +65,20 @@
     <string name="time_init2">00 : 00</string>
     <string name="time_init3">오전 00시:00분</string>
     <string name="time_init4">00.00.00</string>
+    <string name="message">message</string>
+    <string name="errorContent">errorContent</string>
+    <string name="checkResult">checkResult</string>
+    <string name="no_default_message">기본 메세지 앱이 존재하지 않음</string>
+    <string name="message_intent_error">메세지 앱은 있지만 실행은 불가능!</string>
+    <string name="remainingTime">remainingTime</string>
+    <string name="time">time</string>
+    <string name="no_day">날짜 설정하지 않음</string>
+    remainingTime
+    <!-- Lock Type 관련 상수 !-->
+    <string name="wait">재사용 가능까지</string>
+    <string name="exceed">오늘은 더 이상 사용할 수 없습니다</string>
+    <string name="lock_duration">잠금이 적용되었습니다</string>
+
 
     <!-- Permission 관련 상수 !-->
     <string name="permission_use_stat_title">사용 정보 접근</string>
@@ -82,15 +97,16 @@
     <string name="time_info">"%1$s "%2$s시 "%3$s분"</string>
     <string name="lock_status">"%s"</string>
     <string name="amount_of_time">%1$d시간 %2$d분</string>
+    <string name="remain_time">%1$s시간 %2$s분 %3$s초 남았습니다</string>
     <string name="time_expression1">%1$s : %2$s</string>
     <string name="time_expression2">%1$s : %2$s : %3$s</string>
     <string name="time_expression3">오전 %1$s:%2$s</string>
     <string name="time_expression4">%1$s.%2$s.%3$s</string>
 
     <string name="exception_app_name">예외 앱</string>
-    <string name="cmp_total_time_before">어제보다 %s시간 %s분 $s 사용</string>
-    <string name="cmp_total_count_before">어제보다 %s번 $s 사용</string>
-    <string name="cmp_endure_time_before">어제보다 %s시간 %s분 $s 사용</string>
+    <string name="cmp_total_time_before">어제보다 %1$s시간 %2$s분 %3$s</string>
+    <string name="cmp_total_count_before">어제보다 %1$s번 %2$s 사용</string>
+    <string name="cmp_endure_time_before">어제보다 %1$s시간 %2$s분 $3$s</string>
     <string name="select_day">$s</string>
     <string name="title">$s</string>
     <string name="description">$s</string>
