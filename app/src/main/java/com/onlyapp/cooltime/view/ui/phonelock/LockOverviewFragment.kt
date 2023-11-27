@@ -27,7 +27,6 @@ class LockOverviewFragment : Fragment() {
 
     private lateinit var db: UserDatabase
     private lateinit var repository: LockRepository
-
     private lateinit var lockViewModel: LockViewModel
 
     override fun onCreateView(
@@ -44,25 +43,30 @@ class LockOverviewFragment : Fragment() {
             LockViewModelFactory(repository)
         )[LockViewModel::class.java]
 
+        val lockAdapter = LockAdapter { lock ->
+            val bundle = Bundle()
+            bundle.putSerializable("key", lock)
+            findNavController().navigate(
+                R.id.action_phone_lock_main_to_update_lock_setting,
+                bundle
+            )
+        }
+
+        binding.rvLockList.apply {
+            adapter = lockAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
         lifecycleScope.launch {    //총 사용 시간 출력
             MyApplication.getInstance().getDataStore().todayUseTime.collect { currentUseTime ->
-                binding.rvLockList.layoutManager = LinearLayoutManager(context)
-                lifecycleScope.launch {
-                    lockViewModel.lockModelList.observe(viewLifecycleOwner) { list ->
-                        binding.rvLockList.adapter = LockAdapter(list, currentUseTime) { lock ->
-                            val bundle = Bundle()
-                            bundle.putSerializable("key", lock)
-                            findNavController().navigate(
-                                R.id.action_phone_lock_main_to_update_lock_setting,
-                                bundle
-                            )
-                        }
-                    }
-                }
-
-
+                lockAdapter.updateCurrentUseTIme(currentUseTime)
             }
         }
+        lifecycleScope.launch{
+            lockViewModel.lockModelList.observe(viewLifecycleOwner) { list ->
+                lockAdapter.replaceItems(list)
+            }
+        }
+
         binding.fabAddSetting.setOnClickListener {
             findNavController().navigate(R.id.action_phone_lock_main_to_lock_setting)
         }

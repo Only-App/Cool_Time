@@ -25,10 +25,9 @@ class AlarmOverviewFragment : Fragment() {
     private val binding: FragmentAlarmBinding
         get() = _binding!!
 
-    private var db: UserDatabase? = null
-    private var repository: AlarmRepository? = null
-    private var alarmViewModel: AlarmViewModel? = null
-
+    private lateinit var db: UserDatabase
+    private lateinit var repository: AlarmRepository
+    private lateinit var alarmViewModel: AlarmViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,36 +42,32 @@ class AlarmOverviewFragment : Fragment() {
         }
 
         val act = checkNotNull(activity) { "Activity is Null" }
-        db = UserDatabase.getInstance(act.applicationContext)
-        db?.let { db ->
-            repository = AlarmRepositoryImpl(db.alarmDao())
+        db = checkNotNull(UserDatabase.getInstance(act.applicationContext)) { "Database is Null" }
+        repository = AlarmRepositoryImpl(db.alarmDao())
+
+        alarmViewModel = ViewModelProvider(
+            act,
+            AlarmViewModelFactory(repository)
+        )[AlarmViewModel::class.java]
+
+        val alarmAdapter = AlarmAdapter { alarmModel ->
+            val bundle = Bundle()
+            bundle.putSerializable("key", alarmModel)
+            findNavController().navigate(
+                R.id.action_alarm_main_to_update_alarm_setting,
+                bundle
+            )
         }
-        repository?.let { repository ->
-            alarmViewModel = ViewModelProvider(
-                act,
-                AlarmViewModelFactory(repository)
-            )[AlarmViewModel::class.java]
+        binding.rvAlarmSet.apply {
+            adapter = alarmAdapter
+            layoutManager = LinearLayoutManager(this.context)
         }
 
-
-        alarmViewModel?.let {
-            lifecycleScope.launch {
-                it.alarmModelList.observe(this@AlarmOverviewFragment) { list ->
-                    binding.rvAlarmSet.adapter =
-                        AlarmAdapter(list) { alarmModel ->
-                            val bundle = Bundle()
-                            bundle.putSerializable("key", alarmModel)
-                            findNavController().navigate(
-                                R.id.action_alarm_main_to_update_alarm_setting,
-                                bundle
-                            )
-                        }
-                }
+        lifecycleScope.launch {
+            alarmViewModel.alarmModelList.observe(this@AlarmOverviewFragment) { list ->
+                alarmAdapter.replaceItems(list)
             }
         }
-
-
-        binding.rvAlarmSet.layoutManager = LinearLayoutManager(this.context)
 
         return binding.root
     }

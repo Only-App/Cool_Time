@@ -2,15 +2,16 @@ package com.onlyapp.cooltime.view.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.onlyapp.cooltime.databinding.AlarmItemBinding
 import com.onlyapp.cooltime.model.AlarmModel
 
 class AlarmAdapter(
-    private val list: List<AlarmModel>,
     private var mListener: (alarm: AlarmModel) -> Unit
 ) : RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
-
+    private val alarmDiffer = AsyncListDiffer(this, alarmDiffUtil)
     class AlarmViewHolder(val binding: AlarmItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(alarm: AlarmModel) {    //알람 객체와 Alarm Item Layout을 바인딩
 
@@ -25,6 +26,9 @@ class AlarmAdapter(
         }
     }
 
+    fun replaceItems(list : List<AlarmModel>) {
+        alarmDiffer.submitList(list)
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlarmViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val itemBinding = AlarmItemBinding.inflate(inflater, parent, false) //layout inflate 작업
@@ -32,17 +36,28 @@ class AlarmAdapter(
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return alarmDiffer.currentList.size
     }
 
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(alarmDiffer.currentList[position])
         holder.binding.clAlarmItem.setOnClickListener {
-            mListener.invoke(list[position])
+            mListener.invoke(alarmDiffer.currentList[position])
         }
     }
 
     companion object {
+        private val alarmDiffUtil = object : DiffUtil.ItemCallback<AlarmModel>(){
+            override fun areItemsTheSame(oldItem: AlarmModel, newItem: AlarmModel): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: AlarmModel, newItem: AlarmModel): Boolean {
+                return oldItem == newItem
+            }
+
+        }
+
         private val dayList = arrayOf("월", "화", "수", "목", "금", "토", "일")
         private val numList = arrayOf(64, 32, 16, 8, 4, 2, 1)
 

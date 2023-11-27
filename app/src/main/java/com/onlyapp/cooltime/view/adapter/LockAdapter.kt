@@ -2,6 +2,8 @@ package com.onlyapp.cooltime.view.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.onlyapp.cooltime.databinding.LockSettingItemBinding
 import com.onlyapp.cooltime.model.PhoneLockModel
@@ -10,12 +12,13 @@ import java.util.Date
 import java.util.Locale
 
 class LockAdapter(
-    private val list: List<PhoneLockModel>,
-    private val currentUseTime: Long,
     private var mListener: (lock: PhoneLockModel) -> Unit
 ) :
     RecyclerView.Adapter<LockAdapter.LockViewHolder>() {
-    class LockViewHolder(val binding: LockSettingItemBinding, private val currentUseTime: Long) :
+    private val lockDiffer = AsyncListDiffer(this, lockDiffUtil)
+    private var currentUseTime: Long = 0
+
+    inner class LockViewHolder(val binding: LockSettingItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(lockModel: PhoneLockModel) {
             binding.tvLockTime.text =
@@ -50,25 +53,48 @@ class LockAdapter(
 
         }
     }
+    fun replaceItems(list : List<PhoneLockModel>) {
+        lockDiffer.submitList(list)
+    }
+    fun updateCurrentUseTIme(useTime : Long) {
+        currentUseTime = useTime
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LockViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val itemBinding = LockSettingItemBinding.inflate(inflater, parent, false)
-        return LockViewHolder(itemBinding, currentUseTime)
+        return LockViewHolder(itemBinding)
     }
 
     override fun onBindViewHolder(holder: LockViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(lockDiffer.currentList[position])
         holder.binding.llLockItem.setOnClickListener {
-            mListener.invoke(list[position])
+            mListener.invoke(lockDiffer.currentList[position])
         }
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return lockDiffer.currentList.size
     }
 
     companion object {
+        private val lockDiffUtil = object : DiffUtil.ItemCallback<PhoneLockModel>(){
+            override fun areItemsTheSame(
+                oldItem: PhoneLockModel,
+                newItem: PhoneLockModel
+            ): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(
+                oldItem: PhoneLockModel,
+                newItem: PhoneLockModel
+            ): Boolean {
+                return oldItem == newItem
+            }
+
+        }
         private val dayList = arrayOf("월", "화", "수", "목", "금", "토", "일")
         private val numList = arrayOf(64, 32, 16, 8, 4, 2, 1)
 
