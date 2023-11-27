@@ -114,7 +114,7 @@ class ChartHourFragment(val list: List<Long> = ArrayList()) : Fragment() {
 
         // 임의 수동 반복문 데이터
         for (i in list.indices) {
-            //테스트 위해서 그냥 임의로 큰값 한번 넣어줌
+
             valueList.add(BarEntry(i.toFloat(), list[i] / 60.toFloat()))
         }
         // 막대바들의 정보를 담은 BarEntry List와 차트 이름을 넣어서 하나의 차트를 만드는데 필요한 DataSet 생성

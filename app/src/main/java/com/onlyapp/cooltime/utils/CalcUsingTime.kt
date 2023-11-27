@@ -87,7 +87,7 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
         val currentEvent = UsageEvents.Event()
         usageEvents.getNextEvent(currentEvent)
         when (currentEvent.eventType) {
-            UsageEvents.Event.ACTIVITY_RESUMED, UsageEvents.Event.ACTIVITY_PAUSED -> {
+            UsageEvents.Event.ACTIVITY_RESUMED, UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_STOPPED -> {
                 if (list[currentEvent.packageName] == null) {
                     list.putIfAbsent(currentEvent.packageName, ArrayList())
                     list[currentEvent.packageName]?.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
@@ -108,8 +108,10 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
                 val e0 = value[i]
                 val e1 = value[i + 1]
                 if (//E0.first == E1.first &&
-                    e0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
-                    e1.second == UsageEvents.Event.ACTIVITY_PAUSED
+                    (e0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
+                    e1.second == UsageEvents.Event.ACTIVITY_PAUSED) ||
+                    (e0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
+                            e1.second == UsageEvents.Event.ACTIVITY_STOPPED)
                 ) {
                     val diff = ((e1.third - e0.third)) / 1000.toLong()
                     val prev = appUsageMap[packageName] ?: 0L
@@ -120,7 +122,7 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
 
             if (lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED) {
                 val prev = appUsageMap[packageName] ?: 0L
-                appUsageMap[packageName] = prev + (getTodayNow().timeInMillis - lastEvent.third) / 1000.toLong()
+                appUsageMap[packageName] = prev + (endTime - lastEvent.third) / 1000.toLong()
                 Log.d("packageName", packageName)
             }
 
@@ -154,6 +156,7 @@ fun loadTimeUsage(context: Context, calendar: Calendar): ArrayList<Long> {
             endDay.timeInMillis
         )
         for (app in usageStats) {
+            Log.d("tstst", i.toString() + " " + app.key + " " + app.value)
             totalTime += app.value
         }
         list.add(totalTime)
