@@ -87,7 +87,7 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
         val currentEvent = UsageEvents.Event()
         usageEvents.getNextEvent(currentEvent)
         when (currentEvent.eventType) {
-            UsageEvents.Event.ACTIVITY_RESUMED, UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_STOPPED -> {
+            UsageEvents.Event.ACTIVITY_RESUMED, UsageEvents.Event.ACTIVITY_PAUSED -> {
                 if (list[currentEvent.packageName] == null) {
                     list.putIfAbsent(currentEvent.packageName, ArrayList())
                     list[currentEvent.packageName]?.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
@@ -108,10 +108,8 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
                 val e0 = value[i]
                 val e1 = value[i + 1]
                 if (//E0.first == E1.first &&
-                    (e0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
-                    e1.second == UsageEvents.Event.ACTIVITY_PAUSED) ||
-                    (e0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
-                            e1.second == UsageEvents.Event.ACTIVITY_STOPPED)
+                    e0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
+                    e1.second == UsageEvents.Event.ACTIVITY_PAUSED
                 ) {
                     val diff = ((e1.third - e0.third)) / 1000.toLong()
                     val prev = appUsageMap[packageName] ?: 0L
@@ -119,7 +117,11 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
                 }
             }
             val lastEvent = value[value.size - 1]
-
+            val firstEvent = value[0]
+            if (firstEvent.second == UsageEvents.Event.ACTIVITY_PAUSED){
+                val prev = appUsageMap[packageName] ?: 0L
+                appUsageMap[packageName] = prev + (firstEvent.third - beginTime) / 1000.toLong()
+            }
             if (lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED) {
                 val prev = appUsageMap[packageName] ?: 0L
                 appUsageMap[packageName] = prev + (endTime - lastEvent.third) / 1000.toLong()
