@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,12 +11,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.SimpleItemAnimator
 import com.onlyapp.cooltime.common.Constants
-import com.onlyapp.cooltime.data.ExceptAppRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentExceptionAppBinding
-import com.onlyapp.cooltime.model.ExceptAppItem
+import com.onlyapp.cooltime.model.ExceptAppModel
+import com.onlyapp.cooltime.repository.ExceptAppRepositoryImpl
 import com.onlyapp.cooltime.view.adapter.AppAdapter
 import com.onlyapp.cooltime.view.viewmodel.ExceptAppViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +29,7 @@ class ExceptionAppFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val binding = FragmentExceptionAppBinding.inflate(layoutInflater, container, false)
-        val act = checkNotNull(activity) { "MainActivty is Null" }
+        val act = checkNotNull(activity) { "MainActivity is Null" }
         val db =
             checkNotNull(UserDatabase.getInstance(act.applicationContext)) { "UserDatabase is Null" }
         val repository = ExceptAppRepositoryImpl(db.exceptAppsDao())
@@ -88,7 +86,7 @@ class ExceptionAppFragment : Fragment() {
                                 )
                             }
                         exceptViewModel.insertApp(
-                            ExceptAppItem(
+                            ExceptAppModel(
                                 applicationInfo.loadLabel(packageManager).toString(),
                                 packageName,
                                 applicationInfo.loadIcon(packageManager),
@@ -105,20 +103,22 @@ class ExceptionAppFragment : Fragment() {
                 }
             }
 
-            binding.checkedException.itemAnimator = null
-            binding.checkedException.adapter = adapter
-            binding.checkedException.layoutManager =
-                LinearLayoutManager(this@ExceptionAppFragment.context)
+            binding.apply {
+                checkedException.itemAnimator = null
+                checkedException.adapter = adapter
+                checkedException.layoutManager =
+                    LinearLayoutManager(this@ExceptionAppFragment.context)
+            }
 
             lifecycleScope.launch {
-                exceptViewModel.exceptAppItemList.observe(
+                exceptViewModel.exceptAppModelList.observe(
                     this@ExceptionAppFragment
                 ) {
                     adapter.replaceItems(it)
                     it.forEach { app ->
                         try {
                             Log.d("exceptApp", app.toString())
-                            val appInfo = packageManager.getApplicationInfo(
+                            packageManager.getApplicationInfo(
                                 app.packageName, PackageManager.GET_META_DATA
                             )
 
@@ -131,6 +131,7 @@ class ExceptionAppFragment : Fragment() {
             }
 
         }
+
         return binding.root
     }
 }

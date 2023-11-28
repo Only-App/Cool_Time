@@ -8,7 +8,7 @@ import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.MyApplication.Companion.waitCheck
 import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.common.isExistMatchToday
-import com.onlyapp.cooltime.data.LockRepositoryImpl
+import com.onlyapp.cooltime.repository.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.utils.getAppUsageStats
 import com.onlyapp.cooltime.utils.getTodayNow

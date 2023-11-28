@@ -9,7 +9,7 @@ import com.onlyapp.cooltime.MyApplication.Companion.waitCheck
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.common.Constants
 import com.onlyapp.cooltime.common.intentSerializable
-import com.onlyapp.cooltime.data.AlarmRepositoryImpl
+import com.onlyapp.cooltime.repository.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.DataStoreModule
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.model.AlarmModel

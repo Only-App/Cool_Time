@@ -1,4 +1,4 @@
-package com.onlyapp.cooltime.data
+package com.onlyapp.cooltime.data.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -9,19 +9,19 @@ import com.onlyapp.cooltime.data.entity.Alarm
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface AlarmDAO {
+interface AlarmDao {
     @Insert
-    fun insertAlarm(alarm: Alarm): Long
+    suspend fun insertAlarm(alarm: Alarm): Long
 
     @Delete
-    fun deleteAlarm(alarm: Alarm)
+    suspend fun deleteAlarm(alarm: Alarm)
 
     @Update
-    fun updateAlarm(alarm: Alarm): Int
+    suspend fun updateAlarm(alarm: Alarm): Int
 
     @Query("SELECT * FROM alarm")
     fun getAllFlow(): Flow<List<Alarm>>
 
     @Query("SELECT * FROM alarm WHERE id= :id")
-    fun getAlarm(id: Int): Alarm
+    suspend fun getAlarm(id: Int): Alarm
 }

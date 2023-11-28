@@ -7,22 +7,27 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.onlyapp.cooltime.databinding.AlarmItemBinding
 import com.onlyapp.cooltime.model.AlarmModel
+import com.onlyapp.cooltime.view.adapter.LockAdapter.Companion.getDayStr
 
 class AlarmAdapter(
-    private var mListener: (alarm: AlarmModel) -> Unit
+    private val mListener: ((alarm: AlarmModel) -> Unit)? = null
 ) : RecyclerView.Adapter<AlarmAdapter.AlarmViewHolder>() {
     private val alarmDiffer = AsyncListDiffer(this, alarmDiffUtil)
-    class AlarmViewHolder(val binding: AlarmItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class AlarmViewHolder(val binding: AlarmItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(alarm: AlarmModel) {    //알람 객체와 Alarm Item Layout을 바인딩
 
             val dayStr: String = getDayStr(alarm.day)
             val timeStr: String = getTimeStr(alarm.time)
 
-            binding.alarmName.text = alarm.name
-            binding.alarmTime.text = timeStr
-            binding.alarmDay.text = dayStr
-            binding.alarmCompare.text = alarm.remainTime
-
+            binding.apply {
+                alarmName.text = alarm.name
+                alarmTime.text = timeStr
+                alarmDay.text = dayStr
+                alarmCompare.text = alarm.remainTime
+                clAlarmItem.setOnClickListener {
+                    mListener?.invoke(alarm)
+                }
+            }
         }
     }
 
@@ -41,9 +46,6 @@ class AlarmAdapter(
 
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         holder.bind(alarmDiffer.currentList[position])
-        holder.binding.clAlarmItem.setOnClickListener {
-            mListener.invoke(alarmDiffer.currentList[position])
-        }
     }
 
     companion object {

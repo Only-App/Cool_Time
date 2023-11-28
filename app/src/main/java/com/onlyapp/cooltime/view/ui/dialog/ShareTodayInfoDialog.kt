@@ -15,7 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.common.dialogResize
-import com.onlyapp.cooltime.data.LockRepositoryImpl
+import com.onlyapp.cooltime.repository.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentShareTodayInfoDialogBinding
 import com.onlyapp.cooltime.utils.getTodayNow

@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.common.isExistMatchToday
-import com.onlyapp.cooltime.data.AlarmRepository
-import com.onlyapp.cooltime.data.AlarmRepositoryImpl
-import com.onlyapp.cooltime.data.LockRepository
-import com.onlyapp.cooltime.data.LockRepositoryImpl
+import com.onlyapp.cooltime.repository.AlarmRepository
+import com.onlyapp.cooltime.repository.AlarmRepositoryImpl
+import com.onlyapp.cooltime.repository.LockRepository
+import com.onlyapp.cooltime.repository.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentCalendarBinding
 import com.onlyapp.cooltime.utils.getSomedayEnd
@@ -110,9 +110,8 @@ class CalendarFragment : Fragment() {
                 //dateViewModel의 date 속성 값 변경
             }
         }
-
-        val lockAdapter = LockAdapter { _ -> }
-        val alarmAdapter = AlarmAdapter { _ -> }   //filteredList를 가지고 어댑터 연결
+        val alarmAdapter = AlarmAdapter()
+        val lockAdapter = LockAdapter()
 
         //RecyclerView 설정 작업
         binding.apply {

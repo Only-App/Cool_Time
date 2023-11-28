@@ -5,20 +5,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.onlyapp.cooltime.data.ExceptAppRepository
+import com.onlyapp.cooltime.repository.ExceptAppRepository
 import com.onlyapp.cooltime.data.entity.ExceptApp
-import com.onlyapp.cooltime.model.ExceptAppItem
+import com.onlyapp.cooltime.model.ExceptAppModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ExceptAppViewModel(
     private val repository: ExceptAppRepository,
-    private val getAppInfo: (exceptApp: ExceptApp) -> Pair<String, Drawable>
+    private val getAppInfo: (exceptApp: ExceptAppModel) -> Pair<String, Drawable>
 ) : ViewModel() {
-    private var _exceptAppItemList: MutableLiveData<List<ExceptAppItem>> = MutableLiveData()
-    val exceptAppItemList: LiveData<List<ExceptAppItem>>
-        get() = _exceptAppItemList
+    private var _exceptAppModelList: MutableLiveData<List<ExceptAppModel>> = MutableLiveData()
+    val exceptAppModelList: LiveData<List<ExceptAppModel>>
+        get() = _exceptAppModelList
 
     init {
         fetchData()
@@ -26,24 +26,23 @@ class ExceptAppViewModel(
 
     private fun fetchData() {
         viewModelScope.launch {
-            repository.allApps().collect { exceptAppList ->
-                val exceptAppItemList = exceptAppList.map { exceptApp ->
-                    convertToExceptAppItem(exceptApp)
+            repository.allApps().collect { exceptAppModelList ->
+                _exceptAppModelList.value = exceptAppModelList.map{
+                        exceptAppModel ->
+                    val appInfo = getAppInfo.invoke(exceptAppModel)
+                    exceptAppModel.copy(
+                        appName = appInfo.first,
+                        appIcon = appInfo.second
+                    )
                 }
-                _exceptAppItemList.value = exceptAppItemList
             }
         }
 
     }
 
-    fun insertApp(exceptAppItem: ExceptAppItem) {
+    fun insertApp(exceptAppModel: ExceptAppModel) {
         viewModelScope.launch {
-            repository.insertApp(
-                ExceptApp(
-                    exceptAppItem.packageName,
-                    exceptAppItem.checked
-                )
-            )
+            repository.insertApp(exceptAppModel)
         }
     }
 
@@ -51,31 +50,19 @@ class ExceptAppViewModel(
         viewModelScope.launch { repository.deleteApp(packageName) }
     }
 
-    suspend fun getApp(packageName: String): ExceptApp {
+    suspend fun getApp(packageName: String): ExceptAppModel {
         return repository.getApp(packageName)
     }
 
-    fun updateApp(exceptAppItem: ExceptAppItem) {
+    fun updateApp(exceptAppModel: ExceptAppModel) {
         viewModelScope.launch {
             repository.updateApp(
-                ExceptApp(
-                    exceptAppItem.packageName,
-                    !exceptAppItem.checked
+                exceptAppModel.copy(
+                    checked = !exceptAppModel.checked
                 )
             )
         }
     }
 
-    private suspend fun convertToExceptAppItem(exceptApp: ExceptApp): ExceptAppItem {
-        return withContext(Dispatchers.IO) {
-            val appInfo = getAppInfo.invoke(exceptApp)
-            ExceptAppItem(
-                appInfo.first,
-                exceptApp.packageName,
-                appInfo.second,
-                exceptApp.checked
-            )
-        }
-    }
 }
 

@@ -2,7 +2,7 @@ package com.onlyapp.cooltime.view.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.onlyapp.cooltime.data.AlarmRepository
+import com.onlyapp.cooltime.repository.AlarmRepository
 import com.onlyapp.cooltime.view.viewmodel.AlarmViewModel
 
 class AlarmViewModelFactory(private val repository: AlarmRepository) :

@@ -11,8 +11,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.R
-import com.onlyapp.cooltime.data.LockRepository
-import com.onlyapp.cooltime.data.LockRepositoryImpl
+import com.onlyapp.cooltime.repository.LockRepository
+import com.onlyapp.cooltime.repository.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentPhoneLockBinding
 import com.onlyapp.cooltime.view.adapter.LockAdapter

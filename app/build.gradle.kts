@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.onlyapp.cooltime"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.onlyapp.cooltime"
@@ -51,10 +51,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     implementation("androidx.window:window:1.1.0")
     kapt("org.xerial:sqlite-jdbc:3.34.0")
-    annotationProcessor("androidx.room:room-compiler:2.5.0")
-    kapt("androidx.room:room-compiler:2.5.0")
-    implementation("androidx.room:room-ktx:2.5.0")
-    implementation("androidx.room:room-runtime:2.5.2")
+    annotationProcessor("androidx.room:room-compiler:2.6.0")
+    kapt("androidx.room:room-compiler:2.6.0")
+    implementation("androidx.room:room-ktx:2.6.0")
+    implementation("androidx.room:room-runtime:2.6.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation ("androidx.activity:activity:1.3.1")
     implementation ("androidx.core:core-ktx:1.6.0")

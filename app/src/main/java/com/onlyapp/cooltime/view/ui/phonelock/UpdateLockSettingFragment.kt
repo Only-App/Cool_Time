@@ -1,6 +1,5 @@
 package com.onlyapp.cooltime.view.ui.phonelock
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.common.showShortToast
-import com.onlyapp.cooltime.data.LockRepository
-import com.onlyapp.cooltime.data.LockRepositoryImpl
+import com.onlyapp.cooltime.repository.LockRepository
+import com.onlyapp.cooltime.repository.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentUpdateLockSettingBinding
 import com.onlyapp.cooltime.model.PhoneLockModel
@@ -180,7 +179,7 @@ class UpdateLockSettingFragment : Fragment(), CustomTimePickerDialog.ConfirmDial
                                         endDate = endDate
                                     )
                                 )
-
+                                activity.showShortToast("잠금이 수정되었습니다!")
                                 findNavController().popBackStack()
                             }
                         }

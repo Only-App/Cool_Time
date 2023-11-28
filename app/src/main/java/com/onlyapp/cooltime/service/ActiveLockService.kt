@@ -25,7 +25,7 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.GridLayoutManager
 import com.onlyapp.cooltime.R
 import com.onlyapp.cooltime.common.Constants
-import com.onlyapp.cooltime.data.ExceptAppRepositoryImpl
+import com.onlyapp.cooltime.repository.ExceptAppRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentActiveLockBinding
 import com.onlyapp.cooltime.utils.getTodayNow

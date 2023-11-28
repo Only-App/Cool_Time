@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.onlyapp.cooltime.common.isExistMatchToday
-import com.onlyapp.cooltime.data.AlarmRepository
-import com.onlyapp.cooltime.data.entity.Alarm
+import com.onlyapp.cooltime.repository.AlarmRepository
 import com.onlyapp.cooltime.model.AlarmModel
 import com.onlyapp.cooltime.utils.getTodayNow
 import com.onlyapp.cooltime.utils.getTodayStart
@@ -27,38 +26,24 @@ class AlarmViewModel(private val repository: AlarmRepository) : ViewModel() {
 
     private fun fetchData() {
         viewModelScope.launch {
-            repository.getAllFlow().collect { alarmList ->
-                val alarmModelList = alarmList.map { alarm ->
-                    val remainTimeText = getRemainTime(alarm.day, alarm.time)
-                    AlarmModel(alarm.id, alarm.name, alarm.day, alarm.time, remainTimeText)
+            repository.getAllFlow().collect { alarmModelList ->
+                _alarmModelList.value = alarmModelList.map {
+                    it.copy(remainTime = getRemainTime(it.day, it.time))
                 }
-                _alarmModelList.value = alarmModelList
             }
         }
     }
 
-
     suspend fun insertAlarm(alarmModel: AlarmModel): Long {
-        return repository.insert(
-            Alarm(
-                name = alarmModel.name,
-                day = alarmModel.day,
-                time = alarmModel.time
-            )
-        )
+        return repository.insert(alarmModel)
     }
 
     fun deleteAlarm(alarmModel: AlarmModel) = viewModelScope.launch {
-        repository.delete(convertToAlarm(alarmModel))
+        repository.delete(alarmModel)
     }
-
 
     fun updateAlarm(alarmModel: AlarmModel) = viewModelScope.launch {
-        repository.update(convertToAlarm(alarmModel))
-    }
-
-    private fun convertToAlarm(alarmModel: AlarmModel): Alarm {
-        return Alarm(alarmModel.id, alarmModel.name, alarmModel.day, alarmModel.time)
+        repository.update(alarmModel)
     }
 
     private fun startUpdatingData() {

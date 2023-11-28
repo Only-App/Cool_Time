@@ -12,7 +12,7 @@ import java.util.Date
 import java.util.Locale
 
 class LockAdapter(
-    private var mListener: (lock: PhoneLockModel) -> Unit
+    private val mListener: ((lock: PhoneLockModel) -> Unit)? = null
 ) :
     RecyclerView.Adapter<LockAdapter.LockViewHolder>() {
     private val lockDiffer = AsyncListDiffer(this, lockDiffUtil)
@@ -50,7 +50,9 @@ class LockAdapter(
                 (remain / 3600).toString() + "시간 " + (remain % 3600 / 60).toString() + "분 " + remain % 60 + "초 더 사용시 잠금"
 
             binding.tvLockRemainTime.text = remainTime
-
+            binding.llLockItem.setOnClickListener {
+                mListener?.invoke(lockModel)
+            }
         }
     }
     fun replaceItems(list : List<PhoneLockModel>) {
@@ -69,9 +71,6 @@ class LockAdapter(
 
     override fun onBindViewHolder(holder: LockViewHolder, position: Int) {
         holder.bind(lockDiffer.currentList[position])
-        holder.binding.llLockItem.setOnClickListener {
-            mListener.invoke(lockDiffer.currentList[position])
-        }
     }
 
     override fun getItemCount(): Int {

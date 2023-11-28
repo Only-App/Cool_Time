@@ -10,8 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.onlyapp.cooltime.R
-import com.onlyapp.cooltime.data.AlarmRepository
-import com.onlyapp.cooltime.data.AlarmRepositoryImpl
+import com.onlyapp.cooltime.repository.AlarmRepository
+import com.onlyapp.cooltime.repository.AlarmRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentAlarmBinding
 import com.onlyapp.cooltime.view.adapter.AlarmAdapter
