@@ -51,6 +51,7 @@ class AddAlarmSettingFragment : Fragment() {
 
         val act = checkNotNull(activity) { "Activity is Null" }
         db = checkNotNull(UserDatabase.getInstance(act.applicationContext)) { "Database is Null" }
+        repository = AlarmRepositoryImpl(db.alarmDao())
         alarmViewModel = ViewModelProvider(
             act,
             AlarmViewModelFactory(repository!!)
