@@ -132,11 +132,9 @@ class UseTimeService : LifecycleService() {
                         WAIT -> {
                             intent.putExtra(Constants.time, reuseTime)   //최소 사용 시간 간격
                         }
-
                         LOCK_DURATION -> {
                             intent.putExtra(Constants.time, reuseTime)   //잠금이 해제될 때까지의 남은 시간
                         }
-
                         EXCEED -> {
                             intent.putExtra(Constants.time, reuseTime) //총 사용 시간
                         }

@@ -1,6 +1,7 @@
 package com.onlyapp.cooltime.view.ui.calendar
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,8 @@ import com.onlyapp.cooltime.repository.LockRepository
 import com.onlyapp.cooltime.repository.LockRepositoryImpl
 import com.onlyapp.cooltime.data.UserDatabase
 import com.onlyapp.cooltime.databinding.FragmentCalendarBinding
+import com.onlyapp.cooltime.repository.DateStatRepository
+import com.onlyapp.cooltime.repository.DateStatRepositoryImpl
 import com.onlyapp.cooltime.utils.getSomedayEnd
 import com.onlyapp.cooltime.utils.getSomedayStart
 import com.onlyapp.cooltime.utils.loadTimeUsage
@@ -43,6 +46,7 @@ class CalendarFragment : Fragment() {
     private lateinit var db: UserDatabase
     private lateinit var lockRepository: LockRepository
     private lateinit var alarmRepository: AlarmRepository
+    private lateinit var dateStatRepository: DateStatRepository
     private lateinit var lockViewModel: LockViewModel
     private lateinit var alarmViewModel: AlarmViewModel
     private val dateViewModel: DateViewModel by viewModels()
@@ -55,39 +59,40 @@ class CalendarFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentCalendarBinding.inflate(inflater, container, false)
-        binding.apply {
-            llLockAndAlarmSet.visibility = View.VISIBLE
-            llChart.visibility = View.GONE
-        }
+
         val act = checkNotNull(activity) { "Activity is Null" }
         db = checkNotNull(UserDatabase.getInstance(act.applicationContext)) { "Database is Null" }
         lockRepository = LockRepositoryImpl(db.phoneLockDao())
         alarmRepository = AlarmRepositoryImpl(db.alarmDao())
+        dateStatRepository = DateStatRepositoryImpl(db.dateStatDao())
+
         lockViewModel = ViewModelProvider(
-            act,
-            LockViewModelFactory(lockRepository)
+            act, LockViewModelFactory(lockRepository)
         )[LockViewModel::class.java]
         alarmViewModel = ViewModelProvider(
-            act,
-            AlarmViewModelFactory(alarmRepository)
+            act, AlarmViewModelFactory(alarmRepository)
         )[AlarmViewModel::class.java]
 
+        binding.apply {
+            llLockAndAlarmSet.visibility = View.VISIBLE
+            llChart.visibility = View.GONE
+        }
         dateViewModel.date.value = binding.calendarView.date    //dateViewModel date 속성 값 초기화
-
         binding.calendarView.setOnDateChangeListener {  //캘린더 뷰 날짜 변경 리스너 설정
                 _, year, month, day ->
             lifecycleScope.launch {
                 val startDay = getSomedayStart(year, month, day)
                 val endDay = getSomedayEnd(year, month, day)
+
                 this@CalendarFragment.context?.let {
-                    val appList = withContext(Dispatchers.IO) {
+                    var appList = withContext(Dispatchers.IO) {
                         loadUsage(
                             it,
                             startDay.timeInMillis,
                             endDay.timeInMillis
                         )
                     }
-                    val hourList = withContext(Dispatchers.IO) {
+                    var hourList = withContext(Dispatchers.IO) {
                         loadTimeUsage(
                             it,
                             getSomedayStart(
@@ -97,11 +102,23 @@ class CalendarFragment : Fragment() {
                             )
                         )
                     }
+                    Log.d("appList", appList.toString())
+                    Log.d("hourList", hourList.toString())
+
+                    //만약 사용 정보를 불러올 수 없어서 empty list라면 repository에서 사용 정보를 가져옴
+                    if (appList.isEmpty() && hourList.isEmpty()) {
+                        val dateStat = dateStatRepository.getDateStat(startDay.timeInMillis)
+                        appList = dateStat?.appStatList ?: emptyList()
+                        hourList = if(dateStat == null) ArrayList(LongArray(12){0}.toList()) else ArrayList(dateStat.hourStatList)
+                    }
+
+
                     childFragmentManager.beginTransaction()
                         .replace(binding.hourChartFragment.id, ChartHourFragment(hourList)).commit()
                     childFragmentManager.beginTransaction()
                         .replace(binding.appChartFragment.id, ChartAppFragment(appList)).commit()
                 }
+
                 dateViewModel.date.value =
                     SimpleDateFormat(
                         getString(R.string.date_pattern),

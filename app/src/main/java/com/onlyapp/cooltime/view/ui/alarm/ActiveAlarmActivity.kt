@@ -88,8 +88,6 @@ class ActiveAlarmActivity : AppCompatActivity() {
             }
         }.start()
 
-
-
         setContentView(binding.root)
     }
 

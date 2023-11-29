@@ -32,9 +32,9 @@ class AddAlarmSettingFragment : Fragment() {
     private var _binding: FragmentAlarmSettingBinding? = null
     private val binding
         get() = _binding!!
-    private var db: UserDatabase? = null
-    private var repository: AlarmRepository? = null
-    private var alarmViewModel: AlarmViewModel? = null
+    private lateinit var db: UserDatabase
+    private lateinit var repository: AlarmRepository
+    private lateinit var alarmViewModel: AlarmViewModel
     private lateinit var timePicker: TimePicker
 
     override fun onCreateView( //Fragment가 실행될 때 생명주기에 따라 onCreate 다음으로 자동 실행되는 함수, View 관련 내용을 세팅하기에 적합
@@ -49,14 +49,13 @@ class AddAlarmSettingFragment : Fragment() {
 
         timePicker.descendantFocusability = TimePicker.FOCUS_BLOCK_DESCENDANTS
 
-        activity?.let { db = UserDatabase.getInstance(it.applicationContext) }
-        db?.let { repository = AlarmRepositoryImpl(it.alarmDao()) }
-        if (activity != null && repository != null) {
-            alarmViewModel = ViewModelProvider(
-                activity!!,
-                AlarmViewModelFactory(repository!!)
-            )[AlarmViewModel::class.java]
-        }
+        val act = checkNotNull(activity) { "Activity is Null" }
+        db = checkNotNull(UserDatabase.getInstance(act.applicationContext)) { "Database is Null" }
+        alarmViewModel = ViewModelProvider(
+            act,
+            AlarmViewModelFactory(repository!!)
+        )[AlarmViewModel::class.java]
+
 
         hide() // 다른 곳 누르면 키보드 사라지는 함수
         addAlarmSetting()
@@ -92,18 +91,6 @@ class AddAlarmSettingFragment : Fragment() {
 
     private fun addAlarmSetting() {
         //db 객체 가져오기
-        activity?.let { activity ->
-            db = UserDatabase.getInstance(activity.applicationContext)
-            db?.let { userDatabase ->
-                repository = AlarmRepositoryImpl(userDatabase.alarmDao())
-                repository?.let { repository ->
-                    alarmViewModel = ViewModelProvider(
-                        activity,
-                        AlarmViewModelFactory(repository)
-                    )[AlarmViewModel::class.java]
-                }
-            }
-        }
         //등록 버튼을 누르면 입력한 값들을 바탕으로 Entity객체를 생성하고 Alarm 테이블에 Insert
         binding.btnAddSetting.setOnClickListener {
 
@@ -114,13 +101,17 @@ class AddAlarmSettingFragment : Fragment() {
 
             //설정한 시간 값(기준값: 분)
             val timeResult = hour * 60 + minutes
-
             //요일 설정 값(비트 마스크 값)
             val dayResult = dayToBit()
 
             //Alarm 객체 생성
             val entity =
-                AlarmModel(name = etAlarmDescription, day = dayResult, time = timeResult, remainTime = "")
+                AlarmModel(
+                    name = etAlarmDescription,
+                    day = dayResult,
+                    time = timeResult,
+                    remainTime = ""
+                )
 
             if (contentCheck()) {
                 lifecycleScope.launch {
@@ -128,7 +119,13 @@ class AddAlarmSettingFragment : Fragment() {
                     context?.let {
                         id?.let { id ->
                             AlarmScheduler.registerAlarm(
-                                AlarmModel(id.toInt(), entity.name, entity.day, entity.time, remainTime = ""), it
+                                AlarmModel(
+                                    id.toInt(),
+                                    entity.name,
+                                    entity.day,
+                                    entity.time,
+                                    remainTime = ""
+                                ), it
                             )
                         }
                     }
