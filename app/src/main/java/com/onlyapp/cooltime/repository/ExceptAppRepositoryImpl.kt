@@ -21,9 +21,10 @@ class ExceptAppRepositoryImpl(private val exceptAppDao: ExceptAppDao) : ExceptAp
         }
     }
 
-    override suspend fun getApp(packageName: String): ExceptAppModel {
+    override suspend fun getApp(packageName: String): ExceptAppModel? {
         val exceptAppEntity = exceptAppDao.getApp(packageName)
-        return ExceptAppModel(
+        return if(exceptAppEntity == null) null
+        else ExceptAppModel(
             appName = "",
             packageName = exceptAppEntity.packageName,
             checked = exceptAppEntity.checked

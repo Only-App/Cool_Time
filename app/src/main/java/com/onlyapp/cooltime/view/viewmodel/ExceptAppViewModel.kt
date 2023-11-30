@@ -50,7 +50,7 @@ class ExceptAppViewModel(
         viewModelScope.launch { repository.deleteApp(packageName) }
     }
 
-    suspend fun getApp(packageName: String): ExceptAppModel {
+    suspend fun getApp(packageName: String): ExceptAppModel? {
         return repository.getApp(packageName)
     }
 

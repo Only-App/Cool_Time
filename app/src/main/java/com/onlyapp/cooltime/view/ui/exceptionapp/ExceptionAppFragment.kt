@@ -69,7 +69,7 @@ class ExceptionAppFragment : Fragment() {
                     val appInfo = resolveInfo.activityInfo.applicationInfo
                     val packageName = appInfo.packageName
                     if (packageName == Constants.coolTimePackageName) continue
-                    val result = async { exceptViewModel.getApp(packageName) }.await()
+                    val result = exceptViewModel.getApp(packageName)
                     //설치되어 있는 앱인데 아직 DB에 들어있지 않은 앱이라면 insert
                     if (result != null) continue
                     else {  //설치되어 있는 앱인데 아직 DB에 들어있지 않은 앱이라면 insert

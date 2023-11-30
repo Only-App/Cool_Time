@@ -16,7 +16,7 @@ interface ExceptAppDao {
     suspend fun deleteApp(packageName: String)
 
     @Query("SELECT * FROM except_app WHERE packageName=:packageName")
-    suspend fun getApp(packageName: String): ExceptApp
+    suspend fun getApp(packageName: String): ExceptApp?
 
     @Query("SELECT * FROM except_app")
     fun getAllFlow(): Flow<List<ExceptApp>>
