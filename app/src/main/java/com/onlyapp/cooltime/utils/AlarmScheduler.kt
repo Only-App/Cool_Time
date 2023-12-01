@@ -24,9 +24,10 @@ object AlarmScheduler {
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
         }
 
-        if (alarmCalendar.timeInMillis < getTodayNow().timeInMillis) {
+        if (alarmCalendar.timeInMillis <= getTodayNow().timeInMillis + 1000) {
             alarmCalendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 

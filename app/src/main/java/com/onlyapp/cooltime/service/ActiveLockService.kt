@@ -64,7 +64,7 @@ class ActiveLockService : Service() {
                 // 데이터를 처리
                 // receivedData를 사용
                 // 예: TextView에 표시
-                val useTime = getString(R.string.remain_time, String.format("02d", receivedData / 3600), String.format("02d", receivedData % 3600 / 60), String.format("02d", receivedData % 60))
+                val useTime = getString(R.string.remain_time, String.format("%02d", receivedData / 3600), String.format("%02d", receivedData % 3600 / 60), String.format("%02d", receivedData % 60))
                 //"${receivedData / 3600}시간 ${receivedData % 3600 / 60}분 ${receivedData % 60}초 남았습니다"
                 binding.lockUseTime.text = useTime
                 if (receivedData == 0) {
