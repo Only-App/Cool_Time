@@ -3,6 +3,7 @@ package com.onlyapp.cooltime.service
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.LifecycleService
 import com.onlyapp.cooltime.MyApplication
 import com.onlyapp.cooltime.MyApplication.Companion.waitCheck
@@ -32,7 +33,6 @@ class UseTimeService : LifecycleService() {
 
         myRunnable = object : Runnable {
             override fun run() {
-
                 val lockDao = UserDatabase.getInstance(applicationContext)?.phoneLockDao()
                 val lockRepository = lockDao?.let { LockRepositoryImpl(it) }
 
@@ -71,10 +71,7 @@ class UseTimeService : LifecycleService() {
                             }
 
                             //잠금 기간을 설정했는데 잠금 기간에 해당되지 않은 경우
-                            if (getTodayNow().timeInMillis !in startDate..endDate
-                                && (startDate == -1L && endDate == -1L)
-                            ) continue
-
+                            if ((startDate != -1L && endDate != -1L) && getTodayNow().timeInMillis !in startDate..endDate) continue
                             val dayOfWeek =
                                 Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
 
@@ -95,6 +92,9 @@ class UseTimeService : LifecycleService() {
                                 1
                             )   //종료 시간이 시작 시간 보다 빠르면 종료 날짜 + 1
 
+                            Log.d("minTime", minTime.toString())
+                            Log.d("lockStatus", lockStatus.toString())
+                            Log.d("waitCheck", waitCheck.toString())
                             when {
                                 //잠금 시작 시간과 잠금 종료 시간에 포함되는지
                                 getTodayNow().timeInMillis in lockOnDate.timeInMillis..lockOffDate.timeInMillis -> {

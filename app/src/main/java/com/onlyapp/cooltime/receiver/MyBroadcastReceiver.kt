@@ -33,6 +33,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         when (intent.action) {
             Intent.ACTION_USER_PRESENT -> //잠금 해제 상황에서
                 CoroutineScope(Dispatchers.Main).launch {
+                    Log.d("increaseCnt", "true")
                     MyApplication.getInstance().getDataStore().increaseCnt()
                     MyApplication.getInstance().getDataStore().updateLockStatus()
 
