@@ -17,7 +17,7 @@
     <string name="last_time_use">가장 최근 사용 시각</string>
     <string name="calendar">캘린더</string>
     <string name="total_time">하루 총 사용량</string>
-    <string name="interval_time">최소 사용 간격 시간</string>
+    <string name="interval_time">재사용 대기 시간</string>
     <string name="lock_time">특정 시간 잠금</string>
     <string name="app_use_time">앱별 사용 시간</string>
     <string name="menu">메뉴</string>
