@@ -223,7 +223,7 @@ class ActiveLockService : Service() {
                     val lockTime = getString(R.string.time_info, "오후", (hour - 12).toString(), minute.toString())
                     binding.lockTime.text = lockTime
                 } else {
-                    val lockTime = getString(R.string.time_info, "오후", (hour - 12).toString(), minute.toString())
+                    val lockTime = getString(R.string.time_info, "오전", (hour).toString(), minute.toString())
                     binding.lockTime.text = lockTime
                 }
 
@@ -282,7 +282,7 @@ class ActiveLockService : Service() {
                 loadIconJob.await()
                 executor.scheduleWithFixedDelay(
                     runnable, 0, 300, TimeUnit.MILLISECONDS
-                ) // 30밀리초마다 스케쥴 돌아가도록 함
+                ) // 300밀리초마다 스케쥴 돌아가도록 함
             }
         } catch (e: Exception) {
             Log.e("flow Exception", e.toString())

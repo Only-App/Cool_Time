@@ -134,11 +134,12 @@ class CalendarFragment : Fragment() {
         binding.apply {
             rvCalendarLockSet.apply {
                 layoutManager = LinearLayoutManager(context)
-                adapter = alarmAdapter
+
+                adapter = lockAdapter
             }
             rvCalendarAlarmSet.apply {
                 layoutManager = LinearLayoutManager(context)
-                adapter = lockAdapter
+                adapter = alarmAdapter
             }
         }
         //date 값이 변경되는지 관찰

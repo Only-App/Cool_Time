@@ -50,6 +50,7 @@
             android:name=".receiver.MyBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
+            android:launchMode="singleTask"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -103,13 +104,16 @@
         <service
             android:name=".service.UseTimeService"
             android:enabled="true"
+            android:launchMode="singleTask"
             android:excludeFromRecents="true" />
         <service
             android:name=".service.ActiveLockService"
             android:excludeFromRecents="true"
+            android:launchMode="singleTask"
             android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
         <service
             android:name=".service.RemainingTimeService"
+            android:launchMode="singleTask"
             android:excludeFromRecents="true" />
 
     </application>
