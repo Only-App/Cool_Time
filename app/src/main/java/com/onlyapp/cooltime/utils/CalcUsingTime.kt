@@ -87,7 +87,7 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
         val currentEvent = UsageEvents.Event()
         usageEvents.getNextEvent(currentEvent)
         when (currentEvent.eventType) {
-            UsageEvents.Event.ACTIVITY_RESUMED, UsageEvents.Event.ACTIVITY_PAUSED -> {
+            UsageEvents.Event.ACTIVITY_RESUMED, UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_STOPPED -> {
                 if (list[currentEvent.packageName] == null) {
                     list.putIfAbsent(currentEvent.packageName, ArrayList())
                     list[currentEvent.packageName]?.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
@@ -108,8 +108,10 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
                 val e0 = value[i]
                 val e1 = value[i + 1]
                 if (//E0.first == E1.first &&
-                    e0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
-                    e1.second == UsageEvents.Event.ACTIVITY_PAUSED
+                    (e0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
+                    e1.second == UsageEvents.Event.ACTIVITY_PAUSED) ||
+                    (e0.second == UsageEvents.Event.ACTIVITY_RESUMED &&
+                            e1.second == UsageEvents.Event.ACTIVITY_STOPPED)
                 ) {
                     val diff = ((e1.third - e0.third)) / 1000.toLong()
                     val prev = appUsageMap[packageName] ?: 0L
@@ -118,14 +120,14 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
             }
             val lastEvent = value[value.size - 1]
             val firstEvent = value[0]
-            if (firstEvent.second == UsageEvents.Event.ACTIVITY_PAUSED){
+            if (firstEvent.second == UsageEvents.Event.ACTIVITY_PAUSED || firstEvent.second == UsageEvents.Event.ACTIVITY_STOPPED){
                 val prev = appUsageMap[packageName] ?: 0L
-                appUsageMap[packageName] = prev + (firstEvent.third - beginTime) / 1000.toLong()
+                appUsageMap[packageName] = prev + ((firstEvent.third - beginTime) / 1000).toLong()
             }
             if (lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED) {
                 val prev = appUsageMap[packageName] ?: 0L
-                appUsageMap[packageName] = prev + (endTime - lastEvent.third) / 1000.toLong()
-                Log.d("packageName", packageName)
+                appUsageMap[packageName] = prev + ((endTime - lastEvent.third) / 1000).toLong()
+
             }
 
         }
@@ -133,6 +135,50 @@ fun getAppUsageStats(context: Context, beginTime: Long, endTime: Long): Map<Stri
     }
 
     return appUsageMap.toList().sortedBy { it.second }.toMap()
+}
+
+fun checkContinueUsage(context: Context, beginTime: Long, endTime: Long, target: String ): Triple<Boolean, String, String> {
+    val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+    val packageManager = context.packageManager
+    val usageEvents = usageStatsManager.queryEvents(beginTime, endTime)
+
+    val list: MutableMap<String, ArrayList<Triple<String, Int, Long>>> = mutableMapOf()
+    while (usageEvents.hasNextEvent()) {
+        val currentEvent = UsageEvents.Event()
+        usageEvents.getNextEvent(currentEvent)
+        when (currentEvent.eventType) {
+            UsageEvents.Event.ACTIVITY_RESUMED, UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_STOPPED -> {
+                if (list[currentEvent.packageName] == null) {
+                    list.putIfAbsent(currentEvent.packageName, ArrayList())
+                    list[currentEvent.packageName]?.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
+                } else {
+                    list[currentEvent.packageName]?.add(Triple(currentEvent.className, currentEvent.eventType, currentEvent.timeStamp))
+                }
+            }
+        }
+    }
+
+    for ((packageName, value) in list) {
+        if (packageName == "com.onlyapp.cooltime") continue
+        if (packageManager.getLaunchIntentForPackage(packageName) != null) {
+            val lastEvent = value[value.size - 1]
+            val firstEvent = value[0]
+            if(target == "Start"){
+                if (lastEvent.second == UsageEvents.Event.ACTIVITY_RESUMED) {
+                    return Triple(true, "Start" ,packageName)
+                }
+            }
+            if(target == "End"){
+                Log.d("tstst", packageName + "  " + firstEvent.second)
+                if (firstEvent.second == UsageEvents.Event.ACTIVITY_PAUSED || firstEvent.second == UsageEvents.Event.ACTIVITY_STOPPED){
+                    Log.d("tstst", packageName + " 성공")
+                    return Triple(true, "End" , packageName)
+                }
+            }
+        }
+    }
+
+    return Triple(false,"" ,  "")
 }
 
 fun loadUsage(context: Context, startDay: Long, endDay: Long): List<Pair<String, Long>> {
@@ -145,6 +191,9 @@ fun loadTimeUsage(context: Context, calendar: Calendar): ArrayList<Long> {
     for (i in 0 until 24) {
         val startDay = calendar.clone() as Calendar
         startDay.set(Calendar.HOUR_OF_DAY, i)
+        startDay.set(Calendar.MINUTE, 0)
+        startDay.set(Calendar.SECOND, 0)
+        startDay.set(Calendar.MILLISECOND, 0)
         val endDay = calendar.clone() as Calendar
         endDay.set(Calendar.HOUR_OF_DAY, i)
         endDay.set(Calendar.MINUTE, 59)
@@ -157,10 +206,74 @@ fun loadTimeUsage(context: Context, calendar: Calendar): ArrayList<Long> {
             startDay.timeInMillis,
             endDay.timeInMillis
         )
+        if(usageStats.isEmpty()){
+            var flag = false
+            for( j in i-1 downTo  0){
+                val searchLeftStart = calendar.clone() as Calendar
+                searchLeftStart.set(Calendar.HOUR_OF_DAY, j)
+                searchLeftStart.set(Calendar.MINUTE, 0)
+                searchLeftStart.set(Calendar.SECOND, 0)
+                searchLeftStart.set(Calendar.MILLISECOND, 0)
+                val searchLeftEnd = calendar.clone() as Calendar
+                searchLeftEnd.set(Calendar.HOUR_OF_DAY, j)
+                searchLeftEnd.set(Calendar.MINUTE, 59)
+                searchLeftEnd.set(Calendar.SECOND, 59)
+                searchLeftEnd.set(Calendar.MILLISECOND, 999)
+                val searchLeft = checkContinueUsage(
+                    context,
+                    searchLeftStart.timeInMillis,
+                    searchLeftEnd.timeInMillis,
+                    "Start"
+                )
+                if(getAppUsageStats(context, searchLeftStart.timeInMillis, searchLeftEnd.timeInMillis).isNotEmpty()
+                    && !searchLeft.first){
+
+                    break
+                }
+                if(searchLeft.first && searchLeft.second == "Start"){
+                    for(k in i+1 until 24){
+                        val searchRightStart = calendar.clone() as Calendar
+                        searchRightStart.set(Calendar.HOUR_OF_DAY, k)
+                        searchRightStart.set(Calendar.MINUTE, 0)
+                        searchRightStart.set(Calendar.SECOND, 0)
+                        searchRightStart.set(Calendar.MILLISECOND, 0)
+                        val searchRightEnd = calendar.clone() as Calendar
+                        searchRightEnd.set(Calendar.HOUR_OF_DAY, k)
+                        searchRightEnd.set(Calendar.MINUTE, 59)
+                        searchRightEnd.set(Calendar.SECOND, 59)
+                        searchRightEnd.set(Calendar.MILLISECOND, 999)
+
+                        val searchRight = checkContinueUsage(
+                            context,
+                            searchRightStart.timeInMillis,
+                            searchRightEnd.timeInMillis,
+                            "End"
+                        )
+
+                        if(getAppUsageStats(context, searchRightStart.timeInMillis, searchRightEnd.timeInMillis).isNotEmpty()
+                            && !searchRight.first){
+                            flag = true
+                            Log.d("tstst", "실패")
+                            break
+
+                        }
+
+                        if(searchRight.first && searchRight.second == "End" && (searchLeft.third == searchRight.third)){
+                            totalTime += 3600
+                            flag = true
+                            break
+                        }
+                    }
+                }
+                if(flag){break}
+            }
+        }
+
         for (app in usageStats) {
             Log.d("tstst", i.toString() + " " + app.key + " " + app.value)
             totalTime += app.value
         }
+        Log.d("tstst", i.toString() + "시간 total Time 은 " + (totalTime/60).toString())
         list.add(totalTime)
     }
     return list
